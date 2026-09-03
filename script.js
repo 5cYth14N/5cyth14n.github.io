@@ -15,24 +15,18 @@ let songs = [];
 // ============== ADD YOUR SONGS HERE ==============
 // To add more music, just add objects to this array
 songs = [
-  {
-    title: "Hasi (Cover Version)",
-    artist: "Shebika Pal",
-    src: "music/default.mp3",
-    image: "IMG-20230920-002937.jpg"
-  },
   // Add new songs here
   {
-    title: "New Song 1",
-    artist: "New Artist 1", 
-    src: "music/default2.mp3",
-    image: "images/new_song_1.jpg"
+    title: "People so stupid",
+    artist: "Tom MacDonald", 
+    src: "music/song4.mp3",
+    image: "images/song4.jpg"
   },
   {
-    title: "New Song 2",
-    artist: "New Artist 2",
-    src: "music/new_song_2.mp3",
-    image: "images/new_song_2.jpg"
+    title: "White Boyz",
+    artist: "Tom MacDonald",
+    src: "music/song5.mp3",
+    image: "images/song5.jpg"
   },
   {
     title: "New Song 3",
