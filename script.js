@@ -7,8 +7,8 @@ const previous = document.getElementById("previous");
 const play = document.getElementById("play");
 const btn2 = document.querySelector(".fa-random");
 const btn = document.querySelector(".fa-repeat");
-const sleepBtn = document.querySelector("#sleepbtn");
 const music_container = document.getElementsByClassName("music_container")[0];
+
 // Progress bar elements
 const progressRange = document.getElementById("progressRange");
 const progressFill = document.getElementById("progressFill");
@@ -17,14 +17,32 @@ const totalTimeDisplay = document.getElementById("totalTime");
 
 let isPlaying = false;
 let songs = [];
+let isDragging = false;
+let progressAnimationFrame = null;
 
 // ============== ADD YOUR SONGS HERE ==============
-// To add more music, just add objects to this array
 songs = [
-  // Add new songs here
+  {
+    title: "Shape of You",
+    artist: "Ed Sheeran",
+    src: "music/song1.mp3",
+    image: "images/song1.jpg"
+  },
+  {
+    title: "Bohemian Rhapsody",
+    artist: "Queen",
+    src: "music/song2.mp3",
+    image: "images/song2.jpg"
+  },
+  {
+    title: "Imagine",
+    artist: "John Lennon",
+    src: "music/song3.mp3",
+    image: "images/song3.jpg"
+  },
   {
     title: "People so stupid",
-    artist: "Tom MacDonald", 
+    artist: "Tom MacDonald",
     src: "music/song4.mp3",
     image: "images/song4.jpg"
   },
@@ -35,13 +53,115 @@ songs = [
     image: "images/song5.jpg"
   },
   {
-    title: "New Song 3",
-    artist: "New Artist 3",
-    src: "music/new_song_3.mp3",
-    image: "images/new_song_3.jpg"
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
+  },
+  {
+    title: "Rolling in the Deep",
+    artist: "Adele",
+    src: "music/song6.mp3",
+    image: "images/song6.jpg"
   }
-  // Keep adding more songs...
 ];
+
+// ============== SORT SONGS BY ARTIST NAME ==============
+function sortSongsByArtist() {
+  songs.sort((a, b) => {
+    const artistA = a.artist.toLowerCase();
+    const artistB = b.artist.toLowerCase();
+    if (artistA < artistB) return -1;
+    if (artistA > artistB) return 1;
+    // If artists are the same, sort by title
+    const titleA = a.title.toLowerCase();
+    const titleB = b.title.toLowerCase();
+    if (titleA < titleB) return -1;
+    if (titleA > titleB) return 1;
+    return 0;
+  });
+}
+
+// Sort songs initially
+sortSongsByArtist();
 
 // ============== PLAYER FUNCTIONS ==============
 
@@ -51,6 +171,7 @@ const playMusic = () => {
   play.classList.replace("fa-play", "fa-pause");
   img.classList.add("anime");
   music_container.classList.add("glow");
+  updateProgressBar();
 };
 
 const pauseMusic = () => {
@@ -60,6 +181,12 @@ const pauseMusic = () => {
   play.classList.replace("fa-pause", "fa-play");
   img.classList.remove("anime");
   music_container.classList.remove("glow");
+  
+  // Stop animation frame when paused
+  if (progressAnimationFrame) {
+    cancelAnimationFrame(progressAnimationFrame);
+    progressAnimationFrame = null;
+  }
 };
 
 play.addEventListener("click", () => {
@@ -67,39 +194,92 @@ play.addEventListener("click", () => {
 });
 
 const loadSong = (song) => {
+  // Stop current animation
+  if (progressAnimationFrame) {
+    cancelAnimationFrame(progressAnimationFrame);
+    progressAnimationFrame = null;
+  }
+  
+  // Pause if playing
+  if (isPlaying) {
+    pauseMusic();
+  }
+  
   title.textContent = song.title;
   artist.textContent = song.artist;
   music.src = song.src;
   img.src = song.image;
+  
+  // Reset progress bar
+  progressRange.value = 0;
+  progressFill.style.width = "0%";
+  currentTimeDisplay.textContent = "0:00";
+  totalTimeDisplay.textContent = "0:00";
+  
+  // Remove old event listener to prevent duplicates
+  music.removeEventListener('loadedmetadata', updateTotalTime);
+  
+  // Add event listener for metadata
+  music.addEventListener('loadedmetadata', updateTotalTime);
+  
+  // If metadata is already loaded, update immediately
+  if (music.readyState >= 1) {
+    updateTotalTime();
+  }
+  
   updatePlaylistHighlight();
+  updateSongCount();
 };
 
+// Separate function for updating total time
+function updateTotalTime() {
+  if (music.duration && !isNaN(music.duration) && music.duration !== Infinity) {
+    totalTimeDisplay.textContent = formatTime(music.duration);
+  } else {
+    totalTimeDisplay.textContent = "0:00";
+  }
+}
+
 let songIndex = 0;
+
+// Find the index of a song in the sorted array
+function findSongIndex(song) {
+  return songs.findIndex(s => s.title === song.title && s.artist === song.artist);
+}
 
 const shuffleSong = () => {
   const randomNo = Math.floor(Math.random() * songs.length);
   songIndex = randomNo;
   loadSong(songs[songIndex]);
-  playMusic();
+  // Play after a small delay to ensure everything is loaded
+  setTimeout(() => {
+    playMusic();
+  }, 100);
 };
 
 const nextSong = () => {
   songIndex = (songIndex + 1) % songs.length;
   loadSong(songs[songIndex]);
-  playMusic();
+  // Play after a small delay to ensure everything is loaded
+  setTimeout(() => {
+    playMusic();
+  }, 100);
 };
 
 const prevSong = () => {
   songIndex = (songIndex - 1 + songs.length) % songs.length;
   loadSong(songs[songIndex]);
-  playMusic();
+  // Play after a small delay to ensure everything is loaded
+  setTimeout(() => {
+    playMusic();
+  }, 100);
 };
 
 // ============== PROGRESS BAR FUNCTIONS ==============
 
 // Format time from seconds to MM:SS
 function formatTime(seconds) {
-  if (isNaN(seconds)) return "0:00";
+  if (isNaN(seconds) || seconds === Infinity || !seconds) return "0:00";
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -107,19 +287,30 @@ function formatTime(seconds) {
 
 // Update progress bar while playing
 function updateProgressBar() {
-  if (!isPlaying) return;
+  if (!isPlaying) {
+    if (progressAnimationFrame) {
+      cancelAnimationFrame(progressAnimationFrame);
+      progressAnimationFrame = null;
+    }
+    return;
+  }
   
   const currentTime = music.currentTime;
   const duration = music.duration;
   
-  if (duration > 0) {
+  if (duration > 0 && !isNaN(duration) && duration !== Infinity) {
     const progressPercent = (currentTime / duration) * 100;
     progressRange.value = progressPercent;
     progressFill.style.width = `${progressPercent}%`;
     currentTimeDisplay.textContent = formatTime(currentTime);
+    
+    // Update total time if not set
+    if (totalTimeDisplay.textContent === "0:00") {
+      totalTimeDisplay.textContent = formatTime(duration);
+    }
   }
   
-  requestAnimationFrame(updateProgressBar);
+  progressAnimationFrame = requestAnimationFrame(updateProgressBar);
 }
 
 // Handle progress bar input (when user drags)
@@ -129,7 +320,7 @@ progressRange.addEventListener('input', function(e) {
   
   // Update time display while dragging
   const duration = music.duration;
-  if (duration > 0) {
+  if (duration > 0 && !isNaN(duration) && duration !== Infinity) {
     const currentTime = (progress / 100) * duration;
     currentTimeDisplay.textContent = formatTime(currentTime);
   }
@@ -140,7 +331,7 @@ progressRange.addEventListener('change', function(e) {
   const progress = parseFloat(e.target.value);
   const duration = music.duration;
   
-  if (duration > 0) {
+  if (duration > 0 && !isNaN(duration) && duration !== Infinity) {
     const currentTime = (progress / 100) * duration;
     music.currentTime = currentTime;
     currentTimeDisplay.textContent = formatTime(currentTime);
@@ -160,7 +351,7 @@ if (progressBar) {
     progressFill.style.width = `${clampedProgress}%`;
     
     const duration = music.duration;
-    if (duration > 0) {
+    if (duration > 0 && !isNaN(duration) && duration !== Infinity) {
       const currentTime = (clampedProgress / 100) * duration;
       music.currentTime = currentTime;
       currentTimeDisplay.textContent = formatTime(currentTime);
@@ -170,81 +361,120 @@ if (progressBar) {
 
 // Update time when audio time updates
 music.addEventListener('timeupdate', function() {
-  if (!isDragging) {
+  if (!isDragging && isPlaying) {
     const currentTime = music.currentTime;
     const duration = music.duration;
     
-    if (duration > 0) {
+    if (duration > 0 && !isNaN(duration) && duration !== Infinity) {
       const progressPercent = (currentTime / duration) * 100;
       progressRange.value = progressPercent;
       progressFill.style.width = `${progressPercent}%`;
       currentTimeDisplay.textContent = formatTime(currentTime);
+      
+      // Update total time if not set
+      if (totalTimeDisplay.textContent === "0:00") {
+        totalTimeDisplay.textContent = formatTime(duration);
+      }
     }
   }
 });
 
+// Reset progress when song ends
+music.addEventListener('ended', function() {
+  // Reset progress bar when song ends
+  progressRange.value = 0;
+  progressFill.style.width = "0%";
+  currentTimeDisplay.textContent = "0:00";
+  // total time stays the same
+});
 
 // ============== PLAYLIST DISPLAY ==============
+
+function updateSongCount() {
+  const songCount = document.getElementById('songCount');
+  if (songCount) {
+    songCount.textContent = `${songs.length} songs`;
+  }
+}
+
+// Function to get artist initial for grouping
+function getArtistInitial(artist) {
+  return artist.charAt(0).toUpperCase();
+}
 
 function updatePlaylist() {
   const playlist = document.getElementById('playlist');
   if (!playlist) return;
   
   playlist.innerHTML = '';
+  let currentInitial = '';
+  
   songs.forEach((song, index) => {
+    // Get artist initial
+    const initial = getArtistInitial(song.artist);
+    
+    // Add group header if new initial
+    if (initial !== currentInitial) {
+      currentInitial = initial;
+      const groupHeader = document.createElement('li');
+      groupHeader.style.cssText = `
+        padding: 8px 12px;
+        margin: 8px 0 4px 0;
+        color: #009999;
+        font-size: 1.2rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+        background: rgba(0, 153, 153, 0.1);
+        border-radius: 5px;
+        cursor: default;
+        pointer-events: none;
+        border-left: 3px solid #009999;
+        text-transform: uppercase;
+      `;
+      groupHeader.textContent = initial;
+      playlist.appendChild(groupHeader);
+    }
+    
+    // Create song item
     const li = document.createElement('li');
-    li.style.cssText = `
-      padding: 8px 12px;
-      margin: 4px 0;
-      color: #f6f6f6;
-      cursor: pointer;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.05);
-      transition: all 0.3s ease;
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    `;
+    li.className = index === songIndex ? 'active' : '';
+    li.dataset.index = index;
     
-    // Song info
-    const songInfo = document.createElement('span');
-    songInfo.textContent = `${song.title} - ${song.artist}`;
+    // Song info container
+    const songInfo = document.createElement('div');
+    songInfo.className = 'song-info';
     
-    // Playing indicator
+    const songTitle = document.createElement('span');
+    songTitle.className = 'song-title';
+    songTitle.textContent = song.title;
+    
+    const songArtist = document.createElement('span');
+    songArtist.className = 'song-artist';
+    songArtist.textContent = song.artist;
+    
+    songInfo.appendChild(songTitle);
+    songInfo.appendChild(songArtist);
+    
     const indicator = document.createElement('span');
+    indicator.className = 'song-indicator';
     indicator.textContent = '▶';
-    indicator.style.cssText = `
-      color: #f6f6f6;
-      font-size: 12px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    `;
     
     li.appendChild(songInfo);
     li.appendChild(indicator);
     
-    // Hover effect
-    li.addEventListener('mouseenter', () => {
-      li.style.background = 'rgba(255, 255, 255, 0.15)';
-    });
-    li.addEventListener('mouseleave', () => {
-      if (index !== songIndex) {
-        li.style.background = 'rgba(255, 255, 255, 0.05)';
-      }
-    });
-    
-    // Click to play
     li.addEventListener('click', () => {
       songIndex = index;
       loadSong(songs[songIndex]);
-      playMusic();
+      setTimeout(() => {
+        playMusic();
+      }, 100);
     });
     
     playlist.appendChild(li);
   });
   
   updatePlaylistHighlight();
+  updateSongCount();
 }
 
 function updatePlaylistHighlight() {
@@ -253,13 +483,14 @@ function updatePlaylistHighlight() {
   
   const items = playlist.getElementsByTagName('li');
   for (let i = 0; i < items.length; i++) {
-    const indicator = items[i].querySelector('span:last-child');
-    if (i === songIndex) {
-      items[i].style.background = 'rgba(255, 107, 107, 0.3)';
-      if (indicator) indicator.style.opacity = '1';
+    // Skip group headers (they have pointer-events: none)
+    if (items[i].style.pointerEvents === 'none') continue;
+    
+    const index = parseInt(items[i].dataset.index);
+    if (index === songIndex) {
+      items[i].classList.add('active');
     } else {
-      items[i].style.background = 'rgba(255, 255, 255, 0.05)';
-      if (indicator) indicator.style.opacity = '0';
+      items[i].classList.remove('active');
     }
   }
 }
@@ -308,33 +539,13 @@ btn2.addEventListener("click", function () {
   }
 });
 
-// ============== SLEEP TIMER ==============
-
-let startSleep;
-let usersTime;
-
-function gotoSleep() {
-  usersTime = parseInt(sleepBtn[sleepBtn.selectedIndex].value);
-  clearInterval(startSleep);
-  if (usersTime != 0) {
-    alert("Stop audio in " + usersTime + "min");
-    startSleep = setInterval(sleep, usersTime * 60 * 1000);
-  } else {
-    alert("Sleep timer off");
-  }
-}
-
-function sleep() {
-  music.play();
-  clearInterval(startSleep);
-  music.pause();
-  sleepBtn.selectedIndex = 0;
-}
-
 // ============== INITIALIZE ==============
 
 // Load first song
 if (songs.length > 0) {
+  // Reset songIndex to 0 (which will be the first song after sorting)
+  songIndex = 0;
   loadSong(songs[0]);
   updatePlaylist();
+  updateSongCount();
 }

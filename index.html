@@ -14,55 +14,56 @@
 </head>
 <body>
   <div class="main_div">
-    <div class="music_container">
-      <!-- Removed search bar -->
-      
-      <marquee>
-        <h2 id="title">Hasi (Cover Version)</h2>
-      </marquee>
+    <div class="player_wrapper">
+      <!-- Left Side - Music Player -->
+      <div class="music_container">
+        <marquee>
+          <h2 id="title">Hasi (Cover Version)</h2>
+        </marquee>
 
-      <h3 id="artist">Shebika Pal</h3>
+        <h3 id="artist">Shebika Pal</h3>
 
-      <div class="img_container">
-        <img src="IMG-20230920-002937.jpg" alt="thumbnail">
-      </div>
-
-      <audio preload="auto" onended="nextSong()" onpause="pauseMusic()" src="music/default.mp3"></audio>
-<!-- ========== PROGRESS BAR SECTION ========== -->
-      <div class="progress_container">
-        <div class="progress_bar">
-          <input type="range" id="progressRange" min="0" max="100" value="0" step="0.1">
-          <div class="progress_fill" id="progressFill"></div>
+        <div class="img_container">
+          <img src="IMG-20230920-002937.jpg" alt="thumbnail">
         </div>
-        <div class="time_display">
-          <span id="currentTime">0:00</span>
-          <span id="totalTime">0:00</span>
+
+        <audio preload="auto" onended="nextSong()" onpause="pauseMusic()" src="music/default.mp3"></audio>
+
+        <!-- Progress Bar Section -->
+        <div class="progress_container">
+          <div class="progress_bar">
+            <input type="range" id="progressRange" min="0" max="100" value="0" step="0.1">
+            <div class="progress_fill" id="progressFill"></div>
+          </div>
+          <div class="time_display">
+            <span id="currentTime">0:00</span>
+            <span id="totalTime">0:00</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <i class="fas fa-repeat"></i>
+          <i class="fas fa-random"></i>
+        </div>
+        
+        <div class="music_controls">
+          <i onclick="prevSong()" class="fas fa-backward" id="previous" title="Previous"></i>
+          <i class="fas fa-play main_button" id="play" title="Play"></i>
+          <i onclick="nextSong()" class="fas fa-forward" id="next" title="Next"></i>
         </div>
       </div>
-      <div class="controls">
-        <i class="fas fa-repeat"></i>
-        <select id="sleepbtn" onchange="gotoSleep()">
-          <option value="0">Sleep</option>
-          <option value="5">5min</option>
-          <option value="15">15min</option>
-          <option value="30">30min</option>
-          <option value="60">60min</option>
-          <option value="90">90min</option>
-        </select>
-        <i class="fas fa-random"></i>
-      </div>
-      <div class="music_controls">
-        <i onclick="prevSong()" class="fas fa-backward" id="previous" title="Previous"></i>
-        <i class="fas fa-play main_button" id="play" title="Play"></i>
-        <i onclick="nextSong()" class="fas fa-forward" id="next" title="Next"></i>
-      </div>
-      
-      <!-- Add Playlist Section -->
+
+      <!-- Right Side - Playlist -->
       <div class="playlist_container">
-        <h4 style="color: #f6f6f6; margin: 15px 0 10px 0;">🎵 Playlist</h4>
-        <ul id="playlist" style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto;">
-          <!-- Songs will be dynamically added here -->
-        </ul>
+        <div class="playlist_header">
+          <h4>🎵 Playlist</h4>
+          <span id="songCount">0 songs</span>
+        </div>
+        <div class="playlist_scroll">
+          <ul id="playlist">
+            <!-- Songs will be dynamically added here -->
+          </ul>
+        </div>
       </div>
     </div>
   </div>
