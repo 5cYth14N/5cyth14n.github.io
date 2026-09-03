@@ -9,6 +9,12 @@ const btn2 = document.querySelector(".fa-random");
 const btn = document.querySelector(".fa-repeat");
 const sleepBtn = document.querySelector("#sleepbtn");
 const music_container = document.getElementsByClassName("music_container")[0];
+// Progress bar elements
+const progressRange = document.getElementById("progressRange");
+const progressFill = document.getElementById("progressFill");
+const currentTimeDisplay = document.getElementById("currentTime");
+const totalTimeDisplay = document.getElementById("totalTime");
+
 let isPlaying = false;
 let songs = [];
 
@@ -88,6 +94,95 @@ const prevSong = () => {
   loadSong(songs[songIndex]);
   playMusic();
 };
+
+// ============== PROGRESS BAR FUNCTIONS ==============
+
+// Format time from seconds to MM:SS
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+// Update progress bar while playing
+function updateProgressBar() {
+  if (!isPlaying) return;
+  
+  const currentTime = music.currentTime;
+  const duration = music.duration;
+  
+  if (duration > 0) {
+    const progressPercent = (currentTime / duration) * 100;
+    progressRange.value = progressPercent;
+    progressFill.style.width = `${progressPercent}%`;
+    currentTimeDisplay.textContent = formatTime(currentTime);
+  }
+  
+  requestAnimationFrame(updateProgressBar);
+}
+
+// Handle progress bar input (when user drags)
+progressRange.addEventListener('input', function(e) {
+  const progress = parseFloat(e.target.value);
+  progressFill.style.width = `${progress}%`;
+  
+  // Update time display while dragging
+  const duration = music.duration;
+  if (duration > 0) {
+    const currentTime = (progress / 100) * duration;
+    currentTimeDisplay.textContent = formatTime(currentTime);
+  }
+});
+
+// Handle progress bar change (when user releases)
+progressRange.addEventListener('change', function(e) {
+  const progress = parseFloat(e.target.value);
+  const duration = music.duration;
+  
+  if (duration > 0) {
+    const currentTime = (progress / 100) * duration;
+    music.currentTime = currentTime;
+    currentTimeDisplay.textContent = formatTime(currentTime);
+  }
+});
+
+// Click on progress bar to seek
+const progressBar = document.querySelector('.progress_bar');
+if (progressBar) {
+  progressBar.addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const progress = (clickX / rect.width) * 100;
+    const clampedProgress = Math.min(100, Math.max(0, progress));
+    
+    progressRange.value = clampedProgress;
+    progressFill.style.width = `${clampedProgress}%`;
+    
+    const duration = music.duration;
+    if (duration > 0) {
+      const currentTime = (clampedProgress / 100) * duration;
+      music.currentTime = currentTime;
+      currentTimeDisplay.textContent = formatTime(currentTime);
+    }
+  });
+}
+
+// Update time when audio time updates
+music.addEventListener('timeupdate', function() {
+  if (!isDragging) {
+    const currentTime = music.currentTime;
+    const duration = music.duration;
+    
+    if (duration > 0) {
+      const progressPercent = (currentTime / duration) * 100;
+      progressRange.value = progressPercent;
+      progressFill.style.width = `${progressPercent}%`;
+      currentTimeDisplay.textContent = formatTime(currentTime);
+    }
+  }
+});
+
 
 // ============== PLAYLIST DISPLAY ==============
 

@@ -251,3 +251,94 @@ img {
   color: white;
   text-align: center;
 }
+
+/* Progress Bar Styles */
+.progress_container {
+  width: 100%;
+  padding: 10px 20px;
+  margin: 10px 0;
+}
+
+.progress_bar {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.progress_fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f6f6f6, #ff6b6b);
+  border-radius: 10px;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+
+/* Custom Range Input */
+#progressRange {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+  margin: 0;
+}
+
+#progressRange::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+  transition: all 0.2s ease;
+}
+
+#progressRange::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+}
+
+#progressRange::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  cursor: pointer;
+  border: none;
+}
+
+.time_display {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: #f6f6f6;
+  font-size: 12px;
+  opacity: 0.8;
+  letter-spacing: 0.5px;
+}
+
+/* Glowing effect for progress bar when playing */
+.music_container.glow .progress_fill {
+  background: linear-gradient(90deg, #ff6b6b, #ffd93d);
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+}
+
+.music_container.glow #progressRange::-webkit-slider-thumb {
+  background: #ffd93d;
+  box-shadow: 0 0 20px rgba(255, 217, 61, 0.6);
+}
