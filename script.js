@@ -96,7 +96,7 @@ songs = [
   },
   {
     title: "Dragula",
-    artist: "",
+    artist: "Rob Zombie",
     src: "music/song13.mp3",
     image: "images/song13.jpg"
   },
