@@ -23,20 +23,20 @@ let progressAnimationFrame = null;
 // ============== ADD YOUR SONGS HERE ==============
 songs = [
   {
-    title: "Shape of You",
-    artist: "Ed Sheeran",
+    title: "Macarena",
+    artist: "Los del Rio",
     src: "music/song1.mp3",
     image: "images/song1.jpg"
   },
   {
-    title: "Bohemian Rhapsody",
-    artist: "Queen",
+    title: "Cotton Eye Joe",
+    artist: "Rednex",
     src: "music/song2.mp3",
     image: "images/song2.jpg"
   },
   {
-    title: "Imagine",
-    artist: "John Lennon",
+    title: "I Like to Move It",
+    artist: "Reel 2 Real",
     src: "music/song3.mp3",
     image: "images/song3.jpg"
   },
@@ -53,94 +53,106 @@ songs = [
     image: "images/song5.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
+    title: "In the Year 2525",
+    artist: "Zager and Evans",
     src: "music/song6.mp3",
     image: "images/song6.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
+    title: "Chicken Jockey",
+    artist: "Steve",
+    src: "music/song7.mp3",
+    image: "images/song7.jpg"
+  },
+  {
+    title: "I Was Made for loving You",
+    artist: "KISS",
+    src: "music/song8.mp3",
+    image: "images/song8.jpg"
+  },
+  {
+    title: "Golden",
+    artist: "Huntrix",
+    src: "music/song9.mp3",
+    image: "images/song9.jpg"
+  },
+  {
+    title: "Soda Pop",
+    artist: "Saya Boys",
+    src: "music/song10.mp3",
+    image: "images/song10.jpg"
+  },
+  {
+    title: "Papaya Remix",
+    artist: "Minions",
+    src: "music/song11.mp3",
+    image: "images/song11.jpg"
+  },
+  {
+    title: "Ich Tu Dir Weh",
+    artist: "Rammstein",
+    src: "music/song12.mp3",
+    image: "images/song12.jpg"
+  },
+  {
+    title: "Dragula",
+    artist: "",
+    src: "music/song13.mp3",
+    image: "images/song13.jpg"
+  },
+  {
+    title: "It's Tricky",
+    artist: "Run DMC",
+    src: "music/song14.mp3",
+    image: "images/song14.jpg"
+  },
+  {
+    title: "Bismarck",
+    artist: "Sabaton",
+    src: "music/song15.mp3",
+    image: "images/song15.jpg"
+  },
+  {
+    title: "Ski Ba Bop Ba Dop Bop",
+    artist: "Scatman",
+    src: "music/song16.mp3",
     image: "images/song6.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
+    title: "Scatmans World",
+    artist: "Scatman",
+    src: "music/song17.mp3",
+    image: "images/song17.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
+    title: "Sky",
+    artist: "Sonique",
+    src: "music/song18.mp3",
+    image: "images/song18.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
+    title: "Black Betty",
+    artist: "Spiderbait",
+    src: "music/song19.mp3",
+    image: "images/song19.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
+    title: "The House of The Rising Sun",
+    artist: "The Animals",
+    src: "music/song20.mp3",
+    image: "images/song20.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
+    title: "Riders of The Storm",
+    artist: "Igor Sensor",
+    src: "music/song21.mp3",
+    image: "images/song21.jpg"
   },
   {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
-  },
-  {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
-  },
-  {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
-  },
-  {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
-  },
-  {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
-  },
-  {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
-  },
-  {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
-  },
-  {
-    title: "Rolling in the Deep",
-    artist: "Adele",
-    src: "music/song6.mp3",
-    image: "images/song6.jpg"
+    title: "Ice Ice Baby",
+    artist: "Vanilla Ice",
+    src: "music/song22.mp3",
+    image: "images/song22.jpg"
   }
 ];
 
