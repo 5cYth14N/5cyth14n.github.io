@@ -116,7 +116,7 @@ songs = [
     title: "Ski Ba Bop Ba Dop Bop",
     artist: "Scatman",
     src: "music/song16.mp3",
-    image: "images/song6.jpg"
+    image: "images/song16.jpg"
   },
   {
     title: "Scatmans World",
