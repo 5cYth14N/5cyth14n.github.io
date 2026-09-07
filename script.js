@@ -153,6 +153,36 @@ songs = [
     artist: "Vanilla Ice",
     src: "music/song22.mp3",
     image: "images/song22.jpg"
+  },
+  {
+    title: "Bailando",
+    artist: "Paradisio",
+    src: "music/song23.mp3",
+    image: "images/song23.jpeg"
+  },
+  {
+    title: "What is love",
+    artist: "Haddaway",
+    src: "music/song24.mp3",
+    image: "images/song24.jpeg"
+  },
+  {
+    title: "Move Your Ass",
+    artist: "Scooter",
+    src: "music/song25.mp3",
+    image: "images/song25.jpeg"
+  },
+  {
+    title: "We flying high",
+    artist: "Captain Hollywood",
+    src: "music/song26.mp3",
+    image: "images/song26.jpeg"
+  },
+  {
+    title: "Informer",
+    artist: "Snow",
+    src: "music/song27.mp3",
+    image: "images/song27.jpg"
   }
 ];
 
