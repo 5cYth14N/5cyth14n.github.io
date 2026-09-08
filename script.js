@@ -183,6 +183,90 @@ songs = [
     artist: "Snow",
     src: "music/song27.mp3",
     image: "images/song27.jpg"
+  },
+  {
+    title: "Karmageddon",
+    artist: "Iyah May",
+    src: "music/song28.mp3",
+    image: "images/song28.jpg"
+  },
+  {
+    title: "Good Citizen",
+    artist: "Iyah May",
+    src: "music/song29.mp3",
+    image: "images/song29.jpg"
+  },
+  {
+    title: "Here Comes the Hot Stepper",
+    artist: "Ini Kamoze",
+    src: "music/song30.mp3",
+    image: "images/song30.jpg"
+  },
+  {
+    title: "A Thousand Miles",
+    artist: "Vanessa Carlton",
+    src: "music/song31.mp3",
+    image: "images/song31.jpg"
+  },
+  {
+    title: "PPAP",
+    artist: "Pikotaro",
+    src: "music/song32.mp3",
+    image: "images/song32.jpg"
+  },
+  {
+    title: "Kain",
+    artist: "Blind Myself",
+    src: "music/song33.mp3",
+    image: "images/song33.jpg"
+  },
+  {
+    title: "Papaya",
+    artist: "BabyMetal",
+    src: "music/song34.mp3",
+    image: "images/song34.jpg"
+  },
+  {
+    title: "Karate",
+    artist: "BabyMetal",
+    src: "music/song35.mp3",
+    image: "images/song35.jpg"
+  },
+  {
+    title: "Moscow",
+    artist: "Rammstein",
+    src: "music/song36.mp3",
+    image: "images/song36.jpg"
+  },
+  {
+    title: "Katyusa",
+    artist: "Nightcore",
+    src: "music/song37.mp3",
+    image: "images/song37.jpg"
+  },
+  {
+    title: "Lambada",
+    artist: "Kaoma",
+    src: "music/song38.mp3",
+    image: "images/song38.jpg"
+  },
+  {
+    title: "Las Ketchup",
+    artist: "Asareje",
+    src: "music/song39.mp3",
+    image: "images/song39.jpg"
+  },
+  {
+    title: "Pretty Fly For a White Guy",
+    artist: "The Offspring",
+    src: "music/song40.mp3",
+    image: "images/song40.jpg"
+  },
+  {
+    title: "Hard Rock Halleluja",
+    artist: "Lordi",
+    src: "music/song41.mp3",
+    image: "images/song41.jpg"
   }
 ];
 
