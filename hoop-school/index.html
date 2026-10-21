@@ -1,0 +1,1234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Hoop School: a 3D animated basketball tutorial for kids with skills, tricks, rules, team plays and pro tactics.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Hoop School 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;800;900&display=swap">
+<style>
+/* Layout: lesson rail on the left, 3D court stage on the right with the coach's caption and playback deck underneath */
+:root{
+  --bg:#eef3fa; --panel:#ffffff; --ink:#14223a; --muted:#56657e; --line:#d6dfec;
+  --accent:#f0761a; --accent-ink:#ffffff; --accent-soft:#fde3cd;
+  --blue:#2b6fe0; --red:#e0403a; --gold:#f5b81c; --chip:#e4ebf6;
+  --stage:#0f1d36; --hud:#0b1528e6; --hud-ink:#ffffff;
+  --display:'Lilita One','Arial Rounded MT Bold','Trebuchet MS',system-ui,sans-serif;
+  --body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1424; --panel:#152036; --ink:#eef3fb; --muted:#9fb0cb; --line:#26344f;
+  --accent:#ff8a2e; --accent-ink:#1a0e02; --accent-soft:#3a2614;
+  --blue:#5b93f5; --red:#ff6a5f; --gold:#ffc940; --chip:#1e2b45;
+  --stage:#081120; --hud:#050b16e6; --hud-ink:#ffffff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1424; --panel:#152036; --ink:#eef3fb; --muted:#9fb0cb; --line:#26344f;
+  --accent:#ff8a2e; --accent-ink:#1a0e02; --accent-soft:#3a2614;
+  --blue:#5b93f5; --red:#ff6a5f; --gold:#ffc940; --chip:#1e2b45;
+  --stage:#081120; --hud:#050b16e6; --hud-ink:#ffffff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 32px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{max-width:1400px;margin:0 auto 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo canvas{width:42px;height:42px}
+.logo h1{font-family:var(--display);font-weight:400;font-size:30px;line-height:1;margin:0;letter-spacing:.5px}
+.logo h1 span{color:var(--accent)}
+.top p{margin:0;color:var(--muted);font-size:14px;flex:1;min-width:220px}
+.app{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px;align-items:start}
+.rail{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 110px);overflow:auto;position:sticky;top:12px}
+.group h2{font-family:var(--display);font-weight:400;font-size:15px;letter-spacing:.8px;text-transform:uppercase;margin:4px 6px 6px;display:flex;align-items:center;gap:8px}
+.group h2 i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.lesson{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:7px 8px;border-radius:10px}
+.lesson:hover{background:var(--chip)}
+.lesson[aria-current="true"]{background:var(--accent-soft)}
+.lesson .n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12px;background:var(--chip);color:var(--muted);font-variant-numeric:tabular-nums}
+.lesson[aria-current="true"] .n{background:var(--accent);color:var(--accent-ink)}
+.lesson.done .n{background:#2fb36b;color:#fff}
+.lesson .tt{display:flex;flex-direction:column;min-width:0}
+.lesson b{font-weight:800;font-size:14px;line-height:1.2}
+.lesson small{color:var(--muted);font-size:12px;line-height:1.3}
+.main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:99px;color:#fff}
+.head h2{font-family:var(--display);font-weight:400;font-size:28px;margin:0;line-height:1.1;text-wrap:balance}
+.head .hint{color:var(--muted);font-size:13px;margin-left:auto}
+.stage{position:relative;width:100%;aspect-ratio:16/9;max-height:66vh;background:var(--stage);border-radius:18px;overflow:hidden;touch-action:none}
+.stage canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;inset:0;pointer-events:none;font-family:var(--display);color:var(--hud-ink)}
+.score{position:absolute;left:12px;top:12px;background:var(--hud);border-radius:12px;padding:6px 12px;display:flex;gap:10px;align-items:center;font-size:18px;letter-spacing:.5px}
+.score b{font-weight:400;font-size:24px;min-width:1.3ch;text-align:center;font-variant-numeric:tabular-nums}
+.score .bl{color:#79a9ff}.score .rd{color:#ff8a80}
+.clock{position:absolute;right:12px;top:12px;background:var(--hud);border-radius:12px;padding:6px 14px;text-align:center}
+.clock small{display:block;font-family:var(--body);font-weight:900;font-size:10px;letter-spacing:1.2px}
+.clock b{font-weight:400;font-size:34px;line-height:1;color:#ffd24a;font-variant-numeric:tabular-nums}
+.clock.warn b{color:#ff6a5f}
+.whistle{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);background:#e0403a;color:#fff;font-size:clamp(22px,4.5vw,46px);padding:6px 22px 4px;border-radius:14px;border:4px solid #fff;letter-spacing:1px;white-space:nowrap;box-shadow:0 8px 0 #0004}
+.whistle small{display:block;font-family:var(--body);font-weight:900;font-size:12px;letter-spacing:2px;text-align:center;opacity:.9}
+.legend{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:var(--hud);border-radius:99px;padding:5px 14px;display:flex;gap:14px;font-family:var(--body);font-weight:800;font-size:13px}
+.legend span{display:flex;align-items:center;gap:6px}.legend i{width:14px;height:14px;border-radius:50%;border:3px solid}.legend .g{border-color:#39d98a}.legend .r{border-color:#ff4b4b}
+.whistle.good{background:#1f9d61}
+.pop{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);font-size:clamp(40px,8vw,80px);color:#ffd24a;text-shadow:0 4px 0 #0007}
+.anim{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.3)}to{transform:translate(-50%,-50%) scale(1)}}
+.badges{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}
+.badge{background:var(--hud);border-radius:99px;padding:4px 12px;font-size:15px;letter-spacing:.8px}
+.badge.slow{background:#7b4dff}
+.camchip{position:absolute;right:12px;bottom:12px;pointer-events:auto;border:0;background:var(--hud);color:#fff;font-family:var(--body);font-weight:800;font-size:13px;padding:7px 12px;border-radius:99px}
+.camchip[aria-pressed="true"]{background:#2fb36b}
+.endcard{position:absolute;inset:0;display:grid;place-items:center;background:#08112099;pointer-events:auto}
+.endcard div{background:var(--panel);color:var(--ink);border-radius:18px;padding:20px 24px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center;max-width:90%}
+.endcard h3{font-family:var(--display);font-weight:400;font-size:26px;margin:0}
+.endcard .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:900;background:var(--chip)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.coach{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start}
+.coach .whistleicon{flex:none;width:44px;height:44px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-family:var(--display);font-size:20px}
+.coach .txt{min-width:0;flex:1}
+.coach .step{font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.coach p{margin:2px 0 8px;font-size:clamp(17px,2vw,21px);font-weight:800;line-height:1.35;max-width:62ch;min-height:2.7em}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:28px;height:8px;border-radius:99px;border:0;background:var(--chip);padding:0}
+.dots button.on{background:var(--accent)}
+.dots button.past{background:var(--muted);opacity:.5}
+.deck{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.row1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ic{width:40px;height:40px;border-radius:50%;border:0;background:var(--chip);display:grid;place-items:center;flex:none}
+.ic svg{width:18px;height:18px;fill:currentColor}
+.ic.play{width:54px;height:54px;background:var(--accent);color:var(--accent-ink)}
+.ic.play svg{width:24px;height:24px}
+.scrub{flex:1 1 220px;min-width:0;display:flex;align-items:center;gap:8px}
+.scrub input{flex:1;min-width:0}
+.time{font-variant-numeric:tabular-nums;font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap}
+input[type=range]{accent-color:var(--accent);height:28px}
+.row2{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
+.speed{display:flex;align-items:center;gap:8px;flex:1 1 300px;min-width:0;flex-wrap:wrap}
+.speed label{font-weight:900;font-size:14px}
+.speed input{flex:1;min-width:80px}
+.speed output{font-family:var(--display);font-size:20px;min-width:3.4ch;text-align:right;font-variant-numeric:tabular-nums}
+.presets{display:flex;gap:4px;flex-wrap:wrap}
+.presets button{white-space:nowrap;border:0;background:var(--chip);border-radius:8px;padding:5px 9px;font-weight:900;font-size:13px}
+.presets button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.toggles{display:flex;gap:6px 14px;flex-wrap:wrap}
+.toggles label{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;cursor:pointer}
+.toggles input{width:18px;height:18px;accent-color:var(--accent)}
+.keys{color:var(--muted);font-size:12px}
+.keys kbd{font-family:var(--body);font-weight:800;background:var(--chip);border-radius:5px;padding:1px 6px}
+.loading{position:absolute;inset:0;display:flex;gap:12px;align-items:center;justify-content:center;color:#fff;font-family:var(--display);font-size:22px;letter-spacing:.5px;background:var(--stage);z-index:2}
+.spinball{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff9a4a,#e0661a);border:3px solid #1d1008;animation:bounce .6s ease-in infinite alternate}
+@keyframes bounce{from{transform:translateY(-14px)}to{transform:translateY(10px)}}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .rail{position:static;max-height:none;order:2}
+  .stage{aspect-ratio:4/3}
+  .head .hint{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){.anim{animation:none}}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="logo"><canvas id="logoBall" width="84" height="84" aria-hidden="true"></canvas><h1>Hoop <span>School</span></h1></div>
+  <p>Learn basketball step by step. Pick a lesson, press play, and slow it down to see every move.</p>
+</header>
+
+<div class="app">
+  <nav class="rail" id="rail" aria-label="Lessons"></nav>
+  <main class="main">
+    <div class="head">
+      <span class="tag" id="tag">Basics</span>
+      <h2 id="ltitle">The Court</h2>
+      <span class="hint">Drag to turn the court · scroll or pinch to zoom</span>
+    </div>
+    <div class="stage" id="stage">
+      <div class="loading" id="loading"><span class="spinball"></span>Warming up the players…</div>
+      <div class="hud">
+        <div class="score" id="score" hidden><span class="bl">BLUE</span><b id="sb">0</b><b id="sr">0</b><span class="rd">RED</span></div>
+        <div class="clock" id="clock" hidden><small id="clockLabel">SHOT CLOCK</small><b id="clockVal">24</b></div>
+        <div class="whistle" id="whistle" hidden><small id="whistleLabel">TWEET! REF SAYS</small><span id="whistleText"></span></div>
+        <div class="pop" id="pop" hidden>+2</div>
+        <div class="legend" id="legend" hidden><span><i class="g"></i>Open</span><span><i class="r"></i>Covered</span></div>
+        <div class="badges"><span class="badge slow" id="slowBadge" hidden>SLOW-MO</span><span class="badge" id="speedBadge" hidden>½×</span></div>
+        <button class="camchip" id="autocam" aria-pressed="true" title="Let the camera follow the action">Auto camera</button>
+        <div class="endcard" id="endcard" hidden><div><h3 id="endTitle">Lesson done!</h3><span id="endSub">Want to watch it again slower?</span><div class="row"><button class="btn" id="againSlow">Watch at ½ speed</button><button class="btn" id="again">Replay</button><button class="btn primary" id="nextLesson">Next lesson →</button></div></div></div>
+      </div>
+    </div>
+    <section class="coach" aria-live="polite">
+      <div class="whistleicon" aria-hidden="true">!</div>
+      <div class="txt">
+        <div class="step" id="stepnum">Step 1 of 5</div>
+        <p id="captext">…</p>
+        <div class="dots" id="dots"></div>
+      </div>
+    </section>
+    <section class="deck" aria-label="Playback">
+      <div class="row1">
+        <button class="ic" id="restart" title="Start over" aria-label="Start over"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button class="ic" id="prev" title="Previous step" aria-label="Previous step"><svg viewBox="0 0 24 24"><path d="M11 6v12L2 12zM21 6v12l-9-6z"/></svg></button>
+        <button class="ic play" id="play" title="Play / pause (space)" aria-label="Pause"><svg viewBox="0 0 24 24" id="playIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+        <button class="ic" id="next" title="Next step" aria-label="Next step"><svg viewBox="0 0 24 24"><path d="M3 6v12l9-6zM13 6v12l9-6z"/></svg></button>
+        <div class="scrub"><input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Lesson timeline"><span class="time" id="time">0.0 / 0.0s</span></div>
+      </div>
+      <div class="row2">
+        <div class="speed"><label for="speed">Speed</label><input type="range" id="speed" min="0.1" max="2" step="0.05" value="1"><output id="speedOut" for="speed">1×</output>
+          <div class="presets" id="presets"><button data-s="0.1">Super slow</button><button data-s="0.25">¼×</button><button data-s="0.5">½×</button><button data-s="1" aria-pressed="true">1×</button><button data-s="1.5">1½×</button></div>
+        </div>
+        <div class="toggles">
+          <label><input type="checkbox" id="autoSlow" checked> Auto slow-mo on key moves</label>
+          <label><input type="checkbox" id="names" checked> Show names</label>
+          <label><input type="checkbox" id="loop"> Loop</label>
+        </div>
+      </div>
+      <div class="keys"><kbd>Space</kbd> play/pause · <kbd>←</kbd> <kbd>→</kbd> steps · <kbd>-</kbd> <kbd>+</kbd> speed</div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
+<script>
+(function(){
+'use strict';
+/* ================= constants & helpers ================= */
+const BR=0.16, HX=12.425, RIM=3.05;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,u)=>a+(b-a)*u;
+const smooth=u=>{u=clamp(u,0,1);return u*u*(3-2*u)};
+const lerp3=(a,b,u)=>[lerp(a[0],b[0],u),lerp(a[1],b[1],u),lerp(a[2],b[2],u)];
+const angDiff=(a,b)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return d};
+const lerpAng=(a,b,u)=>a+angDiff(a,b)*u;
+function kv(keys,t,def){ if(keys==null) return def; if(typeof keys==='number') return keys;
+  if(t<=keys[0][0]) return keys[0][1];
+  for(let i=1;i<keys.length;i++){ if(t<=keys[i][0]){const a=keys[i-1],b=keys[i];return lerp(a[1],b[1],(t-a[0])/(b[0]-a[0]));} }
+  return keys[keys.length-1][1]; }
+function samplePath(path,t){
+  if(t<=path[0][0]) return [path[0][1],path[0][2]];
+  for(let i=1;i<path.length;i++){ if(t<=path[i][0]){const a=path[i-1],b=path[i];const u=(t-a[0])/((b[0]-a[0])||1);return [lerp(a[1],b[1],u),lerp(a[2],b[2],u)];} }
+  const l=path[path.length-1]; return [l[1],l[2]]; }
+
+/* ================= lesson authoring helpers ================= */
+const H=(p,t0,t1,h)=>({k:'hold',p,t0,t1,h:h||'chest'});
+const DR=(p,t0,t1,o)=>Object.assign({k:'drib',p,t0,t1},o||{});
+const PS=(from,to,t0,t1,o)=>Object.assign({k:'pass',from,to,t0,t1},o||{});
+const SH=(from,t0,t1,o)=>Object.assign({k:'shot',from,t0,t1},o||{});
+const FR=pts=>({k:'free',t0:pts[0][0],t1:pts[pts.length-1][0],pts});
+function netDrop(t,side,dz){side=side||1;dz=dz==null?0.4:dz;const x=side*HX;
+  return FR([[t,x,RIM-0.55,0],[t+0.42,x-side*0.15,BR,dz*0.3],[t+0.95,x-side*0.8,BR,dz,0.55],[t+1.35,x-side*1.15,BR,dz*1.2,0.22],[t+1.7,x-side*1.35,BR,dz*1.3,0.08],[t+2.6,x-side*1.65,BR,dz*1.4,0]]);}
+function guardPath(path,dist,side){side=side||1;return path.map(([t,x,z])=>{const dx=side*HX-x,dz=-z,l=Math.hypot(dx,dz)||1;return [t,x+dx/l*dist,z+dz/l*dist];});}
+const actor=(id,team,num,label,path,extra)=>Object.assign({id,team,num,label,path,jumps:[],spins:[],face:[],pose:[]},extra||{});
+const REF=(path,pose)=>actor('R','ref','',"Ref",path,{stance:'ref',pose:pose||[]});
+
+/* ================= the lessons ================= */
+const CATS={basics:{name:'Basics',color:'#2b6fe0'},tricks:{name:'Tricks',color:'#7b4dff'},rules:{name:'Rules',color:'#e0403a'},team:{name:'Team plays',color:'#1f9d61'},pro:{name:'Pro tactics',color:'#0e7490'}};
+const L_ALL=[
+/* ---------- BASICS ---------- */
+{id:'court',cat:'basics',title:'The Court',sub:'Lines, hoops and zones',dur:24,
+ actors:[actor('Y','blue',4,'You',[[0,-1.5,1],[4,-1.5,1],[6.5,10.5,1],[10,10.5,1],[11.5,7.9,0],[14.5,7.9,0],[16,4.6,3],[18.5,4.6,3],[20.5,14.4,5.5],[24,14.4,5.5]])],
+ ball:[H('Y',0,24)],
+ fx:[{k:'zone',z:'front',t0:3.6,t1:7.4,color:0x2b6fe0},{k:'zone',z:'halfline',t0:3.6,t1:7.4,color:0xffd24a},{k:'zone',z:'paint',t0:7.5,t1:11.4,color:0xffd24a},{k:'zone',z:'ftline',t0:11.5,t1:15,color:0xffffff},{k:'zone',z:'outside3',t0:15.1,t1:19,color:0x39d98a},{k:'zone',z:'out',t0:19.1,t1:24,color:0xff4b4b}],
+ caps:[[0,'This is a basketball court. Each team tries to throw the ball through the other team\'s hoop.'],[3.6,'The half-court line splits the court. Your team attacks one hoop and defends the other one.'],[7.5,'The colored box under the hoop is called the paint, or the key.'],[11.5,'This is the free throw line. Free shots are taken from here.'],[15.1,'See the big arc? Baskets from behind it count for 3 points!'],[19.1,'The lines around the edge are out of bounds. Step on them with the ball and the other team gets it.']],
+ cam:[[0,[0,17,18],[0,0,0]],[4,[0,17,18],[0,0,0]],[7.2,[5,11,10],[10.5,0,0]],[15,[4,11,11],[10,0,0]],[19,[3,14,14],[8,0,0]],[24,[3,14,14],[8,0,0]]]},
+
+{id:'scoring',cat:'basics',title:'How to Score',sub:'1, 2 and 3 points',dur:17,
+ actors:[actor('Y','blue',4,'You',[[0,10.3,1.5],[2.6,10.3,1.5],[4.6,4.9,0.5],[8.6,4.9,0.5],[10.6,7.9,0],[17,7.9,0]],{jumps:[[1.3,1.9,0.4],[6.3,6.9,0.45]]}),
+         actor('B','blue',7,'Teammate',[[0,12.0,-1.7]])],
+ ball:[H('Y',0,1.0),H('Y',1.0,1.5,'high'),SH('Y',1.5,2.4,{arc:1.0}),FR([[2.4,HX,2.5,0],[2.85,12.3,BR,-0.4],[3.4,'B',0.6]]),H('B',3.4,4.6),PS('B','Y',4.6,5.4,{arc:0.5}),H('Y',5.4,6.0),H('Y',6.0,6.5,'high'),SH('Y',6.5,7.8,{arc:1.9}),FR([[7.8,HX,2.5,0],[8.25,12.2,BR,-0.5],[8.8,'B',0.6]]),H('B',8.8,10.7),PS('B','Y',10.7,11.5,{bounce:1}),H('Y',11.5,12.6),H('Y',12.6,13.0,'high'),SH('Y',13.0,13.9,{arc:1.3}),netDrop(13.9)],
+ scores:[[2.3,'blue',2],[7.65,'blue',3],[13.75,'blue',1]],
+ fx:[{k:'zone',z:'inside3',t0:0,t1:3.6,color:0x39d98a},{k:'zone',z:'outside3',t0:4.2,t1:8.6,color:0xffd24a},{k:'zone',z:'ftline',t0:9.4,t1:14.5,color:0xffffff}],
+ caps:[[0,'A basket from inside the big arc is worth 2 points.'],[4.2,'Now step behind the 3-point line. A basket from out here is worth 3!'],[9.4,'A free throw is taken from the free throw line. It is worth 1 point.'],[14.6,'The team with the most points at the end wins!']],
+ cam:[[0,[9,5.5,11],[10,1.5,0]],[3,[6,6.5,12],[8.5,1.5,0]],[9,[6,6.5,12],[8.5,1.5,0]],[11,[7,4.5,9],[10,1.8,0]]]},
+
+{id:'dribble',cat:'basics',title:'Dribbling',sub:'Bounce, walk, run',dur:16,
+ actors:[actor('Y','blue',4,'You',[[0,4,0],[5.5,4,0],[9.5,7,2.5],[12,9.5,0],[15,5,-3],[16,5,-3]])],
+ ball:[DR('Y',0,15,{side:[[0,1],[2.5,1],[3,-1],[5,-1],[5.5,1]]}),H('Y',15,16)],
+ caps:[[0,'Bounce the ball with your fingertips, not your palm. Push it down to about waist height.'],[2.6,'Practice with your other hand too. Good players can dribble with both!'],[5.5,'Now walk. Keep your eyes up so you can see your team, not the ball.'],[9.5,'Use your body to protect the ball.'],[12,'Faster! Push the ball out in front as you run.']],
+ follow:'Y',cam:[[0,[-3.5,3,5],[0.5,0.8,0]],[5,[-3.5,3,5],[0.5,0.8,0]],[9,[-4.5,4,6],[0.5,0.8,0]]]},
+
+{id:'passing',cat:'basics',title:'Passing',sub:'Chest, bounce, overhead',dur:15,
+ actors:[actor('Y','blue',4,'You',[[0,6,-3.2]]),actor('B','blue',7,'Teammate',[[0,6,3.2]]),
+         actor('D','red',9,'Defender',[[0,9.5,1.5],[3.8,9.5,1.5],[4.8,6.6,0]],{stance:'defend',pose:[[8.8,11.2,'block']]})],
+ ball:[H('Y',0,1.2),PS('Y','B',1.2,1.9,{arc:0.25}),H('B',1.9,5.0),PS('B','Y',5.0,5.9,{bounce:1}),H('Y',5.9,8.8),H('Y',8.8,9.6,'high'),PS('Y','B',9.6,10.6,{fh:'high',th:'high',arc:1.0}),H('B',10.6,11.2,'high'),H('B',11.2,15)],
+ caps:[[0,'Chest pass: hold the ball at your chest, step toward your teammate and push it straight to them.'],[4.0,'A defender is in the way! Try a bounce pass. Bounce it about two-thirds of the way.'],[8.8,'Overhead pass: both hands above your head. Throw it up and over the defender.'],[11.6,'Always look at your target and step toward them when you pass.']],
+ slow:[[1.1,2.0],[4.9,6.0],[9.5,10.7]],
+ cam:[[0,[1.2,5.5,0],[6.5,1,0]],[15,[1.2,5.5,0],[6.5,1,0]]]},
+
+{id:'shooting',cat:'basics',title:'Shooting',sub:'B.E.E.F.',dur:12,
+ actors:[actor('Y','blue',4,'You',[[0,8.5,2.3]],{jumps:[[5.7,6.4,0.35]],pose:[[0,4.2,'holdlow'],[4.2,5.7,'highlow']]})],
+ ball:[H('Y',0,4.2),H('Y',4.2,6.0,'high'),SH('Y',6.0,7.4,{arc:1.8}),netDrop(7.4)],
+ scores:[[7.25,'blue',2]],
+ caps:[[0,'B is for Balance: feet apart, knees bent, ready to jump.'],[2,'E is for Eyes: look at the front of the rim, not the ball.'],[4.2,'E is for Elbow: shooting elbow under the ball, pointing at the hoop.'],[5.6,'F is for Follow-through: snap your wrist like you\'re reaching into a cookie jar!'],[8,'Shoot it high like a rainbow. A high arc has a better chance to go in.']],
+ slow:[[5.4,7.5]],
+ cam:[[0,[9.8,2.6,9],[10.4,2,0.8]],[12,[9.8,2.6,9],[10.4,2,0.8]]]},
+
+{id:'layup',cat:'basics',title:'The Layup',sub:'Right, left, up!',dur:9,
+ actors:[actor('Y','blue',4,'You',[[0,5.5,-5.5],[3.0,9.8,-2.4],[3.6,10.6,-1.6],[4.2,11.25,-0.95],[5.0,11.75,-0.55],[5.4,11.85,-0.5],[9,11.85,-0.5]],{jumps:[[4.2,5.0,0.6]]})],
+ ball:[DR('Y',0,3.0),H('Y',3.0,4.3),H('Y',4.3,4.6,'high'),SH('Y',4.6,5.15,{arc:0.35}),netDrop(5.15)],
+ scores:[[5.05,'blue',2]],
+ caps:[[0,'Dribble toward the hoop from the side.'],[2.9,'Pick up the ball and step with your RIGHT foot…'],[3.6,'…then your LEFT foot…'],[4.2,'…and jump UP! Reach the ball high toward the hoop.'],[4.8,'Lay it in softly, just over the rim.'],[6.2,'Right, left, up! Practice it slowly first, then speed up.']],
+ slow:[[2.8,5.3]],
+ cam:[[0,[7,4,-10],[10,1.5,-1.5]],[9,[7,4,-10],[10,1.5,-1.5]]]},
+
+{id:'rebound',cat:'basics',title:'Rebounding',sub:'Box out and grab it',dur:8,
+ actors:[actor('S','red',11,'Shooter',[[0,6,3]],{jumps:[[1.8,2.4,0.4]]}),
+         actor('O','red',8,'Opponent',[[0,10.0,-2.8],[2.2,10.0,-2.8],[2.8,10.2,-2.55],[3.5,10.25,-2.5]],{jumps:[[3.5,4.2,0.3]],pose:[[3.0,4.3,'block']]}),
+         actor('Y','blue',4,'You',[[0,10.6,-2.0],[2.2,10.6,-2.0],[2.8,10.55,-2.05]],{jumps:[[3.45,4.25,0.55]],face:[[2.0,9,'hoop']],pose:[[0,2.0,'defend'],[2.2,3.3,'box'],[4.3,8,'chin']]})],
+ ball:[H('S',0,1.5),H('S',1.5,2.0,'high'),SH('S',2.0,3.1,{make:false,arc:1.5}),FR([[3.1,HX-0.24,RIM+0.12,0.04],[3.9,'Y',0.9,'high']]),H('Y',3.9,4.3,'high'),H('Y',4.3,8)],
+ caps:[[0,'Not every shot goes in. Grabbing a missed shot is called a rebound.'],[2.0,'When the shot goes up, find the player you are guarding…'],[2.6,'…turn around and put your back against them. That\'s boxing out!'],[3.3,'Watch the ball, jump and grab it with two hands.'],[4.6,'Chin it! Hold the ball tight under your chin with your elbows out.']],
+ slow:[[2.0,4.4]],
+ cam:[[0,[7.5,4,-9],[10.5,1.6,-1.5]],[8,[7.5,4,-9],[10.5,1.6,-1.5]]]},
+
+(function(){const op=[[0,5,0],[2,5,0],[4,6,-3.5],[6,6.5,-3.5],[8,6.3,2.8],[10,6.5,2.8],[12,7,0],[14.5,7,0]];
+return {id:'defense',cat:'basics',title:'Defense',sub:'Stance and sliding',dur:14.5,
+ actors:[actor('O','red',8,'Attacker',op),actor('Y','blue',4,'You',guardPath(op,1.3),{stance:'defend',face:[[0,99,'O']]})],
+ ball:[DR('O',0,14.5)],
+ caps:[[0,'Defense means stopping the other team from scoring.'],[2,'Get low: feet wide, knees bent, hands out. That\'s your defensive stance.'],[5,'Slide your feet side to side. Don\'t cross them!'],[8.5,'Always stay between your player and the basket.'],[11.5,'Keep your hands active to block passes.']],
+ cam:[[0,[0.5,6.5,4],[8.5,0.8,0]],[14.5,[0.5,6.5,4],[8.5,0.8,0]]]};})(),
+
+/* ---------- TRICKS ---------- */
+{id:'crossover',cat:'tricks',title:'Crossover',sub:'Switch hands, switch direction',dur:9,
+ actors:[actor('Y','blue',4,'You',[[0,3.5,1.8],[2.0,5.6,1.7],[2.5,6.3,2.0],[3.0,6.6,1.4],[4.2,9.4,-0.9],[5.0,10.9,-1.0],[5.6,11.6,-0.7],[6.4,11.8,-0.6],[9,11.8,-0.6]],{jumps:[[5.3,6.1,0.55]]}),
+         actor('D','red',9,'Defender',[[0,7.6,1.4],[2.0,7.6,1.5],[2.7,7.65,2.4],[3.4,7.8,2.0],[4.6,9.6,0.6],[9,9.8,0.4]],{stance:'defend',face:[[0,99,'Y']]})],
+ ball:[DR('Y',0,4.5,{side:[[0,1],[2.5,1],[3.0,-1]],hy:[[2.2,0.95],[2.45,0.62],[3.0,0.62],[3.3,0.95]]}),H('Y',4.5,5.4),H('Y',5.4,5.7,'high'),SH('Y',5.7,6.25,{arc:0.35}),netDrop(6.25)],
+ scores:[[6.15,'blue',2]],
+ caps:[[0,'The crossover: dribble toward your defender with one hand.'],[1.9,'Take a hard step like you\'re going this way. The defender follows!'],[2.5,'Quick! Bounce the ball LOW across your body to your other hand.'],[3.1,'Push off and zoom past on the other side!'],[4.6,'Finish with a layup.']],
+ slow:[[1.9,3.4]],
+ cam:[[0,[12,3.8,-3],[6.5,0.8,1.2]],[3.4,[12,3.8,-3],[6.5,0.8,1.2]],[4.6,[7,5,-7],[10.5,1.8,-0.5]],[9,[7,5,-7],[10.5,1.8,-0.5]]]},
+
+{id:'betweenlegs',cat:'tricks',title:'Between the Legs',sub:'Make a tunnel',dur:9.5,
+ actors:[actor('Y','blue',4,'You',[[0,3.5,0.5],[2.0,6.0,0.5],[3.0,6.1,0.5],[3.2,6.25,0.3],[4.4,9.2,-1.6],[5.2,10.9,-1.2],[5.8,11.6,-0.8],[6.6,11.8,-0.7],[9.5,11.8,-0.7]],{jumps:[[5.4,6.2,0.55]],pose:[[2.2,3.1,'lunge']]}),
+         actor('D','red',9,'Defender',[[0,7.6,0.6],[2.2,7.5,0.7],[2.8,7.4,1.5],[3.6,7.6,1.0],[4.8,9.6,-0.4],[9.5,9.8,-0.5]],{stance:'defend',face:[[0,99,'Y']]})],
+ ball:[DR('Y',0,4.5,{side:[[0,1],[2.5,1],[3.0,-1]],fwd:[[0,0.45],[2.45,0.45],[2.6,0.0],[2.9,0.0],[3.05,0.45]],hy:[[2.2,0.95],[2.45,0.65],[3.0,0.65],[3.3,0.95]]}),H('Y',4.5,5.5),H('Y',5.5,5.8,'high'),SH('Y',5.8,6.35,{arc:0.35}),netDrop(6.35)],
+ scores:[[6.25,'blue',2]],
+ caps:[[0,'Between the legs: a tricky way to switch hands.'],[2.2,'Step forward with one foot so your legs make a tunnel.'],[2.55,'Bounce the ball hard and low through the tunnel to your other hand.'],[3.2,'Now go the other way!'],[4.8,'Layup. Score!']],
+ slow:[[2.1,3.4]],
+ cam:[[0,[10.5,2.6,2.8],[6,0.7,0.4]],[3.4,[10.5,2.6,2.8],[6,0.7,0.4]],[4.6,[7,5,-7],[10.5,1.8,-0.5]],[9.5,[7,5,-7],[10.5,1.8,-0.5]]]},
+
+{id:'behindback',cat:'tricks',title:'Behind the Back',sub:'Wrap it around',dur:9.5,
+ actors:[actor('Y','blue',4,'You',[[0,3.5,-0.5],[2.4,6.2,-0.4],[3.0,6.8,-0.4],[4.3,9.5,-2.0],[5.1,11.0,-1.4],[5.7,11.6,-0.9],[6.5,11.8,-0.8],[9.5,11.8,-0.8]],{jumps:[[5.3,6.1,0.55]]}),
+         actor('D','red',9,'Defender',[[0,7.8,-0.3],[2.2,7.4,0.3],[2.8,7.3,0.8],[3.6,7.7,0.2],[4.8,9.8,-0.8],[9.5,10,-0.9]],{stance:'defend',face:[[0,99,'Y']]})],
+ ball:[DR('Y',0,4.5,{side:[[0,1],[2.5,1],[2.6,1.4],[2.75,0],[2.9,-1.4],[3.0,-1]],fwd:[[0,0.45],[2.5,0.45],[2.6,0.0],[2.75,-0.45],[2.9,0.0],[3.0,0.45]]}),H('Y',4.5,5.4),H('Y',5.4,5.7,'high'),SH('Y',5.7,6.25,{arc:0.35}),netDrop(6.25)],
+ scores:[[6.15,'blue',2]],
+ caps:[[0,'Behind the back: the defender is blocking your path.'],[2.4,'Swing the ball around your back to your other hand…'],[2.9,'…and keep running the other way!'],[4.6,'Finish strong.']],
+ slow:[[2.2,3.3]],
+ cam:[[0,[1,3.2,-1.8],[6.5,0.8,-0.3]],[3.4,[1.5,3.2,-2.0],[6.8,0.8,-0.3]],[4.6,[7,5,-7.5],[10.5,1.8,-0.8]],[9.5,[7,5,-7.5],[10.5,1.8,-0.8]]]},
+
+{id:'spin',cat:'tricks',title:'Spin Move',sub:'Turn all the way around',dur:9.5,
+ actors:[actor('Y','blue',4,'You',[[0,4.2,1.5],[2.4,6.7,1.25],[2.6,6.85,1.1],[2.9,7.0,0.3],[3.2,7.5,-0.5],[4.4,9.8,-1.2],[5.2,11.1,-1.0],[5.8,11.65,-0.7],[6.6,11.8,-0.6],[9.5,11.8,-0.6]],{jumps:[[5.3,6.1,0.55]],spins:[[2.6,3.2,-1]]}),
+         actor('D','red',9,'Defender',[[0,8.0,1.0],[2.2,7.9,1.15],[2.6,7.8,1.25],[3.3,7.8,1.4],[4.6,9.6,0.4],[9.5,9.8,0.3]],{stance:'defend',face:[[0,99,'Y']]})],
+ ball:[DR('Y',0,4.5,{fwd:[[0,0.45],[2.4,0.45],[2.6,0.08],[3.15,0.08],[3.35,0.4]],side:[[0,1],[2.4,1],[2.6,1.35],[3.15,1.35],[3.5,-1]],hy:[[2.3,0.95],[2.6,0.8],[3.5,0.8],[3.8,0.95]]}),H('Y',4.5,5.4),H('Y',5.4,5.7,'high'),SH('Y',5.7,6.25,{arc:0.35}),netDrop(6.25)],
+ scores:[[6.15,'blue',2]],
+ caps:[[0,'The spin move: drive at your defender.'],[2.2,'The defender cuts you off. Plant your foot…'],[2.6,'…and spin all the way around, keeping the ball close!'],[3.3,'You\'re past them! Switch hands and go!'],[4.8,'Easy layup!']],
+ slow:[[2.2,3.5]],
+ cam:[[0,[5,6,7.5],[7.5,0.8,0.6]],[3.5,[5,6,7.5],[7.5,0.8,0.6]],[4.7,[7,5,-7.5],[10.5,1.8,-0.6]],[9.5,[7,5,-7.5],[10.5,1.8,-0.6]]]},
+
+{id:'pumpfake',cat:'tricks',title:'Pump Fake',sub:'Make them jump',dur:9,
+ actors:[actor('Y','blue',4,'You',[[0,6.9,4.2],[2.4,6.9,4.2],[2.9,7.9,4.6],[3.9,10.4,1.8],[4.4,11.1,0.95],[5.1,11.6,0.6],[5.6,11.7,0.55],[9,11.7,0.55]],{jumps:[[4.3,5.1,0.5]]}),
+         actor('D','red',9,'Defender',[[0,7.7,3.6],[2.7,7.7,3.6],[3.6,8.0,3.0],[5,9.8,1.9],[9,10.0,1.8]],{stance:'defend',face:[[0,99,'Y']],jumps:[[1.75,2.55,0.55]],pose:[[1.5,2.7,'block']]})],
+ ball:[H('Y',0,1.4),H('Y',1.4,2.0,'high'),H('Y',2.0,2.4),DR('Y',2.4,3.9),H('Y',3.9,4.4),H('Y',4.4,4.7,'high'),SH('Y',4.7,5.3,{arc:0.45}),netDrop(5.3)],
+ scores:[[5.2,'blue',2]],
+ caps:[[0,'The pump fake: pretend you are going to shoot.'],[1.4,'Lift the ball up like a real shot. Keep your feet on the floor!'],[1.9,'The defender jumps to block it…'],[2.4,'…and while they\'re in the air, dribble right past!'],[4.2,'Score!']],
+ slow:[[1.3,3.0]],
+ cam:[[0,[4.5,3.5,8.5],[8,1.6,3]],[3,[4.5,3.5,8.5],[8,1.6,3]],[4.3,[8,5,-6],[11,1.8,0.5]],[9,[8,5,-6],[11,1.8,0.5]]]},
+
+{id:'passfake',cat:'tricks',title:'Pass Fake',sub:'Look one way, pass the other',dur:8,
+ actors:[actor('Y','blue',4,'You',[[0,5.0,0]],{face:[[0.8,2.05,'P2'],[2.05,2.9,'P3']]}),
+   actor('D','red',9,'Defender',[[0,6.1,0],[1.2,6.1,0],[1.8,6.1,-0.75],[3.2,6.1,-0.75],[4.2,6.3,0.4],[8,6.3,0.4]],{stance:'defend',jumps:[[1.5,2.2,0.4]],pose:[[1.3,2.3,'block']]}),
+   actor('P2','blue',7,'Teammate',[[0,7.4,-5.2]]),
+   actor('P3','blue',10,'Teammate',[[0,7.4,5.2]],{jumps:[[3.5,4.1,0.4]]})],
+ ball:[H('Y',0,1.0),H('Y',1.0,1.85,'high'),H('Y',1.85,2.2),PS('Y','P3',2.2,3.0,{bounce:1}),H('P3',3.0,3.4),H('P3',3.4,3.7,'high'),SH('P3',3.7,5.0,{arc:1.9}),netDrop(5.0)],
+ scores:[[4.85,'blue',3]],
+ fx:[{k:'lane',t0:0.3,t1:3.0,from:'Y',to:'P2',vs:['D']},{k:'lane',t0:0.3,t1:3.0,from:'Y',to:'P3',vs:['D']}],
+ caps:[[0,'The pass fake: make the defender guess wrong.'],[1.0,'Lift the ball and LOOK at one teammate like you\'re passing to them…'],[1.8,'The defender jumps to block that pass. That lane is closed (red)…'],[2.2,'…so snap a quick pass the OTHER way, where the lane is open (green)!'],[3.4,'Open shot! Your eyes and the fake did the work.']],
+ slow:[[0.9,3.0]],
+ cam:[[0,[1.2,7.5,0],[6.5,0.5,0]],[8,[1.2,7.5,0],[6.5,0.5,0]]]},
+
+{id:'behindpass',cat:'tricks',title:'Behind-the-Back Pass',sub:'Wrap it to a teammate',dur:8.5,
+ actors:[actor('Y','blue',4,'You',[[0,2,0.2],[2.4,7.4,0.1],[3.0,7.9,0.1],[8.5,8.0,0.1]],{pose:[[2.5,2.95,'wrap']]}),
+   actor('D','red',9,'Defender',[[0,10.5,0.5],[2.4,9.1,0.3],[3.0,8.95,0.3],[4,9.3,-0.6],[8.5,9.6,-0.6]],{stance:'defend',face:[[0,3.2,'Y']]}),
+   actor('T','blue',7,'Teammate',[[0,2.5,-3.6],[2.4,7.8,-3.0],[3.0,9.0,-2.4],[3.4,9.9,-1.8],[4.0,10.8,-1.2],[4.6,11.4,-0.8],[5.2,11.7,-0.6],[8.5,11.7,-0.6]],{jumps:[[4.0,4.8,0.55]]})],
+ ball:[DR('Y',0,2.5),PS('Y','T',2.5,3.2,{wrap:1,arc:0.15}),H('T',3.2,4.0),H('T',4.0,4.3,'high'),SH('T',4.3,4.85,{arc:0.35}),netDrop(4.85)],
+ scores:[[4.75,'blue',2]],
+ caps:[[0,'2-on-1 fast break! You have the ball, your teammate runs on your left.'],[2.0,'The defender steps up to stop you…'],[2.5,'…so wrap the ball behind your back to your teammate!'],[3.2,'The defender was watching you, not the pass.'],[4.2,'Layup! Tip: only use a trick pass when a simple pass won\'t work.']],
+ slow:[[2.2,3.4]],
+ cam:[[0,[3,5.5,7.5],[8,0.8,-0.6]],[8.5,[3,5.5,7.5],[8,0.8,-0.6]]]},
+
+/* ---------- RULES ---------- */
+{id:'travel',cat:'rules',title:'Traveling',sub:'Dribble when you move',dur:12,
+ actors:[actor('Y','blue',4,'You',[[0,5,-1],[1.0,5,-1],[3.2,8.6,-1.2],[12,8.6,-1.2]],{spins:[[8.6,9.6,0.4],[9.8,10.8,-0.4]]}),
+         REF([[0,8.5,7.9]],[[2.7,5.2,'travel']])],
+ ball:[H('Y',0,5.5),PS('Y','R',5.5,6.3,{bounce:1}),H('R',6.3,7.4),PS('R','Y',7.4,8.2,{bounce:1}),H('Y',8.2,12)],
+ whistles:[[2.7,'TRAVELING!']],
+ caps:[[0,'When you move with the ball, you must dribble it.'],[1.2,'Look! Running while holding the ball…'],[2.7,'…is TRAVELING. Too many steps! The ref rolls their arms like this.'],[5.4,'After traveling, the other team gets the ball.'],[8.3,'When you stop, keep one foot glued to the floor. You can turn on it. That\'s a PIVOT, and it\'s allowed!']],
+ slow:[[1.2,3.2]],
+ cam:[[0,[5.5,5,9],[7.5,1,1.5]],[12,[5.5,5,9],[7.5,1,1.5]]]},
+
+{id:'doubledribble',cat:'rules',title:'Double Dribble',sub:'One dribble at a time',dur:11,
+ actors:[actor('Y','blue',4,'You',[[0,5,-2],[2,6.2,-2.2],[3.0,6.2,-2.2],[4.5,7.2,-1.8],[11,7.2,-1.8]]),
+         actor('B','blue',7,'Teammate',[[0,8.8,3.6]]),REF([[0,6.5,7.9]],[[3.6,6.0,'double']])],
+ ball:[DR('Y',0,2),H('Y',2,3),DR('Y',3,4.5),H('Y',4.5,6.6),PS('Y','B',6.6,7.4),H('B',7.4,11)],
+ whistles:[[3.6,'DOUBLE DRIBBLE!']],
+ caps:[[0,'Dribble the ball…'],[2,'…then catch it with two hands. Your dribble is now over.'],[3,'Starting to dribble again is a DOUBLE DRIBBLE!'],[4.8,'The ref pats the air with both hands. It\'s the other team\'s ball.'],[6.4,'So once you stop dribbling: pass or shoot!']],
+ slow:[[1.8,3.8]],
+ cam:[[0,[3.5,4.5,6.5],[7,1,0]],[11,[3.5,4.5,6.5],[7,1,0]]]},
+
+{id:'fouls',cat:'rules',title:'Fouls & Free Throws',sub:'No pushing, no hitting',dur:17,
+ actors:[actor('Y','blue',4,'You',[[0,5,-3.5],[2.6,10.3,-1.3],[3.1,10.9,-0.9],[3.7,11.2,-0.8],[5,11.2,-0.8],[7.5,7.9,0],[17,7.9,0]],{jumps:[[3.0,3.7,0.5]]}),
+         actor('D','red',9,'Defender',[[0,10.8,1.2],[2.4,10.8,0.6],[3.1,11.0,-0.3],[3.8,10.9,0.3],[5.6,10.9,0.3],[7.0,11.4,-2.75],[17,11.4,-2.75]],{face:[[0,4,'Y']],pose:[[2.9,3.5,'slap']]}),
+         actor('O','red',8,'Opponent',[[0,8.6,4.6],[6.6,8.6,4.6],[8,10.3,2.75],[17,10.3,2.75]]),
+         REF([[0,9.5,7.9],[3.4,9.5,7.9],[5.6,10.0,3.0],[7.0,8.9,1.4],[9.5,13.4,2.2],[17,13.4,2.2]],[[3.35,5.2,'foul']])],
+ ball:[DR('Y',0,2.5),H('Y',2.5,3.0),H('Y',3.0,3.2,'high'),SH('Y',3.2,3.85,{make:false,arc:0.5}),FR([[3.85,HX-0.24,RIM+0.12,0.04],[4.5,11.2,BR,1.6,0.7],[5.1,10.4,BR,2.4,0.35],[5.9,'R',0.2]]),H('R',5.9,7.5),PS('R','Y',7.5,8.2,{bounce:1}),H('Y',8.2,9.0),H('Y',9.0,9.4,'high'),SH('Y',9.4,10.3,{arc:1.3}),FR([[10.3,HX,2.5,0],[10.75,12.6,BR,0.6],[11.3,'R',0.4]]),H('R',11.3,11.9),PS('R','Y',11.9,12.8,{bounce:1}),H('Y',12.8,13.2),H('Y',13.2,13.6,'high'),SH('Y',13.6,14.5,{arc:1.3}),netDrop(14.5)],
+ scores:[[10.15,'blue',1],[14.35,'blue',1]],
+ whistles:[[3.35,'FOUL!']],
+ fx:[{k:'zone',z:'ftline',t0:7.6,t1:14.6,color:0xffd24a}],
+ caps:[[0,'Basketball is a no-contact game.'],[2.9,'Hitting, pushing or grabbing another player…'],[3.35,'…is a FOUL! The defender hit the shooter\'s arm.'],[5.2,'If you get fouled while shooting, you get free throws.'],[8.0,'Free throw: nobody can guard you. Take a breath and use B.E.E.F.'],[10.4,'Swish! That\'s 1 point.'],[12.4,'Two free throws, two points!']],
+ slow:[[2.8,3.9]],
+ cam:[[0,[7,4.5,-8.5],[10,1.5,-1]],[6,[7,4.5,-8.5],[10,1.5,-1]],[8,[5.5,4.5,-6],[10,1.8,0]],[17,[5.5,4.5,-6],[10,1.8,0]]]},
+
+{id:'outofbounds',cat:'rules',title:'Out of Bounds',sub:'Stay inside the lines',dur:10,
+ actors:[actor('Y','blue',4,'You',[[0,3,4.6],[2.6,7.2,6.6],[3.3,8.3,7.55],[10,8.3,7.55]]),
+         actor('O','red',8,'Opponent',[[0,9.5,4],[4.0,9.5,4],[5.0,9.4,8.3],[10,9.4,8.3]]),
+         actor('P','red',11,'Opponent',[[0,7.5,3.5],[5.5,7.5,3.5],[6.5,7.2,3.0],[10,7.2,3.0]]),
+         REF([[0,5.5,8.3]],[[3.4,6,'point']])],
+ ball:[DR('Y',0,3.5),H('Y',3.5,4.9),PS('Y','O',4.9,5.4,{arc:0.15}),H('O',5.4,6.6),PS('O','P',6.6,7.5,{arc:0.3}),H('P',7.5,10)],
+ whistles:[[3.4,'OUT OF BOUNDS!']],
+ fx:[{k:'zone',z:'out',t0:2.2,t1:7.2,color:0xff4b4b}],
+ caps:[[0,'The lines around the edge of the court are out of bounds.'],[2.2,'Careful near the line…'],[3.4,'Your foot is on the line. OUT OF BOUNDS!'],[4.8,'The other team gets the ball.'],[5.6,'They pass it back in from outside the line, near where it went out.']],
+ slow:[[2.4,3.8]],
+ cam:[[0,[5.5,6,-3],[6.5,0.5,5.5]],[10,[5.5,6,-3],[6.5,0.5,5.5]]]},
+
+{id:'clocks',cat:'rules',title:'Shot Clock & 3 Seconds',sub:'Time rules',dur:18,
+ actors:[actor('Y','blue',4,'You',[[0,5.2,0],[9.5,5.2,0],[11,10.5,1.0],[14.6,10.5,1.0],[15.6,10.5,3.4],[18,10.5,3.4]]),
+         actor('B','blue',7,'Teammate',[[0,7.6,-5.6]]),actor('C','blue',10,'Teammate',[[0,7.6,5.6]],{jumps:[[7.2,7.8,0.4]]}),
+         REF([[0,9,-7.9]],[[14.2,16.2,'three']])],
+ ball:[H('Y',0,1.5),PS('Y','B',1.5,2.2),H('B',2.2,3.5),PS('B','Y',3.5,4.2),H('Y',4.2,5.5),PS('Y','C',5.5,6.3),H('C',6.3,7.0),H('C',7.0,7.4,'high'),SH('C',7.4,8.6,{arc:1.8}),netDrop(8.6,1,0.6)],
+ scores:[[8.45,'blue',3]],
+ clocks:[{t0:0,t1:8.6,from:24,label:'SHOT CLOCK',reset:24},{t0:11.2,t1:14.2,up:true,label:'IN THE PAINT',hold:1.6}],
+ whistles:[[14.2,'3 SECONDS!']],
+ fx:[{k:'zone',z:'paint',t0:10.6,t1:16.2,color:0xff4b4b}],
+ caps:[[0,'The shot clock: your team has 24 seconds to shoot. Some kids\' leagues use 30 seconds or no clock at all.'],[3.5,'Pass the ball around to find an open shot.'],[7,'Shoot before the clock reaches zero!'],[9,'The ball hit the rim, so the shot clock starts over.'],[10.6,'The 3-second rule: attackers can\'t stand in the paint for more than 3 seconds.'],[14.2,'Too long! That\'s a 3-SECOND VIOLATION.'],[15.6,'Step out of the paint before you count to 3. Then you can go back in.']],
+ cam:[[0,[3,9,10],[9,0.5,0]],[18,[3,9,10],[9,0.5,0]]]},
+
+/* ---------- TEAM PLAYS ---------- */
+{id:'pickroll',cat:'team',title:'Pick and Roll',sub:'Set a screen, roll to the hoop',dur:10.5,
+ actors:[actor('Y','blue',4,'You',[[0,4.8,-0.6],[2.2,4.8,-0.6],[3.2,6.2,1.6],[4.6,7.8,2.6],[6,8.2,2.7],[10.5,8.2,2.7]]),
+         actor('B','blue',7,'Screener',[[0,8.6,3.4],[1.9,6.3,0.55],[3.5,6.3,0.55],[5.0,10.7,0.6],[5.6,11.2,0.4],[7,11.4,0.3],[10.5,11.4,0.3]],{jumps:[[5.5,6.3,0.55]],pose:[[1.9,3.5,'screen']]}),
+         actor('D','red',9,'Defender',[[0,5.9,-0.5],[2.2,5.9,-0.5],[2.8,6.1,0.1],[3.6,6.2,0.0],[4.8,7.6,0.6],[10.5,8,0.8]],{stance:'defend',face:[[0,3.6,'Y']]}),
+         actor('E','red',8,'Defender',[[0,9.6,3.0],[1.9,7.4,1.2],[3.4,7.4,2.9],[4.6,8.6,2.2],[5.6,10.4,0.9],[10.5,10.6,0.8]],{stance:'defend'})],
+ ball:[DR('Y',0,4.5),H('Y',4.5,4.7),PS('Y','B',4.7,5.4,{bounce:1}),H('B',5.4,5.6),H('B',5.6,5.85,'high'),SH('B',5.85,6.4,{arc:0.35}),netDrop(6.4)],
+ scores:[[6.3,'blue',2]],
+ fx:[{k:'arrow',t0:0,t1:2.4,pts:[[8.6,3.4],[7.4,1.8],[6.4,0.7]],color:0xffd24a},{k:'arrow',t0:2.0,t1:4.8,pts:[[4.8,-0.6],[5.6,0.6],[6.6,2.0],[7.8,2.6]],color:0x79a9ff},{k:'arrow',t0:3.4,t1:5.8,pts:[[6.3,0.55],[8.5,0.7],[10.8,0.6]],color:0xffd24a}],
+ caps:[[0,'Pick and roll: a play for two teammates.'],[0.8,'Your teammate stands still right next to your defender. That\'s a screen, also called a pick.'],[2.4,'Dribble right past the screen. Your defender gets stuck!'],[3.6,'Now the screener rolls to the hoop…'],[4.8,'…and you pass for an easy basket!']],
+ cam:[[0,[2,9,-6],[7.5,0.5,1]],[10.5,[2,9,-6],[7.5,0.5,1]]]},
+
+{id:'giveandgo',cat:'team',title:'Give and Go',sub:'Pass, then cut',dur:9,
+ actors:[actor('Y','blue',4,'You',[[0,7.6,-5.4],[1.8,7.6,-5.4],[2.3,7.1,-5.9],[2.6,7.5,-5.3],[3.8,10.6,-2.0],[4.4,11.3,-1.2],[5.0,11.7,-0.8],[5.6,11.8,-0.7],[9,11.8,-0.7]],{jumps:[[4.3,5.0,0.55]]}),
+         actor('B','blue',7,'Teammate',[[0,5.0,0.4]]),
+         actor('D','red',9,'Defender',[[0,8.4,-4.6],[1.8,8.3,-4.7],[2.6,7.6,-3.6],[3.4,7.9,-3.2],[4.6,10.1,-2.6],[9,10.4,-2.3]],{stance:'defend'}),
+         actor('E','red',8,'Defender',[[0,6.1,0.35]],{stance:'defend',face:[[0,99,'B']]})],
+ ball:[H('Y',0,1.0),PS('Y','B',1.0,1.8),H('B',1.8,3.3),PS('B','Y',3.3,4.0,{arc:0.5}),H('Y',4.0,4.3),H('Y',4.3,4.6,'high'),SH('Y',4.6,5.1,{arc:0.35}),netDrop(5.1)],
+ scores:[[5.0,'blue',2]],
+ fx:[{k:'arrow',t0:1.8,t1:4.0,pts:[[7.3,-5.7],[8.6,-4.2],[10.6,-2.0]],color:0xffd24a}],
+ caps:[[0,'Give and go: GIVE the ball to a teammate…'],[1.8,'…then GO! Fake one way and cut fast to the basket.'],[3.2,'Your teammate passes it right back to you.'],[4.4,'Easy layup!']],
+ cam:[[0,[3,8,-9],[8.5,0.5,-2]],[9,[3,8,-9],[8.5,0.5,-2]]]},
+
+{id:'fastbreak',cat:'team',title:'Fast Break',sub:'Run before they get back',dur:11,
+ actors:[actor('Y','blue',4,'You',[[0,-11.2,0.6],[1.4,-11.2,0.6],[2.6,-9.5,-5.0],[4.5,-4,-6.0],[9,7,-5.2],[11,8,-5]],{jumps:[[0.3,1.05,0.5]]}),
+         actor('B','blue',7,'Guard',[[0,-9,-4],[1.3,-8.4,-5],[2.0,-7.8,-4.8],[4,-3,-1],[6.5,4.5,0],[7,5.6,0],[11,6.5,0]]),
+         actor('C','blue',10,'Runner',[[0,-9.5,4.2],[2,-6,5.8],[6.5,6,5.5],[7.5,9.5,3.5],[8.3,11.0,1.6],[8.8,11.5,1.0],[9.5,11.7,0.9],[11,11.7,0.9]],{jumps:[[7.8,8.6,0.55]]}),
+         actor('O','red',8,'Opponent',[[0,-10.4,-1.8],[1,-10.3,-1.5],[9,1,-1],[11,4,-0.8]]),
+         actor('P','red',11,'Opponent',[[0,-12,2],[0.5,-11.8,1.8],[9,2.5,2.2],[11,5.5,1.5]])],
+ ball:[FR([[0,-(HX-0.24),RIM+0.12,0.04],[0.75,'Y',0.5,'high']]),H('Y',0.75,1.0,'high'),H('Y',1.0,1.3),PS('Y','B',1.3,2.0),DR('B',2.0,6.5),H('B',6.5,6.6),PS('B','C',6.6,7.4,{arc:0.4}),H('C',7.4,7.9),H('C',7.9,8.2,'high'),SH('C',8.2,8.75,{arc:0.35}),netDrop(8.75)],
+ scores:[[8.65,'blue',2]],
+ fx:[{k:'arrow',t0:2.0,t1:6.6,pts:[[-6,5.8],[0,5.7],[6,5.5]],color:0x79a9ff},{k:'arrow',t0:2.0,t1:6.6,pts:[[-6,-1.5],[0,-0.5],[4.5,0]],color:0x79a9ff},{k:'arrow',t0:2.0,t1:6.6,pts:[[-6,-6],[0,-5.6],[6,-5.3]],color:0x79a9ff}],
+ caps:[[0,'Fast break: grab the rebound…'],[1.3,'…and pass it out fast to a guard on the side.'],[2.4,'Everyone sprints! Fill the lanes: one in the middle, one on each side.'],[5.0,'Beat the other team down the court…'],[6.6,'…for an easy layup before they get back!']],
+ follow:'ball',cam:[[0,[-1,12,13],[1,0,0]],[11,[-1,12,13],[1,0,0]]]},
+
+{id:'mantozone',cat:'team',title:'Man-to-Man vs Zone',sub:'Two ways to defend',dur:16,
+ actors:[actor('A1','red',1,'',[[0,5.0,0]]),actor('A2','red',2,'',[[0,7.0,-5.2]]),actor('A3','red',3,'',[[0,7.0,5.2]]),actor('A4','red',4,'',[[0,12.8,-6.8]]),actor('A5','red',5,'',[[0,11.2,2.8]]),
+   actor('D1','blue',11,'You',[[0,6.1,0],[7,6.1,0],[8.6,7.2,-3.6],[9.8,7.2,-3.6],[10.8,6.6,-1.0],[11.9,6.6,-1.0],[12.9,7.6,-0.4]],{stance:'defend'}),
+   actor('D2','blue',12,'',[[0,7.79,-4.44],[7,7.79,-4.44],[8.6,10.2,-5.0],[9.8,10.2,-5.0],[10.8,10.6,-4.0],[11.9,10.6,-4.0],[12.9,11.0,-2.4]],{stance:'defend'}),
+   actor('D3','blue',13,'',[[0,7.79,4.44],[7,7.79,4.44],[8.6,7.6,-0.4],[9.8,7.6,-0.4],[10.8,6.6,1.0],[11.9,6.6,1.0],[12.9,7.2,3.6]],{stance:'defend'}),
+   actor('D4','blue',14,'',[[0,12.74,-5.7],[7,12.74,-5.7],[8.6,11.2,-1.4],[9.8,11.2,-1.4],[10.8,11.4,0],[11.9,11.4,0],[12.9,11.2,1.4]],{stance:'defend'}),
+   actor('D5','blue',15,'',[[0,11.64,1.79],[7,11.64,1.79],[8.6,10.5,1.9],[9.8,10.5,1.9],[10.8,10.3,4.2],[11.9,10.3,4.2],[12.9,10.2,5.0]],{stance:'defend'})],
+ ball:[H('A1',0,2),PS('A1','A2',2,2.7),H('A2',2.7,4),PS('A2','A4',4,4.6),H('A4',4.6,7.6),PS('A4','A2',7.6,8.2),H('A2',8.2,9.6),PS('A2','A1',9.6,10.3),H('A1',10.3,11.6),PS('A1','A3',11.6,12.4),H('A3',12.4,16)],
+ fx:[{k:'link',t0:0.6,t1:7,a:'D1',b:'A1',color:0xffd24a},{k:'link',t0:0.6,t1:7,a:'D2',b:'A2',color:0xffd24a},{k:'link',t0:0.6,t1:7,a:'D3',b:'A3',color:0xffd24a},{k:'link',t0:0.6,t1:7,a:'D4',b:'A4',color:0xffd24a},{k:'link',t0:0.6,t1:7,a:'D5',b:'A5',color:0xffd24a},
+     {k:'ring',t0:8.4,t1:16,actor:'D1',r:1.7,color:0x79a9ff},{k:'ring',t0:8.4,t1:16,actor:'D2',r:1.7,color:0x79a9ff},{k:'ring',t0:8.4,t1:16,actor:'D3',r:1.7,color:0x79a9ff},{k:'ring',t0:8.4,t1:16,actor:'D4',r:1.7,color:0x79a9ff},{k:'ring',t0:8.4,t1:16,actor:'D5',r:1.7,color:0x79a9ff}],
+ caps:[[0,'There are two main ways to play defense. First: man-to-man.'],[1.5,'Each defender guards one player and follows them everywhere.'],[7,'Second: zone defense.'],[8.6,'Each defender guards an AREA of the court, not a person. This one is called a 2-3 zone.'],[11,'When the ball moves, the whole zone slides toward it.'],[14,'Whichever defense you play, talk to your teammates!']],
+ cam:[[0,[0.5,13,7],[9.5,0,0]],[16,[0.5,13,7],[9.5,0,0]]]},
+
+/* ---------- PRO TACTICS ---------- */
+{id:'seeball',cat:'pro',title:'Don\'t Hide Behind Your Defender',sub:'See the ball, get the pass',dur:10,
+ actors:[actor('B','blue',7,'Passer',[[0,5.0,0]],{face:[[0,6.4,'Y']]}),
+   actor('Y','blue',4,'You',[[0,7.6,-4.2],[4.6,7.6,-4.2],[5.8,6.0,-5.4],[10,6.0,-5.4]],{jumps:[[7.6,8.2,0.4]]}),
+   actor('D','red',9,'Defender',[[0,6.75,-2.85],[4.6,6.75,-2.85],[5.8,6.6,-3.2],[7.2,6.55,-4.45],[10,6.55,-4.45]],{stance:'defend',face:[[0,99,'B']],pose:[[7.5,8.4,'block']]})],
+ ball:[H('B',0,2.2),PS('B','D',2.2,2.75,{arc:0.2}),H('D',2.75,4.3),FR([[4.3,'D',0],[4.35,'B',0]]),H('B',4.35,6.3),PS('B','Y',6.3,7.0,{arc:0.35}),H('Y',7.0,7.5),H('Y',7.5,7.8,'high'),SH('Y',7.8,9.1,{arc:1.9}),netDrop(9.1)],
+ scores:[[8.95,'blue',3]],
+ whistles:[[2.75,'STOLEN!','BLOCKED LANE','bad']],
+ fx:[{k:'lane',t0:0.3,t1:7.0,from:'B',to:'Y',vs:['D']}],
+ caps:[[0,'You\'re standing BEHIND your defender. The passing lane is blocked (red line).'],[1.5,'If your teammate passes now…'],[2.75,'…the defender steals it! Hiding behind a defender means no pass.'],[4.4,'Let\'s fix it. Step out to the side, away from your defender…'],[5.8,'Now there\'s a clear line from the ball to you (green). You can SEE the passer\'s eyes!'],[7.0,'Catch it and shoot! If you can\'t see the ball, the ball can\'t find you.']],
+ slow:[[1.8,3.0],[4.5,7.0]],
+ cam:[[0,[2.5,8,-8.5],[6.6,0.5,-2.6]],[10,[2.5,8,-8.5],[6.6,0.5,-2.6]]]},
+
+{id:'vcut',cat:'pro',title:'Get Open: V-Cut',sub:'Lose your defender',dur:9,
+ actors:[actor('B','blue',7,'Passer',[[0,5.0,0]]),actor('E','red',8,'',[[0,6.1,0.4]],{stance:'defend',face:[[0,99,'B']]}),
+   actor('Y','blue',4,'You',[[0,7.6,-5.0],[1.5,7.6,-5.0],[3.2,10.2,-3.6],[3.9,7.3,-5.8],[4.6,7.1,-5.9],[9,7.1,-5.9]],{jumps:[[5.1,5.7,0.4]]}),
+   actor('D','red',9,'Defender',[[0,7.19,-4.2],[1.5,7.19,-4.2],[3.3,9.46,-3.09],[3.9,9.1,-3.4],[5.0,8.0,-5.0],[5.4,7.85,-5.15],[9,7.85,-5.15]],{stance:'defend',face:[[0,99,'Y']],pose:[[5.1,5.8,'block']]})],
+ ball:[H('B',0,3.9),PS('B','Y',3.9,4.6,{arc:0.35}),H('Y',4.6,5.0),H('Y',5.0,5.3,'high'),SH('Y',5.3,6.6,{arc:1.9}),netDrop(6.6)],
+ scores:[[6.45,'blue',3]],
+ fx:[{k:'open',t0:0.2,t1:6.6,who:['Y'],vs:['D']},{k:'arrow',t0:1.4,t1:4.1,pts:[[7.6,-5.0],[9.4,-3.9],[10.1,-3.65],[8.6,-4.9],[7.3,-5.8]],color:0xffd24a}],
+ caps:[[0,'Standing still, you\'re easy to guard. The defender sits in the passing lane. Red ring = covered.'],[1.5,'V-cut: walk your defender slowly toward the basket…'],[3.2,'…then plant your foot and BURST back out. Change speed and direction!'],[3.9,'Green ring = open! Show your hands as a target.'],[4.7,'Catch, face the hoop and shoot before the defender gets back.']],
+ slow:[[3.1,4.1]],
+ cam:[[0,[3,8.5,-11.5],[8.5,0.5,-3]],[9,[3,8.5,-11.5],[8.5,0.5,-3]]]},
+
+{id:'backdoor',cat:'pro',title:'Backdoor Cut',sub:'Beat the overplay',dur:9,
+ actors:[actor('B','blue',7,'Passer',[[0,5.0,0.5]]),actor('E','red',8,'',[[0,5.9,-0.3]],{stance:'defend',face:[[0,99,'B']]}),
+   actor('Y','blue',4,'You',[[0,7.6,5.2],[1.2,7.6,5.2],[2.0,6.9,4.6],[2.6,8.4,3.6],[3.6,10.6,1.2],[4.2,11.3,0.7],[5.0,11.7,0.45],[9,11.75,0.4]],{jumps:[[4.1,4.9,0.55]]}),
+   actor('D','red',9,'Defender',[[0,6.9,4.5],[1.2,6.9,4.5],[2.0,6.56,3.87],[2.8,6.7,3.6],[3.8,8.8,2.2],[5,9.9,1.6],[9,10,1.5]],{stance:'defend',face:[[0,2.6,'B'],[2.6,99,'Y']],pose:[[0.3,2.5,'slap']]})],
+ ball:[H('B',0,2.6),PS('B','Y',2.6,3.5,{bounce:1}),H('Y',3.5,4.0),H('Y',4.0,4.35,'high'),SH('Y',4.35,4.9,{arc:0.35}),netDrop(4.9)],
+ scores:[[4.8,'blue',2]],
+ fx:[{k:'open',t0:0.2,t1:4.4,who:['Y'],vs:['D']},{k:'arrow',t0:1.9,t1:3.8,pts:[[6.9,4.6],[8.4,3.6],[10.6,1.2]],color:0xffd24a}],
+ caps:[[0,'Your defender is overplaying: jumping into the passing lane to steal the ball.'],[1.2,'Take a step out like you want the ball. The defender jumps out even more…'],[2.0,'…so cut BEHIND them, straight to the basket. That\'s a backdoor cut!'],[2.7,'Passer: bounce it to where your teammate is GOING, not where they were.'],[4.0,'Easy layup! Every time a defender overplays, punish them with a backdoor cut.']],
+ slow:[[1.9,3.6]],
+ cam:[[0,[4,8,10.5],[8.5,0.5,2.5]],[9,[4,8,10.5],[8.5,0.5,2.5]]]},
+
+{id:'offscreen',cat:'pro',title:'Off-Ball Screen',sub:'Teammates get you open',dur:10,
+ actors:[actor('B','blue',7,'Passer',[[0,5.0,0.5]]),actor('E','red',8,'',[[0,5.9,0.2]],{stance:'defend',face:[[0,99,'B']]}),
+   actor('Y','blue',4,'You',[[0,11.6,-2.0],[1.6,11.6,-2.0],[2.2,11.2,-2.8],[3.4,8.2,-5.2],[3.6,7.9,-5.4],[10,7.85,-5.45]],{jumps:[[4.7,5.3,0.4]]}),
+   actor('S','blue',10,'Screener',[[0,7.5,-5.6],[1.8,9.5,-3.4],[4.6,9.5,-3.4],[5.6,10.8,-1.6],[10,11,-1.5]],{pose:[[1.8,3.6,'screen']]}),
+   actor('D','red',9,'Defender',[[0,10.76,-1.68],[1.6,10.76,-1.68],[2.4,10.3,-2.6],[3.0,10.0,-2.75],[3.8,9.9,-2.6],[4.2,9.0,-2.7],[4.8,8.4,-4.1],[5.4,8.4,-4.7],[10,8.4,-4.7]],{stance:'defend',face:[[0,99,'Y']],pose:[[4.9,5.7,'block']]})],
+ ball:[H('B',0,3.6),PS('B','Y',3.6,4.3,{arc:0.35}),H('Y',4.3,4.6),H('Y',4.6,4.9,'high'),SH('Y',4.9,6.2,{arc:1.9}),netDrop(6.2)],
+ scores:[[6.05,'blue',3]],
+ fx:[{k:'open',t0:0.2,t1:6.2,who:['Y'],vs:['D']},{k:'arrow',t0:0,t1:2.0,pts:[[7.5,-5.6],[8.6,-4.4],[9.4,-3.5]],color:0xffd24a},{k:'arrow',t0:1.8,t1:3.8,pts:[[11.2,-2.8],[9.9,-4.3],[8.2,-5.2]],color:0x79a9ff}],
+ caps:[[0,'Shooters get open with help. Your teammate comes to set a screen for you, away from the ball.'],[1.6,'Walk your defender low, then run right past your teammate\'s shoulder.'],[2.6,'Your defender bumps into the screen and gets stuck!'],[3.6,'You\'re open on the wing. Catch, face the hoop, shoot!'],[5.4,'Great teams screen for each other. Your teammate made the shot happen.']],
+ slow:[[2.2,3.8]],
+ cam:[[0,[5,9,-12.5],[9,0.5,-3]],[10,[5,9,-12.5],[9,0.5,-3]]]},
+
+{id:'heroteam',cat:'pro',title:'Hero Ball vs Team Ball',sub:'Why passing wins',dur:20,
+ actors:[actor('Y','blue',4,'You',[[0,5.0,0],[1.5,5.0,0],[3.5,9.4,0.3],[4.3,10.0,0.3],[9.6,10.0,0.3],[9.65,5.0,0],[11.0,5.0,0],[13.0,9.2,0.3],[13.4,9.3,0.3],[20,9.3,0.3]],{jumps:[[4.4,5.0,0.4]]}),
+   actor('P2','blue',7,'',[[0,7.2,-5.4]]),actor('P3','blue',10,'',[[0,7.2,5.4]]),
+   actor('P4','blue',12,'',[[0,12.9,-6.8]],{jumps:[[15.5,16.1,0.4]]}),actor('P5','blue',14,'',[[0,12.9,6.8]]),
+   actor('E1','red',8,'',[[0,6.1,0],[1.5,6.1,0],[3.5,10.4,0.2],[4.3,11.1,0.2],[9.6,11.1,0.2],[9.65,6.1,0],[11.0,6.1,0],[13.0,10.2,0.2],[20,10.4,0.2]],{stance:'defend',slide:true,face:[[0,4.4,'Y'],[9.65,13.2,'Y']],jumps:[[4.6,5.3,0.55]],pose:[[4.5,5.4,'block']]}),
+   actor('E2','red',9,'',[[0,7.99,-4.64],[2.2,7.99,-4.64],[4.2,9.9,-1.0],[6.3,8.3,-2.6],[9.6,8.3,-2.6],[9.65,7.99,-4.64],[11.2,7.99,-4.64],[13.0,9.7,-1.2],[13.5,9.6,-1.4],[14.3,8.05,-4.6],[20,8.05,-4.6]],{stance:'defend'}),
+   actor('E3','red',11,'',[[0,7.99,4.64],[2.2,7.99,4.64],[4.2,9.9,1.6],[9.6,9.9,1.6],[9.65,7.99,4.64],[11.2,7.99,4.64],[13.0,9.7,1.8],[20,9.2,2.6]],{stance:'defend'}),
+   actor('E4','red',13,'',[[0,12.74,-5.7],[3,12.0,-3.8],[9.6,12.0,-3.8],[9.65,12.74,-5.7],[12.5,12.0,-3.8],[14.4,12.0,-3.8],[15.6,12.75,-5.75],[20,12.75,-5.75]],{stance:'defend',pose:[[15.3,16.2,'block']]}),
+   actor('E5','red',15,'',[[0,12.82,5.7],[3,12.0,3.8],[9.6,12.0,3.8],[9.65,12.82,5.7],[12.5,12.0,3.8],[20,12.0,3.8]],{stance:'defend'})],
+ ball:[DR('Y',0,4.0),H('Y',4.0,4.4),H('Y',4.4,4.7,'high'),FR([[4.7,'Y',0,'high'],[4.95,10.65,3.0,0.25,0.15],[5.6,8.6,BR,-1.8,0.8],[6.0,8.0,0.7,-2.4,0.35],[6.3,'E2',0.2]]),H('E2',6.3,9.6),FR([[9.6,'E2',0],[9.65,'Y',0]]),
+   DR('Y',9.65,13.15),PS('Y','P2',13.2,13.9,{arc:0.3}),H('P2',13.9,14.4),PS('P2','P4',14.4,15.0,{arc:0.35}),H('P4',15.0,15.4),H('P4',15.4,15.7,'high'),SH('P4',15.7,16.9,{arc:1.8}),netDrop(16.9)],
+ scores:[[16.75,'blue',3]],
+ whistles:[[5.0,'BLOCKED!','HERO BALL','bad'],[17.0,'3 POINTS!','TEAM BALL','good']],
+ fx:[{k:'open',t0:1.4,t1:9.4,who:['P2','P3','P4','P5'],vs:['E1','E2','E3','E4','E5']},{k:'open',t0:10.4,t1:17.4,who:['P2','P3','P4','P5'],vs:['E1','E2','E3','E4','E5']},
+     {k:'arrow',t0:13.0,t1:14.2,pts:[[9.1,0],[8.4,-2.6],[7.4,-5.0]],color:0x39d98a},{k:'arrow',t0:14.2,t1:15.4,pts:[[7.5,-5.6],[10.2,-6.4],[12.6,-6.7]],color:0x39d98a}],
+ caps:[[0,'HERO BALL: you try to beat all five defenders by yourself.'],[1.6,'You drive into the middle. Watch the defense collapse onto you…'],[3.3,'Your teammates are wide open (green rings)! But you don\'t pass…'],[5.0,'Blocked! One player against five defenders almost never wins.'],[6.6,'The other team gets the ball. Let\'s try it again, the TEAM way.'],
+   [9.7,'Same start. Drive to pull the defenders toward you…'],[12.6,'…and when they collapse, kick it out to the open teammate!'],[13.9,'The defense rushes back. Make the EXTRA pass to whoever is open now.'],[15.4,'Wide-open shot. Good pass, great pass, great shot!'],[17.2,'Hero ball: 0 points. Team ball: 3 points. The open player is the best shooter!']],
+ slow:[[4.3,5.4],[12.8,15.1]],
+ cam:[[0,[1,12.5,9],[9.5,0,0]],[20,[1,12.5,9],[9.5,0,0]]]},
+
+{id:'fullcourt',cat:'pro',title:'Full Court: Hero vs Team',sub:'Dribble alone or pass ahead?',dur:18,
+ actors:[actor('Y','blue',4,'You',[[0,-12,0],[0.8,-12,0],[7.0,9.4,0.3],[7.2,9.5,0.3],[10.4,9.5,0.3],[10.45,-12,0],[11.0,-12,0],[16,-2,0],[18,-1,0]],{jumps:[[7.2,7.8,0.4]]}),
+   actor('P2','blue',7,'',[[0,-8,-5],[7,4,-5.5],[10.4,4,-5.5],[10.45,-8,-5],[11.6,-6.5,-5.2],[16,3,-5.5],[18,4,-5.5]]),
+   actor('P3','blue',10,'',[[0,-8,5],[7,4,5.5],[10.4,4,5.5],[10.45,-8,5],[16,4,5.5],[18,5,5.5]]),
+   actor('P4','blue',12,'',[[0,-4,-6.5],[7,11,-6.6],[10.4,11,-6.6],[10.45,-4,-6.5],[12.8,3.5,-6.3],[13.0,4,-6.3],[16,8,-6.4],[18,8.5,-6.4]]),
+   actor('P5','blue',14,'',[[0,-4,6.5],[7,11,6.6],[10.4,11,6.6],[10.45,-4,6.5],[13.6,9.5,2.2],[13.7,9.7,2.0],[14.3,10.8,1.2],[14.9,11.5,0.7],[15.4,11.7,0.6],[18,11.7,0.6]],{jumps:[[14.3,15.1,0.55]]}),
+   actor('E1','red',8,'',[[0,-6,0],[0.8,-6,0],[2.5,-5.0,0.1],[7.0,10.8,0.2],[10.4,10.8,0.2],[10.45,-6,0],[16,4,0.5],[18,5,0.5]],{stance:'defend',jumps:[[7.4,8.1,0.55]],pose:[[7.3,8.2,'block']]}),
+   actor('E2','red',9,'',[[0,-2,-3],[3,-2,-3],[3.6,0,-2.5],[6.8,9.0,-1.1],[9.1,7.9,-2.9],[10.4,7.9,-2.9],[10.45,-2,-3],[16,6,-2.5],[18,7,-2.5]],{stance:'defend'}),
+   actor('E3','red',11,'',[[0,-2,3],[3,-2,3],[3.6,0,2.5],[6.8,9.0,1.6],[10.4,9.0,1.6],[10.45,-2,3],[16,6,2.5],[18,7,2.5]],{stance:'defend'}),
+   actor('E4','red',13,'',[[0,5,-2],[5,9.5,-2.6],[6.8,10.0,-1.9],[10.4,10.0,-1.9],[10.45,5,-2],[13,7.5,-3.5],[16,8.5,-3],[18,9,-3]],{stance:'defend'}),
+   actor('E5','red',15,'',[[0,5,2],[5,9.5,2.6],[6.8,10.0,2.2],[10.4,10.0,2.2],[10.45,5,2],[13,6.5,1.5],[16,7,1.5],[18,7.5,1.5]],{stance:'defend'})],
+ ball:[DR('Y',0,7.0),H('Y',7.0,7.2),H('Y',7.2,7.5,'high'),FR([[7.5,'Y',0,'high'],[7.75,10.4,3.0,0.25,0.15],[8.4,8.2,BR,-2.2,0.8],[8.8,7.6,0.7,-2.7,0.35],[9.1,'E2',0.2]]),H('E2',9.1,10.4),
+   FR([[10.4,'E2',0],[10.45,'Y',0]]),H('Y',10.45,11.0),PS('Y','P2',11.0,11.6,{arc:0.4}),H('P2',11.6,12.0),PS('P2','P4',12.0,12.8,{arc:0.6}),H('P4',12.8,13.0),PS('P4','P5',13.0,13.7,{arc:0.5}),H('P5',13.7,14.4),H('P5',14.4,14.7,'high'),SH('P5',14.7,15.2,{arc:0.35}),netDrop(15.2)],
+ scores:[[15.1,'blue',2]],
+ whistles:[[7.7,'BLOCKED!','HERO BALL','bad'],[15.3,'SCORE!','TEAM BALL','good']],
+ clocks:[{t0:0.8,t1:7.7,up:true,max:99,label:'HERO TIME',hold:1.6},{t0:11.0,t1:15.1,up:true,max:99,label:'TEAM TIME',hold:2.5}],
+ fx:[{k:'open',t0:1.0,t1:10.2,who:['P2','P3','P4','P5'],vs:['E1','E2','E3','E4','E5']},{k:'open',t0:10.8,t1:15.4,who:['P2','P3','P4','P5'],vs:['E1','E2','E3','E4','E5']},
+     {k:'arrow',t0:10.9,t1:14.0,pts:[[-12,0],[-6.5,-5.0],[3.5,-6.1],[9.6,1.9]],color:0x39d98a}],
+ caps:[[0,'Full court, HERO BALL: you grab the ball and try to go all the way alone.'],[2.5,'Your teammates are open all over the court (green rings), but you keep dribbling…'],[5.0,'One player can\'t beat five. The defense gets back and gangs up on you.'],[7.7,'Blocked! Dribbling the whole court alone is slow and ends in a crowd.'],[9.3,'Let\'s try again. Same start, TEAM BALL.'],
+   [11.0,'Pass AHEAD to a teammate right away…'],[12.0,'…and again! The ball flies faster than anyone can run.'],[13.0,'Find the teammate racing to the hoop…'],[14.6,'Layup in about 4 seconds! The defense never caught up.'],[16,'Pass ahead, run your lane, and the whole team wins.']],
+ slow:[[7.2,8.0],[12.8,13.8]],
+ follow:'ball',cam:[[0,[-1,13,14],[1,0,0]],[18,[-1,13,14],[1,0,0]]]},
+
+{id:'spacing',cat:'pro',title:'Spacing',sub:'Don\'t be a beehive',dur:15.5,
+ actors:[actor('P1','blue',4,'You',[[0,6.5,0],[2.5,6.8,0.3],[5,6.6,0.1],[8.5,5.0,0],[15.5,5.0,0]]),
+   actor('P2','blue',7,'',[[0,7.4,-1.4],[2,7.2,-1.0],[4.5,7.6,-1.2],[5,7.5,-1.5],[6.5,7.3,-4.5],[8.5,7.2,-5.4]]),
+   actor('P3','blue',10,'',[[0,7.5,1.3],[2.2,7.8,1.7],[4.5,7.4,1.2],[5,7.5,1.5],[6.5,7.3,4.5],[8.5,7.2,5.4]]),
+   actor('P4','blue',12,'',[[0,5.6,-1.4],[2.6,5.8,-1.0],[5,5.6,-1.5],[5.8,5.6,-1.5],[8.5,12.9,-6.8]],{jumps:[[12.0,12.6,0.4]]}),
+   actor('P5','blue',14,'',[[0,5.6,1.5],[2.4,5.8,1.8],[5,5.6,1.7],[5.8,5.6,1.7],[8.5,12.9,6.8]]),
+   actor('E1','red',8,'',[[0,7.9,0.3],[5,8.0,0.1],[8.5,6.1,0]],{stance:'defend'}),
+   actor('E2','red',9,'',[[0,8.2,-0.6],[5,8.3,-0.7],[8.5,8.1,-4.6],[10,8.1,-4.0],[11.5,11.6,-5.3]],{stance:'defend'})],
+ ball:[DR('P1',0,8.5),H('P1',8.5,9.0),PS('P1','P2',9.0,9.7),H('P2',9.7,10.6),PS('P2','P4',10.6,11.2),H('P4',11.2,11.8),H('P4',11.8,12.2,'high'),SH('P4',12.2,13.3,{arc:1.7}),netDrop(13.3)],
+ scores:[[13.15,'blue',3]],
+ fx:[{k:'open',t0:0.3,t1:12,who:['P2','P3','P4','P5'],vs:['E1','E2']},{k:'ring',t0:5,t1:9.5,at:[5.0,0],r:0.7,color:0xffd24a},{k:'ring',t0:5,t1:9.5,at:[7.2,-5.4],r:0.7,color:0xffd24a},{k:'ring',t0:5,t1:9.5,at:[7.2,5.4],r:0.7,color:0xffd24a},{k:'ring',t0:5,t1:9.5,at:[12.9,-6.8],r:0.7,color:0xffd24a},{k:'ring',t0:5,t1:9.5,at:[12.9,6.8],r:0.7,color:0xffd24a}],
+ caps:[[0,'Uh-oh! Everyone is crowding around the ball. That\'s called a beehive.'],[2.6,'See the red rings? Bunched up, every player is covered. One defender can guard two of you!'],[5,'Spread out! Stand about 4 big steps apart, on these spots.'],[9,'Green rings: now everyone is open. Two defenders can\'t guard four spread-out players!'],[12,'…an open shot from the corner. Great teamwork!']],
+ cam:[[0,[1,12,8],[9,0,0]],[15.5,[1,12,8],[9,0,0]]]}
+];
+
+/* ================= three.js scene ================= */
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+stage.insertBefore(renderer.domElement,stage.firstChild);
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0f1d36);
+scene.fog=new THREE.Fog(0x0f1d36,40,80);
+const camera=new THREE.PerspectiveCamera(45,16/9,0.1,200);
+camera.position.set(0,16,18);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.48; controls.minDistance=3; controls.maxDistance=45;
+scene.add(new THREE.HemisphereLight(0xffffff,0x3a4a6a,0.62));
+const sun=new THREE.DirectionalLight(0xffffff,0.62);
+sun.position.set(6,20,9); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-18,right:18,top:12,bottom:-12,near:1,far:50}); sun.shadow.bias=-0.0006;
+scene.add(sun);
+
+function makeFloor(){
+  const c=document.createElement('canvas'); c.width=2048; c.height=1216; const g=c.getContext('2d');
+  g.setTransform(64,0,0,64,16*64,9.5*64);
+  g.fillStyle='#1f3b6b'; g.fillRect(-16,-9.5,32,19);
+  let seed=7; const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+  for(let z=-7.5;z<7.5-1e-6;z+=0.25){ let x=-14+rnd()*1.5-1.5; while(x<14){ const len=1.6+rnd()*2.6; const x0=Math.max(x,-14), x1=Math.min(x+len,14);
+      g.fillStyle=`hsl(${31+rnd()*6},${52+rnd()*10}%,${60+rnd()*9}%)`; g.fillRect(x0,z,x1-x0,0.25); x+=len; } }
+  g.fillStyle='rgba(43,111,224,0.82)'; g.fillRect(8.2,-2.45,5.8,4.9); g.fillRect(-14,-2.45,5.8,4.9);
+  g.fillStyle='rgba(240,118,26,0.9)'; g.beginPath(); g.arc(0,0,1.8,0,Math.PI*2); g.fill();
+  g.strokeStyle='#ffffff'; g.lineWidth=0.065;
+  g.strokeRect(-14,-7.5,28,15);
+  g.beginPath(); g.moveTo(0,-7.5); g.lineTo(0,7.5); g.stroke();
+  g.beginPath(); g.arc(0,0,1.8,0,Math.PI*2); g.stroke();
+  for(const s of [1,-1]){
+    g.strokeRect(s>0?8.2:-14,-2.45,5.8,4.9);
+    g.beginPath(); g.arc(s*8.2,0,1.8,0,Math.PI*2); g.stroke();
+    g.beginPath(); g.moveTo(s*14,-6.6); g.lineTo(s*11.01,-6.6);
+    if(s>0) g.arc(HX,0,6.75,-1.782,1.782,true); else g.arc(-HX,0,6.75,-1.359,1.359,false);
+    g.lineTo(s*14,6.6); g.stroke();
+    g.beginPath(); if(s>0) g.arc(HX,0,1.25,Math.PI/2,Math.PI*1.5,false); else g.arc(-HX,0,1.25,-Math.PI/2,Math.PI/2,false); g.stroke();
+  }
+  g.save(); g.fillStyle='rgba(255,255,255,0.9)'; g.font='0.62px "Lilita One", sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+  g.translate(0,0); g.fillText('HOOP',0,-0.33); g.fillText('SCHOOL',0,0.38); g.restore();
+  g.save(); g.fillStyle='rgba(255,255,255,0.18)'; g.font='1.1px "Lilita One", sans-serif'; g.textAlign='center';
+  g.fillText('HOME OF THE HOOPERS',0,8.75); g.restore();
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=renderer.capabilities.getMaxAnisotropy(); return tex;
+}
+const floorMat=new THREE.MeshLambertMaterial({map:makeFloor()});
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(32,19),floorMat); floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+if(document.fonts&&document.fonts.load){document.fonts.load('20px "Lilita One"').then(()=>{floorMat.map=makeFloor();floorMat.needsUpdate=true;}).catch(()=>{});}
+
+// stands
+(function(){const m1=new THREE.MeshLambertMaterial({color:0x1b2f55}),m2=new THREE.MeshLambertMaterial({color:0x243c6b});
+  for(const s of [1,-1]){for(let i=0;i<4;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(34,0.5+i*0.55,1.2),i%2?m1:m2);b.position.set(0,(0.5+i*0.55)/2,s*(10.2+i*1.2));scene.add(b);}
+    for(let i=0;i<3;i++){const b=new THREE.Mesh(new THREE.BoxGeometry(1.2,0.5+i*0.55,22),i%2?m1:m2);b.position.set(s*(16.8+i*1.2),(0.5+i*0.55)/2,0);scene.add(b);}}
+  // crowd
+  let sd=11;const rnd=()=>{sd=(sd*9301+49297)%233280;return sd/233280};
+  const bodyG=new THREE.BoxGeometry(0.42,0.5,0.3), headG=new THREE.SphereGeometry(0.13,8,6);
+  const cols=[0xf0761a,0x2b6fe0,0xffffff,0xe0403a,0xf5b81c,0x39d98a,0x7b4dff].map(c=>new THREE.MeshLambertMaterial({color:c}));
+  const skins=[0xf1c9a5,0x8d5524,0xc68642,0xe0ac69,0x5c3a1e].map(c=>new THREE.MeshLambertMaterial({color:c}));
+  for(const side of [1,-1]) for(let row=0;row<4;row++) for(let x=-15.5;x<=15.5;x+=0.75){ if(rnd()<0.3) continue;
+    const y=0.5+row*0.55, z=side*(10.2+row*1.2);
+    const b=new THREE.Mesh(bodyG,cols[Math.floor(rnd()*cols.length)]); b.position.set(x+rnd()*0.2,y+0.25,z); scene.add(b);
+    const h=new THREE.Mesh(headG,skins[Math.floor(rnd()*skins.length)]); h.position.set(b.position.x,y+0.64,z); scene.add(h); }
+})();
+
+// hoops
+const nets=[];
+function makeHoop(s){
+  const g=new THREE.Group();
+  const white=new THREE.MeshLambertMaterial({color:0xffffff}), dark=new THREE.MeshLambertMaterial({color:0x2a3346});
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.12,3.9,12),dark); pole.position.set(s*15.2,1.95,0); pole.castShadow=true; g.add(pole);
+  const pad=new THREE.Mesh(new THREE.BoxGeometry(0.4,1.8,0.4),new THREE.MeshLambertMaterial({color:0x2b6fe0})); pad.position.set(s*15.2,0.9,0); g.add(pad);
+  const arm=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.12,0.12),dark); arm.position.set(s*14.0,3.75,0); g.add(arm);
+  const board=new THREE.Mesh(new THREE.BoxGeometry(0.05,1.05,1.8),new THREE.MeshLambertMaterial({color:0xffffff,transparent:true,opacity:0.82})); board.position.set(s*12.8,3.425,0); board.castShadow=true; g.add(board);
+  const sqm=new THREE.MeshBasicMaterial({color:0xe0403a});
+  const mk=(w,h,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(0.06,h,w),sqm);m.position.set(s*(12.8-s*0.03),y,z);g.add(m);};
+  mk(0.59,0.04,3.1+0.45,0); mk(0.59,0.04,3.1,0); mk(0.04,0.45,3.325,-0.295); mk(0.04,0.45,3.325,0.295);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(0.225,0.022,8,32),new THREE.MeshLambertMaterial({color:0xf0761a})); rim.rotation.x=Math.PI/2; rim.position.set(s*HX,RIM,0); rim.castShadow=true; g.add(rim);
+  const br=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.04,0.12),new THREE.MeshLambertMaterial({color:0xf0761a})); br.position.set(s*12.72,RIM,0); g.add(br);
+  const net=new THREE.Mesh(new THREE.CylinderGeometry(0.225,0.14,0.45,14,3,true),new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.85}));
+  net.position.set(s*HX,RIM-0.225,0); g.add(net); nets.push({mesh:net,side:s});
+  scene.add(g);
+}
+makeHoop(1); makeHoop(-1);
+
+// ball
+function ballTexture(){const c=document.createElement('canvas');c.width=256;c.height=128;const g=c.getContext('2d');
+  g.fillStyle='#e8701c';g.fillRect(0,0,256,128);
+  for(let i=0;i<1400;i++){g.fillStyle=`rgba(120,40,0,${Math.random()*0.25})`;g.fillRect(Math.random()*256,Math.random()*128,1.5,1.5);}
+  g.strokeStyle='#1d1008';g.lineWidth=4;
+  g.beginPath();g.moveTo(0,64);g.lineTo(256,64);g.stroke();
+  for(const x of [0,128,256]){g.beginPath();g.moveTo(x,0);g.lineTo(x,128);g.stroke();}
+  for(const x0 of [64,192]){g.beginPath();for(let y=0;y<=128;y+=4){const x=x0+Math.sin(y/128*Math.PI)*34*(x0===64?1:-1)*0.0+Math.cos(y/128*Math.PI*2)*18;y===0?g.moveTo(x,y):g.lineTo(x,y);}g.stroke();}
+  return new THREE.CanvasTexture(c);}
+const ball=new THREE.Mesh(new THREE.SphereGeometry(BR,24,16),new THREE.MeshLambertMaterial({map:ballTexture()}));
+ball.castShadow=true; scene.add(ball);
+const ballShadow=new THREE.Mesh(new THREE.CircleGeometry(BR*1.1,20),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.3,depthWrite:false}));
+ballShadow.rotation.x=-Math.PI/2; scene.add(ballShadow);
+
+/* ================= players ================= */
+const SKIN=[0xf1c9a5,0x8d5524,0xc68642,0xe0ac69,0x5c3a1e,0xffdbac];
+const HAIR=[0x2b1a0e,0x111111,0x4a2c14,0x8a5a2b,0x1b1b1b,0x6b3e1f];
+function textTex(txt,opts){opts=opts||{};const c=document.createElement('canvas');c.width=opts.w||128;c.height=opts.h||128;const g=c.getContext('2d');
+  if(opts.bg){g.fillStyle=opts.bg;const r=c.height/2;g.beginPath();g.moveTo(r,0);g.lineTo(c.width-r,0);g.arc(c.width-r,r,r,-Math.PI/2,Math.PI/2);g.lineTo(r,c.height);g.arc(r,r,r,Math.PI/2,Math.PI*1.5);g.fill();}
+  g.fillStyle=opts.color||'#fff';g.font=`${opts.size||86}px "Lilita One", "Arial Black", sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(txt,c.width/2,c.height/2+4);
+  const t=new THREE.CanvasTexture(c);return t;}
+function stripeTex(){const c=document.createElement('canvas');c.width=128;c.height=32;const g=c.getContext('2d');for(let i=0;i<16;i++){g.fillStyle=i%2?'#111':'#f4f4f4';g.fillRect(i*8,0,8,32);}return new THREE.CanvasTexture(c);}
+let stripeT=null;
+function buildPlayer(a,idx){
+  const teamCol=a.team==='blue'?0x2b6fe0:a.team==='red'?0xe0403a:0xffffff;
+  const root=new THREE.Group();
+  const skinM=new THREE.MeshLambertMaterial({color:SKIN[idx%SKIN.length]});
+  let jerseyM; if(a.team==='ref'){stripeT=stripeT||stripeTex();jerseyM=new THREE.MeshLambertMaterial({map:stripeT});} else jerseyM=new THREE.MeshLambertMaterial({color:teamCol});
+  const shortsM=new THREE.MeshLambertMaterial({color:a.team==='ref'?0x222222:(a.team==='blue'?0x1d4fa8:0xa82a25)});
+  const shoeM=new THREE.MeshLambertMaterial({color:a.team==='ref'?0x111111:0xffffff});
+  const body=new THREE.Group(); root.add(body);
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(0.21,0.23,0.58,16),jerseyM); torso.position.y=1.2; body.add(torso);
+  const shorts=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.25,0.26,16),shortsM); shorts.position.y=0.88; body.add(shorts);
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.07,0.1,8),skinM); neck.position.y=1.53; body.add(neck);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.135,16,12),skinM); head.position.y=1.7; body.add(head);
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(0.14,16,8,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:HAIR[idx%HAIR.length]})); hair.position.y=1.72; hair.rotation.x=-0.25; body.add(hair);
+  const eyeM=new THREE.MeshBasicMaterial({color:0x111111});
+  for(const ex of [-0.05,0.05]){const e=new THREE.Mesh(new THREE.SphereGeometry(0.018,6,6),eyeM);e.position.set(ex,1.72,0.125);body.add(e);}
+  if(a.team!=='ref' && a.num!==''){const nt=textTex(String(a.num));const nm=new THREE.MeshBasicMaterial({map:nt,transparent:true});
+    const f=new THREE.Mesh(new THREE.PlaneGeometry(0.28,0.28),nm);f.position.set(0,1.22,0.232);body.add(f);
+    const b=f.clone();b.position.z=-0.232;b.rotation.y=Math.PI;body.add(b);}
+  if(a.team==='ref'){const w=new THREE.Mesh(new THREE.SphereGeometry(0.03,6,6),new THREE.MeshBasicMaterial({color:0xffd24a}));w.position.set(0,1.42,0.22);body.add(w);}
+  const mkLimb=(len,r,mat,x,y)=>{const pv=new THREE.Group();pv.position.set(x,y,0);const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r*0.85,len,10),mat);m.position.y=-len/2;m.castShadow=true;pv.add(m);return {pv,m};};
+  const armL=mkLimb(0.62,0.055,skinM,0.29,1.44), armR=mkLimb(0.62,0.055,skinM,-0.29,1.44);
+  // sleeves
+  for(const ar of [armL,armR]){const sl=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.07,0.16,10),jerseyM);sl.position.y=-0.06;ar.pv.add(sl);
+    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.06,8,6),skinM);hand.position.y=-0.64;ar.pv.add(hand);}
+  body.add(armL.pv); body.add(armR.pv);
+  const legL=mkLimb(0.86,0.075,skinM,0.12,0.9), legR=mkLimb(0.86,0.075,skinM,-0.12,0.9);
+  for(const lg of [legL,legR]){const sh=new THREE.Mesh(new THREE.BoxGeometry(0.13,0.08,0.26),shoeM);sh.position.set(0,-0.88,0.05);lg.pv.add(sh);
+    const sock=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.14,8),new THREE.MeshLambertMaterial({color:0xffffff}));sock.position.y=-0.76;lg.pv.add(sock);}
+  root.add(legL.pv); root.add(legR.pv);
+  root.traverse(o=>{if(o.isMesh&&o.material!==eyeM&&!(o.material.map&&o.material.transparent)) o.castShadow=true;});
+  let label=null;
+  if(a.label){const isYou=a.label==='You';const tex=textTex(a.label,{w:256,h:72,size:44,bg:isYou?'#f0761a':(a.team==='ref'?'#222222':'rgba(15,29,54,0.85)'),color:'#fff'});
+    label=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true})); label.scale.set(0.95,0.27,1); label.renderOrder=10; scene.add(label);}
+  scene.add(root);
+  return {root,body,armL:armL.pv,armR:armR.pv,legL:legL.pv,legR:legR.pv,label,phase:0,rAng:null,lastP:null};
+}
+
+/* ================= fx (zones, arrows, rings, links) ================= */
+const fxGroup=new THREE.Group(); scene.add(fxGroup);
+function shapeFromPts(pts){const s=new THREE.Shape();pts.forEach((p,i)=>i?s.lineTo(p[0],-p[1]):s.moveTo(p[0],-p[1]));return s;}
+function inside3Pts(){const pts=[[14,-6.6],[11.01,-6.6]];for(let i=0;i<=48;i++){const ph=-1.782-(4.501-1.782)*i/48;pts.push([HX+6.75*Math.cos(ph),6.75*Math.sin(ph)]);}pts.push([11.01,6.6],[14,6.6]);return pts;}
+const rect=(x0,x1,z0,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
+function zoneGeo(z){let s;
+  switch(z){
+    case 'paint': s=shapeFromPts(rect(8.2,14,-2.45,2.45)); break;
+    case 'inside3': s=shapeFromPts(inside3Pts()); break;
+    case 'outside3': s=shapeFromPts(rect(0,14,-7.5,7.5)); s.holes.push(new THREE.Path(inside3Pts().map(p=>new THREE.Vector2(p[0],-p[1])))); break;
+    case 'out': s=shapeFromPts(rect(-16,16,-9.5,9.5)); s.holes.push(new THREE.Path(rect(-14,14,-7.5,7.5).map(p=>new THREE.Vector2(p[0],-p[1])))); break;
+    case 'front': s=shapeFromPts(rect(0,14,-7.5,7.5)); break;
+    case 'halfline': s=shapeFromPts(rect(-0.12,0.12,-7.5,7.5)); break;
+    case 'ftline': {const g=new THREE.CircleGeometry(1.8,40);g.translate(8.2,0,0);return g;}
+  }
+  return new THREE.ShapeGeometry(s,24);}
+function buildFx(list){
+  while(fxGroup.children.length){const c=fxGroup.children.pop();c.geometry&&c.geometry.dispose();}
+  const out=[];
+  for(const f of list||[]){
+    let mesh, base=0.42;
+    const mat=new THREE.MeshBasicMaterial({color:f.color||0xffd24a,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide});
+    if(f.k==='zone'){mesh=new THREE.Mesh(zoneGeo(f.z),mat);mesh.rotation.x=-Math.PI/2;mesh.position.y=0.012;base=f.z==='halfline'?0.9:0.42;}
+    else if(f.k==='arrow'){const curve=new THREE.CatmullRomCurve3(f.pts.map(p=>new THREE.Vector3(p[0],0.05,p[1])));
+      mesh=new THREE.Group();mesh.add(new THREE.Mesh(new THREE.TubeGeometry(curve,48,0.07,6,false),mat));
+      const head=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.55,14),mat);const end=curve.getPoint(1),tan=curve.getTangent(1).normalize();
+      head.position.copy(end);head.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),tan);mesh.add(head);base=0.95;}
+    else if(f.k==='ring'){mesh=new THREE.Mesh(new THREE.RingGeometry(f.r-0.09,f.r,48),mat);mesh.rotation.x=-Math.PI/2;mesh.position.y=0.03;base=0.85;
+      if(f.at) mesh.position.set(f.at[0],0.03,f.at[1]);}
+    else if(f.k==='link'){mesh=new THREE.Mesh(new THREE.BoxGeometry(0.14,0.02,1),mat);mesh.position.y=0.05;base=0.9;}
+    else if(f.k==='lane'){mesh=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.02,1),mat);mesh.position.y=0.06;base=0.95;}
+    else if(f.k==='open'){mesh=new THREE.Group();const rings=[];for(const id of f.who){const m=new THREE.MeshBasicMaterial({color:0x39d98a,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide});
+        const r=new THREE.Mesh(new THREE.RingGeometry(0.42,0.6,40),m);r.rotation.x=-Math.PI/2;r.position.y=0.035;mesh.add(r);rings.push({id,r,m});}
+      fxGroup.add(mesh);out.push({f,mesh,mat,base:0.85,rings});continue;}
+    fxGroup.add(mesh); out.push({f,mesh,mat,base});
+  }
+  return out;}
+
+/* ================= lesson runtime ================= */
+let L=null, P={}, FX=[], t=0, playing=true, speed=1, autoSlow=true, loop=false, autoCam=true, showNames=true;
+let camFollow=null, prevT=0;
+function prep(lesson){
+  lesson.A={}; lesson.actors.forEach(a=>{lesson.A[a.id]=a;});
+  lesson.ball.sort((a,b)=>a.t0-b.t0);
+  return lesson;}
+function segIndex(t){const S=L.ball;let i=0;for(let k=0;k<S.length;k++) if(t>=S[k].t0) i=k;return i;}
+function holderOf(seg,t){ if(!seg) return null; if(seg.k==='drib'||seg.k==='hold') return seg.p; if(seg.k==='shot'&&t<seg.t0+0.3) return seg.from; return null;}
+function nextPassTo(id,t){for(const s of L.ball){if(s.k==='pass'&&s.from===id&&s.t0>=t-0.01&&s.t0-t<1.0) return s.to;}return null;}
+function jumpH(a,t){let y=0;for(const j of a.jumps){if(t>=j[0]&&t<=j[1]) y+=j[2]*Math.sin(Math.PI*(t-j[0])/(j[1]-j[0]));}return y;}
+function spinOff(a,t){let r=0;for(const s of a.spins){if(t>=s[1]) r+=s[2]*Math.PI*2; else if(t>s[0]) r+=s[2]*Math.PI*2*smooth((t-s[0])/(s[1]-s[0]));}return r;}
+function velOf(a,t){const p1=samplePath(a.path,t-0.18),p2=samplePath(a.path,t+0.18);const dx=p2[0]-p1[0],dz=p2[1]-p1[1];return [dx,dz,Math.hypot(dx,dz)/0.36];}
+function explicitFace(a,t){let tg=null;for(const f of a.face) if(t>=f[0]&&t<f[1]) tg=f[2];return tg;}
+function facingBase(id,t){
+  const a=L.A[id]; const p=samplePath(a.path,t); const v=velOf(a,t);
+  let tg=explicitFace(a,t); const explicit=tg!=null;
+  if(!explicit){ const seg=L.ball[segIndex(t)]; if(holderOf(seg,t)===id){ tg=nextPassTo(id,t)||'hoop'; } else tg='ball'; }
+  let q;
+  if(tg==='hoop') q=[(a.hoop||1)*HX,0];
+  else if(tg==='ball'){const b=ballPos(t,true);q=[b[0],b[2]];}
+  else if(typeof tg==='string'&&L.A[tg]) q=samplePath(L.A[tg].path,t);
+  else if(Array.isArray(tg)) q=tg;
+  let look = (typeof tg==='number')? tg : null;
+  if(look==null){const dx=q[0]-p[0],dz=q[1]-p[1]; look=(dx*dx+dz*dz<0.01)?(a._lastLook||Math.PI/2):Math.atan2(dx,dz);}
+  a._lastLook=look;
+  const sprinting=a.stance==='defend'&&!a.slide&&v[2]>2.1;
+  if(!sprinting&&(explicit||a.stance==='defend'||a.stance==='ref')) return look;
+  if(v[2]>0.25){const mv=Math.atan2(v[0],v[1]);return lerpAng(look,mv,clamp((v[2]-0.25)/0.8,0,1));}
+  return look;}
+function facing(id,t){return facingBase(id,t)+spinOff(L.A[id],t);}
+function handPos(id,t,h,rough){
+  const a=L.A[id]; const p=samplePath(a.path,t); const j=jumpH(a,t);
+  if(rough) return [p[0],1.2+j,p[1]];
+  const th=facing(id,t), fx=Math.sin(th), fz=Math.cos(th);
+  if(h==='high') return [p[0]+fx*0.24,2.1+j,p[1]+fz*0.24];
+  return [p[0]+fx*0.45,1.2+j,p[1]+fz*0.45];}
+function resolvePt(pt,rough){ if(typeof pt[1]==='string') return {p:handPos(pt[1],pt[0],pt[3]||'chest',rough),arc:pt[2]||0}; return {p:[pt[1],pt[2],pt[3]],arc:pt[4]||0}; }
+function evalSeg(s,t,rough){
+  const u=clamp((t-s.t0)/((s.t1-s.t0)||1),0,1);
+  switch(s.k){
+    case 'hold': return handPos(s.p,t,s.h,rough);
+    case 'drib': { const a=L.A[s.p]; const p=samplePath(a.path,t); if(rough) return [p[0],0.6,p[1]];
+      const th=facing(s.p,t), fx=Math.sin(th), fz=Math.cos(th), rx=-Math.cos(th), rz=Math.sin(th);
+      const side=kv(s.side,t,1), f=kv(s.fwd,t,0.45), hy=kv(s.hy,t,0.95);
+      const ph=((t-s.t0)*(s.rate||2))%1; const y=BR+(hy-BR)*Math.abs(Math.cos(Math.PI*ph));
+      return [p[0]+fx*f+rx*side*0.32,y,p[1]+fz*f+rz*side*0.32]; }
+    case 'pass': { const a0=handPos(s.from,s.t0,s.fh||'chest',rough), a1=handPos(s.to,s.t1,s.th||'chest',rough);
+      if(s.wrap&&!rough){const uw=0.4;const wrapAt=(tt,v)=>{const pp=samplePath(L.A[s.from].path,tt),th=facing(s.from,tt);const ang=Math.PI*0.92*v;
+          const Fx=Math.sin(th),Fz=Math.cos(th),Rx=-Math.cos(th),Rz=Math.sin(th);return [pp[0]+(Math.cos(ang)*Rx-Math.sin(ang)*Fx)*0.5,1.0,pp[1]+(Math.cos(ang)*Rz-Math.sin(ang)*Fz)*0.5];};
+        if(u<uw) return wrapAt(t,u/uw);
+        const w0=wrapAt(s.t0+uw*(s.t1-s.t0),1),w=(u-uw)/(1-uw);const p=lerp3(w0,a1,w);p[1]+=(s.arc||0.15)*4*w*(1-w);return p;}
+      if(s.bounce){const m=0.62; if(u<m){const v=u/m;return [lerp(a0[0],a1[0],u),lerp(a0[1],BR,v*v*0.4+v*0.6),lerp(a0[2],a1[2],u)];}
+        const w=(u-m)/(1-m);return [lerp(a0[0],a1[0],u),lerp(BR,a1[1],w)+0.25*Math.sin(Math.PI*w),lerp(a0[2],a1[2],u)];}
+      const arc=s.arc==null?0.3:s.arc; const p=lerp3(a0,a1,u); p[1]+=arc*4*u*(1-u); return p; }
+    case 'shot': { const a0=handPos(s.from,s.t0,'high',rough); const sx=s.side||1; const arc=s.arc==null?1.3:s.arc;
+      if(s.make!==false){const top=[sx*HX,RIM+0.18,0];
+        if(u<0.85){const v=u/0.85;const p=lerp3(a0,top,v);p[1]+=arc*4*v*(1-v);return p;}
+        const v=(u-0.85)/0.15;return [top[0],lerp(top[1],RIM-0.55,v),0];}
+      const e=[sx*(HX-0.24),RIM+0.12,0.04];const p=lerp3(a0,e,u);p[1]+=arc*4*u*(1-u);return p; }
+    case 'free': { const pts=s.pts; if(t<=pts[0][0]) return resolvePt(pts[0],rough).p;
+      for(let i=1;i<pts.length;i++){ if(t<=pts[i][0]){const A=resolvePt(pts[i-1],rough).p,B=resolvePt(pts[i],rough);const v=(t-pts[i-1][0])/(pts[i][0]-pts[i-1][0]);const p=lerp3(A,B.p,v);p[1]+=B.arc*4*v*(1-v);return p;} }
+      return resolvePt(pts[pts.length-1],rough).p; }
+  }
+  return [0,1,0];}
+function ballPos(t,rough){
+  const S=L.ball; const i=segIndex(t); const s=S[i]; const tt=clamp(t,s.t0,s.t1);
+  let p=evalSeg(s,tt,rough);
+  if(i>0&&t<s.t0+0.15){const pe=evalSeg(S[i-1],S[i-1].t1,rough);p=lerp3(pe,p,smooth((t-s.t0)/0.15));}
+  return p;}
+
+/* poses */
+function poseFor(id,t){
+  const a=L.A[id]; let explicit=null; for(const p of a.pose) if(t>=p[0]&&t<p[1]) explicit=p[2];
+  let legs=null; if(explicit==='lunge'){legs='lunge';explicit=null;}
+  if(explicit) return {name:explicit,legs};
+  const seg=L.ball[segIndex(t)];
+  if(seg){
+    if(seg.k==='drib'&&seg.p===id&&t<=seg.t1) return {name:'dribble',seg,legs};
+    if(seg.k==='hold'&&seg.p===id) return {name:seg.h==='high'?'high':'hold',legs};
+    if(seg.k==='pass'&&seg.from===id&&t<seg.t0+0.3) return {name:'release',legs};
+    if(seg.k==='pass'&&seg.to===id&&t>seg.t1-0.35) return {name:'catch',legs};
+    if(seg.k==='shot'&&seg.from===id&&t<seg.t0+0.06) return {name:'high',legs};
+    if(seg.k==='shot'&&seg.from===id&&t<seg.t0+0.5) return {name:'follow',legs};
+    if(seg.k==='free'){const last=seg.pts[seg.pts.length-1]; if(last[1]===id&&t>last[0]-0.4) return {name:last[3]==='high'?'high':'catch',legs};}
+  }
+  if(a.stance==='defend') return {name:(!a.slide&&velOf(a,t)[2]>2.1)?null:'defend',legs};
+  return {name:null,legs};}
+function armsFor(pose,t,a){
+  switch(pose.name){
+    case 'hold': return {l:[1.25,-0.32],r:[1.25,-0.32]};
+    case 'holdlow': return {l:[1.15,-0.32],r:[1.15,-0.32],crouch:1};
+    case 'high': return {l:[2.85,-0.12],r:[2.85,-0.12]};
+    case 'highlow': return {l:[2.85,-0.12],r:[2.85,-0.12],crouch:1};
+    case 'release': return {l:[1.6,-0.05],r:[1.6,-0.05]};
+    case 'catch': return {l:[1.35,0.05],r:[1.35,0.05]};
+    case 'chin': return {l:[0.95,0.6],r:[0.95,0.6]};
+    case 'defend': return {l:[0.55,0.95],r:[0.55,0.95],crouch:1};
+    case 'box': return {l:[0.35,1.25],r:[0.35,1.25],crouch:1};
+    case 'screen': return {l:[0.5,-0.35],r:[0.5,-0.35],crouch:0.6};
+    case 'block': return {l:[3.0,0.15],r:[3.0,0.15]};
+    case 'slap': return {l:[0.4,0.3],r:[1.75,-0.15]};
+    case 'travel': {const w=t*9;return {l:[1.35+0.3*Math.sin(w),-0.35+0.15*Math.cos(w)],r:[1.35+0.3*Math.sin(w+Math.PI),-0.35+0.15*Math.cos(w+Math.PI)]};}
+    case 'double': {const b=0.28*Math.sin(t*10);return {l:[1.2+b,0.1],r:[1.2+b,0.1]};}
+    case 'foul': return {l:[0.1,0.12],r:[3.05,0.05]};
+    case 'point': return {l:[0.1,0.12],r:[0.2,1.5]};
+    case 'three': return {l:[0.1,0.12],r:[2.9,0.35]};
+    case 'dribble': {const s=pose.seg;const side=kv(s.side,t,1);const ph=((t-s.t0)*(s.rate||2))%1;const bob=0.25*Math.cos(Math.PI*2*ph);
+      const hy=kv(s.hy,t,0.95); const low=(0.95-hy)*0.8;
+      const ball=[0.55+bob-low*0.2,0.28+low*0.3], guard=[0.5,0.35];
+      if(Math.abs(side)<0.6) return {l:[0.6,0.2],r:[0.6,0.2],crouch:low>0.1?1:0};
+      return side>0?{r:ball,l:guard,crouch:low>0.1?1:0}:{l:ball,r:guard,crouch:low>0.1?1:0};}
+  }
+  return null;}
+
+
+/* ================= rigged 3D players (Xbot) ================= */
+const V3=THREE.Vector3, Q=THREE.Quaternion, UP=new V3(0,1,0);
+let XBOT=null, RIG={scale:1,ankle:0.08};
+function loadXbot(){
+  return fetch('xbot.glb').then(r=>{if(!r.ok) throw new Error('model '+r.status);return r.arrayBuffer();})
+    .then(buf=>new Promise((ok,err)=>new THREE.GLTFLoader().parse(buf,'',ok,err)));}
+function clipNamed(n){return XBOT.animations.find(c=>c.name===n);}
+function measureRig(){
+  const m=THREE.SkeletonUtils.clone(XBOT.scene); const mx=new THREE.AnimationMixer(m); mx.clipAction(clipNamed('idle')).play(); mx.update(0); m.updateMatrixWorld(true);
+  const top=m.getObjectByName('mixamorigHeadTop_End').getWorldPosition(new V3()).y;
+  RIG.scale=1.8/top;
+  RIG.ankle=m.getObjectByName('mixamorigLeftFoot').getWorldPosition(new V3()).y*RIG.scale;}
+function aimBone(bone,child,target){
+  const bp=bone.getWorldPosition(new V3()), cp=child.getWorldPosition(new V3());
+  const cur=cp.sub(bp); if(cur.lengthSq()<1e-10) return; cur.normalize();
+  const want=target.clone().sub(bp); if(want.lengthSq()<1e-10) return; want.normalize();
+  const q=new Q().setFromUnitVectors(cur,want);
+  const wq=bone.getWorldQuaternion(new Q());
+  const pq=bone.parent.getWorldQuaternion(new Q()).invert();
+  bone.quaternion.copy(pq.multiply(q.multiply(wq)));
+  bone.updateMatrixWorld(true);}
+function twoBone(ch,target,pole){
+  const a=ch.a.getWorldPosition(new V3());
+  const d=target.clone().sub(a); const dist=clamp(d.length(),0.05,(ch.l1+ch.l2)*0.999); const dir=d.normalize();
+  const cosA=clamp((ch.l1*ch.l1+dist*dist-ch.l2*ch.l2)/(2*ch.l1*dist),-1,1), sinA=Math.sqrt(1-cosA*cosA);
+  const pv=pole.clone().sub(a); pv.sub(dir.clone().multiplyScalar(pv.dot(dir)));
+  if(pv.lengthSq()<1e-8) pv.set(0,-1,0); pv.normalize();
+  const elbow=a.clone().add(dir.clone().multiplyScalar(ch.l1*cosA)).add(pv.multiplyScalar(ch.l1*sinA));
+  aimBone(ch.a,ch.b,elbow);
+  aimBone(ch.b,ch.c,a.clone().add(dir.multiplyScalar(dist)));}
+function rotateBoneWorld(bone,axis,angle){
+  const pw=bone.parent.getWorldQuaternion(new Q()); const qa=new Q().setFromAxisAngle(axis,angle);
+  bone.quaternion.premultiply(pw.clone().invert().multiply(qa).multiply(pw)); bone.updateMatrixWorld(true);}
+function buildRig(a,idx){
+  const cols={blue:[0x2b6fe0,0xf2f5fb],red:[0xe0403a,0xf2f5fb],ref:[0x1c1c1f,0xf4f4f4]}[a.team];
+  const bodyM=new THREE.MeshStandardMaterial({color:cols[0],roughness:0.55,metalness:0.05,skinning:true});
+  const jointM=new THREE.MeshStandardMaterial({color:cols[1],roughness:0.5,metalness:0.05,skinning:true});
+  const model=THREE.SkeletonUtils.clone(XBOT.scene);
+  model.traverse(o=>{if(o.isSkinnedMesh){o.material=/Joints/.test(o.material.name)?jointM:bodyM;o.castShadow=true;o.frustumCulled=false;}});
+  model.scale.setScalar(RIG.scale);
+  const root=new THREE.Group(); root.add(model); scene.add(root);
+  const mixer=new THREE.AnimationMixer(model);
+  const act={}; for(const n of ['idle','walk','run']){const c=clipNamed(n);if(!c) continue;act[n]=mixer.clipAction(c);act[n].play();act[n].setEffectiveWeight(n==='idle'?1:0);}
+  // desync gait between players
+  mixer.update((idx*0.37)%1);
+  const g=n=>model.getObjectByName('mixamorig'+n);
+  root.updateMatrixWorld(true);
+  const chain=(A,B,C)=>{const ch={a:g(A),b:g(B),c:g(C)};const pa=ch.a.getWorldPosition(new V3()),pb=ch.b.getWorldPosition(new V3()),pc=ch.c.getWorldPosition(new V3());ch.l1=pa.distanceTo(pb);ch.l2=pb.distanceTo(pc);ch.w=0;ch.cur=null;ch.pole=null;return ch;};
+  const rig={model,mixer,act,spine:g('Spine'),spine2:g('Spine2'),head:g('Head'),
+    armL:chain('LeftArm','LeftForeArm','LeftHand'),armR:chain('RightArm','RightForeArm','RightHand'),
+    legL:chain('LeftUpLeg','LeftLeg','LeftFoot'),legR:chain('RightUpLeg','RightLeg','RightFoot')};
+  rig.reset=[];[rig.spine,rig.spine2,rig.armL.a,rig.armL.b,rig.armR.a,rig.armR.b,rig.legL.a,rig.legL.b,rig.legR.a,rig.legR.b,rig.legL.c,rig.legR.c].forEach(b=>rig.reset.push([b,b.quaternion.clone()]));
+  const extras=[];
+  if(a.team!=='ref'&&a.num!==''){const nm=new THREE.MeshBasicMaterial({map:textTex(String(a.num)),transparent:true,depthWrite:false});
+    rig.numF=new THREE.Mesh(new THREE.PlaneGeometry(0.24,0.24),nm);rig.numB=new THREE.Mesh(new THREE.PlaneGeometry(0.26,0.26),nm);scene.add(rig.numF);scene.add(rig.numB);extras.push(rig.numF,rig.numB);}
+  let label=null;
+  if(a.label){const isYou=a.label==='You';const tex=textTex(a.label,{w:256,h:72,size:44,bg:isYou?'#f0761a':(a.team==='ref'?'#222222':'rgba(15,29,54,0.85)'),color:'#fff'});
+    label=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,depthTest:false,transparent:true})); label.scale.set(0.95,0.27,1); label.renderOrder=10; scene.add(label);}
+  return {root,rig,label,extras,phase:0,rAng:null,lastP:null};}
+
+const CROUCH={defend:1,box:1,holdlow:0.7,highlow:0.7,screen:0.45};
+function armTargets(pose,c){
+  const {b,F,R,U,shL,shR,t}=c; const L=R.clone().negate();
+  const reach=(sh,...terms)=>{const d=new V3();for(let i=0;i<terms.length;i+=2) d.addScaledVector(terms[i],terms[i+1]);return sh.clone().addScaledVector(d.normalize(),c.armLen*0.9);};
+  const P=(base,...terms)=>{const v=base.clone();for(let i=0;i<terms.length;i+=2) v.addScaledVector(terms[i],terms[i+1]);return v;};
+  const both=(l,r,pl,pr,exact)=>({l:{t:l,pole:pl,exact},r:{t:r,pole:pr,exact}});
+  const elbowsDown=[P(shL,U,-0.6,L,0.35,F,-0.2),P(shR,U,-0.6,R,0.35,F,-0.2)];
+  switch(pose.name){
+    case 'hold': case 'holdlow': case 'catch':
+      return both(P(b,L,0.15,F,-0.04),P(b,R,0.15,F,-0.04),elbowsDown[0],elbowsDown[1],true);
+    case 'chin': return both(P(b,L,0.15),P(b,R,0.15),P(shL,L,0.8,U,-0.2),P(shR,R,0.8,U,-0.2),true);
+    case 'high': case 'highlow':
+      return both(P(b,L,0.13,U,-0.04,F,-0.02),P(b,U,-0.14,F,-0.07,R,0.02),P(shL,F,0.5,U,-0.4,L,0.35),P(shR,F,0.6,U,-0.4,R,0.15),true);
+    case 'follow': return both(P(shL,F,0.3,U,0.45,R,0.08),P(shR,F,0.34,U,0.44,L,0.04),P(shL,F,0.6,L,0.2),P(shR,F,0.6,R,0.2),false);
+    case 'release': return both(P(shL,F,0.55,U,-0.12,R,0.1),P(shR,F,0.55,U,-0.12,L,0.1),P(shL,U,-0.5,L,0.4),P(shR,U,-0.5,R,0.4),false);
+    case 'dribble': { const s=pose.seg; const side=kv(s.side,t,1); const hy=kv(s.hy,t,0.95);
+      const hand=new V3(b.x,Math.max(b.y+BR*0.85,hy-0.1),b.z);
+      const guardL=P(shL,F,0.3,U,-0.32,L,0.22), guardR=P(shR,F,0.3,U,-0.32,R,0.22);
+      if(side>=0) return {r:{t:hand,pole:P(shR,R,0.5,U,-0.3,F,-0.4),exact:true},l:{t:guardL,pole:elbowsDown[0],exact:false}};
+      return {l:{t:hand,pole:P(shL,L,0.5,U,-0.3,F,-0.4),exact:true},r:{t:guardR,pole:elbowsDown[1],exact:false}}; }
+    case 'wrap': return {r:{t:b.clone(),pole:P(shR,R,0.5,F,-0.5,U,-0.2),exact:true},l:{t:P(shL,F,0.3,U,-0.32,L,0.22),pole:elbowsDown[0],exact:false}};
+    case 'defend': { const mid=shL.clone().add(shR).multiplyScalar(0.5); const ballRight=b.clone().sub(mid).dot(R)>0;
+      const high=(sh,out)=>reach(sh,out,0.55,F,0.5,U,0.45), low=(sh,out)=>reach(sh,out,0.6,F,0.55,U,-0.55);
+      const lT=ballRight?high(shL,L):low(shL,L), rT=ballRight?low(shR,R):high(shR,R);
+      return both(lT,rT,P(shL,U,-0.7,L,0.15,F,-0.15),P(shR,U,-0.7,R,0.15,F,-0.15),false); }
+    case 'box': return both(reach(shL,L,1,F,0.2,U,-0.05),reach(shR,R,1,F,0.2,U,-0.05),P(shL,U,-0.7,F,-0.2),P(shR,U,-0.7,F,-0.2),false);
+    case 'block': return both(P(shL,U,0.56,F,0.08,L,0.05),P(shR,U,0.56,F,0.08,R,0.05),P(shL,L,0.6,F,0.2),P(shR,R,0.6,F,0.2),false);
+    case 'slap': return {r:{t:P(shR,F,0.52,U,0.02,L,0.12),pole:P(shR,U,-0.5,R,0.4),exact:false},l:null};
+    case 'screen': return both(P(shL,F,0.24,U,-0.42,R,0.22),P(shR,F,0.26,U,-0.4,L,0.22),P(shL,L,0.5,U,-0.3),P(shR,R,0.5,U,-0.3),false);
+    case 'travel': { const w=t*9, ce=P(shL.clone().add(shR).multiplyScalar(0.5),F,0.38,U,-0.18);
+      return both(P(ce,L,0.07,U,0.1*Math.sin(w),F,0.1*Math.cos(w)),P(ce,R,0.07,U,0.1*Math.sin(w+Math.PI),F,0.1*Math.cos(w+Math.PI)),P(shL,U,-0.5,L,0.5),P(shR,U,-0.5,R,0.5),true); }
+    case 'double': { const bob=0.1*Math.sin(t*10); return both(P(shL,F,0.42,U,-0.3+bob),P(shR,F,0.42,U,-0.3+bob),P(shL,L,0.5,U,-0.4),P(shR,R,0.5,U,-0.4),true); }
+    case 'foul': return {r:{t:P(shR,U,0.56,F,0.04),pole:P(shR,R,0.6,F,0.2),exact:false},l:null};
+    case 'point': return {r:{t:P(shR,R,0.55,F,0.08),pole:P(shR,U,-0.5,F,-0.2),exact:false},l:null};
+    case 'three': return {r:{t:P(shR,U,0.5,R,0.2,F,0.05),pole:P(shR,R,0.6,F,0.2),exact:false},l:null};
+  }
+  return {l:null,r:null};}
+function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr){
+  const R=v.rig, th=v.root.rotation.y;
+  const F=new V3(Math.sin(th),0,Math.cos(th)), Rt=new V3(-Math.cos(th),0,Math.sin(th)), Lf=Rt.clone().negate();
+  for(const [bn,q] of R.reset) bn.quaternion.copy(q);
+  let crouch=CROUCH[pose.name]||0;
+  if(pose.name==='dribble'){const hy=kv(pose.seg.hy,t,0.95); if(hy<0.85) crouch=Math.max(crouch,0.55);}
+  const air=j>0.02;
+  const mode=pose.legs==='lunge'?'lunge':air?'air':crouch>0?'crouch':'clip';
+  let wi=1,ww=0,wr=0;
+  if(mode==='clip'||mode==='air'){const m=clamp(sp/1.1,0,1),rk=clamp((sp-2.0)/1.6,0,1);wi=1-m;ww=m*(1-rk);wr=m*rk;}
+  if(R.act.idle) R.act.idle.setEffectiveWeight(wi);
+  if(R.act.walk){R.act.walk.setEffectiveWeight(ww);R.act.walk.timeScale=clamp(sp/1.35,0.6,1.7);}
+  if(R.act.run){R.act.run.setEffectiveWeight(wr);R.act.run.timeScale=clamp(sp/3.9,0.7,1.5);}
+  R.mixer.update(snap?0:clamp(air?dtG*0.3:dtG,0,0.1));
+  const drop=mode==='crouch'?0.2*crouch:mode==='lunge'?0.16:0;
+  v.root.position.set(p[0],j-drop,p[1]); v.root.updateMatrixWorld(true);
+  // torso lean
+  const lean=crouch*0.3+(mode==='lunge'?0.22:0);
+  if(lean>0.001) rotateBoneWorld(R.spine,new V3().crossVectors(UP,F).normalize(),lean);
+  // legs
+  if(mode==='crouch'&&(!R.feet||R.feetMode!=='crouch'||snap)) R.feet={};
+  if(mode!=='clip'){
+    const ground=new V3(p[0],0,p[1]);
+    for(const side of [1,-1]){const leg=side>0?R.legL:R.legR; let tg;
+      if(mode==='crouch'){const wide=0.22+0.1*crouch;
+        const vv=velOf(a,t);const vel=new V3(vv[0]/0.36,0,vv[1]/0.36);
+        const desired=ground.clone().addScaledVector(Lf,side*wide).addScaledVector(F,0.03).addScaledVector(vel,0.12);
+        let f=R.feet[side]; if(!f){f=R.feet[side]={plant:ground.clone().addScaledVector(Lf,side*wide).addScaledVector(F,0.03),stepping:false,s:0};}
+        const other=R.feet[-side];
+        if(!f.stepping&&dtG>0&&f.plant.distanceTo(desired)>0.2&&!(other&&other.stepping)){f.stepping=true;f.from=f.plant.clone();f.s=0;}
+        let pos=f.plant, lift=0;
+        if(f.stepping){f.s+=Math.max(dtG,0)/clamp(0.17/(1+sp*0.35),0.08,0.17);const u=Math.min(1,f.s);pos=f.from.clone().lerp(desired,smooth(u));lift=0.13*Math.sin(Math.PI*u);if(u>=1){f.stepping=false;f.plant=desired.clone();pos=f.plant;}}
+        tg=pos.clone().add(new V3(0,RIG.ankle+lift,0));}
+      else if(mode==='lunge'){tg=ground.clone().addScaledVector(Lf,side*0.14).addScaledVector(F,side>0?0.42:-0.36).add(new V3(0,RIG.ankle,0));}
+      else {tg=leg.c.getWorldPosition(new V3()).add(new V3(0,Math.min(0.22,j*0.6),0)).addScaledVector(F,-0.06);}
+      const hip=leg.a.getWorldPosition(new V3());
+      twoBone(leg,tg,hip.clone().addScaledVector(F,1).addScaledVector(Lf,side*0.2).add(new V3(0,-0.3,0)));
+      if(mode!=='air') rotateBoneWorld(leg.c,new V3().crossVectors(UP,F).normalize(),-lean*0.5);}
+  }
+  R.feetMode=mode;
+  // arms
+  const ctx={b:new V3(bArr[0],bArr[1],bArr[2]),F,R:Rt,U:UP,t,shL:R.armL.a.getWorldPosition(new V3()),shR:R.armR.a.getWorldPosition(new V3()),armLen:R.armL.l1+R.armL.l2};
+  const T=armTargets(pose,ctx); const k=snap?1:1-Math.exp(-16*Math.max(dtG,0));
+  for(const [arm,tg] of [[R.armL,T.l],[R.armR,T.r]]){
+    if(snap) arm.w=tg?1:0; else arm.w+=((tg?1:0)-arm.w)*k;
+    if(tg){ if(!arm.cur||snap||tg.exact) arm.cur=tg.t.clone(); else arm.cur.lerp(tg.t,k*1.4>1?1:k*1.4); arm.pole=tg.pole; }
+    if(arm.w>0.01&&arm.cur){const clipHand=arm.c.getWorldPosition(new V3());twoBone(arm,clipHand.lerp(arm.cur,arm.w),arm.pole);}
+  }
+  // jersey numbers
+  if(R.numF){const c=R.spine2.getWorldPosition(new V3());
+    R.numF.position.copy(c).addScaledVector(F,0.17).add(new V3(0,0.02,0)); R.numF.rotation.set(0,th,0);
+    R.numB.position.copy(c).addScaledVector(F,-0.17).add(new V3(0,0.04,0)); R.numB.rotation.set(0,th+Math.PI,0);}
+  if(v.label){v.label.visible=showNames;v.label.position.set(p[0],j-drop+2.5,p[1]);}
+}
+
+/* ================= HUD & UI ================= */
+const $=id=>document.getElementById(id);
+const legendEl=$('legend'),scoreEl=$('score'),clockEl=$('clock'),whistleEl=$('whistle'),popEl=$('pop'),slowBadge=$('slowBadge'),speedBadge=$('speedBadge');
+let lastWhistle=null,lastPop=null,capIdx=-1;
+function fmtSpeed(s){const m={0.25:'¼',0.5:'½',1:'1',1.5:'1½'};return (m[s]||(+s.toFixed(2)).toString())+'×';}
+function updateHUD(){
+  // score
+  if(L.scores){scoreEl.hidden=false;let b=0,r=0,pop=null;for(const s of L.scores){if(t>=s[0]){if(s[1]==='blue')b+=s[2];else r+=s[2];if(t<s[0]+1.4) pop=s;}}
+    $('sb').textContent=b;$('sr').textContent=r;
+    if(pop){popEl.hidden=false;if(lastPop!==pop){popEl.textContent='+'+pop[2]+(pop[2]===1?' point':' points');popEl.classList.remove('anim');void popEl.offsetWidth;popEl.classList.add('anim');lastPop=pop;}}
+    else {popEl.hidden=true;lastPop=null;}
+  } else {scoreEl.hidden=true;popEl.hidden=true;}
+  // whistle
+  let w=null; for(const x of L.whistles||[]) if(t>=x[0]&&t<x[0]+2.4) w=x;
+  if(w){whistleEl.hidden=false;if(lastWhistle!==w){$('whistleText').textContent=w[1];$('whistleLabel').textContent=w[2]||'TWEET! REF SAYS';whistleEl.classList.toggle('good',w[3]==='good');whistleEl.classList.remove('anim');void whistleEl.offsetWidth;whistleEl.classList.add('anim');lastWhistle=w;}}
+  else {whistleEl.hidden=true;lastWhistle=null;}
+  // clock
+  let c=null; for(const k of L.clocks||[]) if(t>=k.t0&&t<k.t1+(k.hold||1.2)) c=k;
+  if(c){clockEl.hidden=false;$('clockLabel').textContent=c.label;let v;
+    if(c.up) v=Math.min(c.max||3,Math.floor(t-c.t0)); else v=t>=c.t1&&c.reset?c.reset:Math.max(0,Math.ceil(c.from-(t-c.t0)));
+    $('clockVal').textContent=v; clockEl.classList.toggle('warn',c.up?(!c.max&&v>=3):v<=5);}
+  else clockEl.hidden=true;
+  // slow-mo
+  slowBadge.hidden=!(autoSlow&&inSlow(t));
+  speedBadge.hidden=speed===1; speedBadge.textContent=fmtSpeed(speed);
+  // caption
+  let ci=0; L.caps.forEach((c,i)=>{if(t>=c[0]) ci=i;});
+  if(ci!==capIdx){capIdx=ci;$('captext').textContent=L.caps[ci][1];$('stepnum').textContent=`Step ${ci+1} of ${L.caps.length}`;
+    [...$('dots').children].forEach((d,i)=>{d.classList.toggle('on',i===ci);d.classList.toggle('past',i<ci);});}
+  // timeline
+  if(!scrubbing) $('scrub').value=Math.round(t/L.dur*1000);
+  $('time').textContent=`${t.toFixed(1)} / ${L.dur.toFixed(1)}s`;
+}
+function inSlow(t){for(const s of L.slow||[]) if(t>=s[0]&&t<=s[1]) return true;return false;}
+
+/* ================= frame update ================= */
+const tmpV=new THREE.Vector3();
+let lastBall=null;
+function camAt(t){const K=L.cam;if(t<=K[0][0]) return [K[0][1],K[0][2]];
+  for(let i=1;i<K.length;i++){if(t<=K[i][0]){const u=smooth((t-K[i-1][0])/(K[i][0]-K[i-1][0]));return [lerp3(K[i-1][1],K[i][1],u),lerp3(K[i-1][2],K[i][2],u)];}}
+  const l=K[K.length-1];return [l[1],l[2]];}
+function update(dtReal){
+  const dtG=t-prevT; const snap=dtG<0||dtG>0.3; prevT=t;
+  const b=ballPos(t,false);
+  // actors
+  for(const a of L.actors){const v=P[a.id]; const p=samplePath(a.path,t); const j=jumpH(a,t);
+    const base=facingBase(a.id,t);
+    if(v.rAng==null||snap) v.rAng=base; else v.rAng=lerpAng(v.rAng,base,1-Math.exp(-11*Math.max(dtG,0)));
+    v.root.rotation.y=v.rAng+spinOff(a,t);
+    // movement phase
+    if(v.lastP&&!snap){v.phase+=Math.hypot(p[0]-v.lastP[0],p[1]-v.lastP[1])*2.6;} v.lastP=p;
+    const sp=velOf(a,t)[2];
+    const pose=poseFor(a.id,t);
+    if(v.rig){updateRig(v,a,p,j,dtG,snap,sp,pose,b);continue;}
+    const arms=armsFor(pose,t,a);
+    const crouch=arms&&arms.crouch?arms.crouch:0;
+    let lx=0,rx=0,lz=0,rz=0;
+    const moving=sp>0.3&&j<0.02;
+    if(pose.legs==='lunge'){lx=-0.5;rx=0.42;}
+    else if(crouch>0){lz=0.3*crouch;rz=-0.3*crouch; if(moving){const o=0.14*Math.sin(v.phase);lz+=o;rz+=o;}}
+    else if(moving){const k=Math.min(1,sp/2.5)*0.65;lx=k*Math.sin(v.phase);rx=-lx;}
+    if(j>0.02){lx=-0.35;rx=0.15;}
+    v.legL.rotation.set(lx,0,lz); v.legR.rotation.set(rx,0,rz);
+    const drop=0.9*(1-Math.cos(Math.max(Math.abs(lx),Math.abs(lz))))*(j>0.02?0:1) + (pose.legs==='lunge'?0.05:0);
+    v.root.position.set(p[0],j-drop,p[1]);
+    v.body.rotation.x=crouch*0.18+(moving&&!crouch?Math.min(sp,6)*0.025:0);
+    v.body.position.y=-crouch*0.04;
+    let A=arms;
+    if(!A){ if(moving){const s=0.55*Math.min(1,sp/2.5)*Math.sin(v.phase);A={l:[-s,0.12],r:[s,0.12]};} else A={l:[0.08,0.1],r:[0.08,0.1]}; }
+    v.armL.rotation.set(-A.l[0],0,A.l[1]); v.armR.rotation.set(-A.r[0],0,-A.r[1]);
+    if(v.label){v.label.visible=showNames;v.label.position.set(p[0],j+2.22,p[1]);}
+  }
+  // ball
+  ball.position.set(b[0],b[1],b[2]);
+  if(lastBall&&!snap){const dx=b[0]-lastBall[0],dz=b[2]-lastBall[2],d=Math.hypot(dx,dz);if(d>1e-4){tmpV.set(dz,0,-dx).normalize();ball.rotateOnWorldAxis(tmpV,d/BR);}
+    else if(Math.abs(b[1]-lastBall[1])>1e-4){ball.rotateX((b[1]-lastBall[1])*2);} }
+  lastBall=b;
+  ballShadow.position.set(b[0],0.008,b[2]); const hs=1+b[1]*0.15; ballShadow.scale.set(hs,hs,1); ballShadow.material.opacity=0.32/hs;
+  // nets
+  for(const n of nets){let s=1;for(const sc of L.scores||[]){const d=t-sc[0];if(d>-0.1&&d<0.6&&n.side===(sc[3]||1)) s=1+0.25*Math.sin(Math.max(0,d)*18)*Math.exp(-d*5);}n.mesh.scale.set(1/s,s,1/s);}
+  // fx
+  let anyOpen=false;
+  for(const e of FX){const f=e.f;const vis=t>=f.t0&&t<=f.t1;const fade=vis?Math.min(1,(t-f.t0)/0.35,(f.t1-t)/0.35):0;
+    const pulse=f.k==='zone'?0.75+0.25*Math.sin(performance.now()/260):1;
+    e.mat.opacity=e.base*fade*pulse; e.mesh.visible=fade>0.001;
+    if(!e.mesh.visible) continue;
+    if(f.k==='open'){for(const q of e.rings){const p=samplePath(L.A[q.id].path,t);q.r.position.set(p[0],0.035,p[1]);
+        let md=99;for(const d of f.vs){const o=samplePath(L.A[d].path,t);md=Math.min(md,Math.hypot(o[0]-p[0],o[1]-p[1]));}
+        q.m.color.setHex(md>1.7?0x39d98a:0xff4b4b);q.m.opacity=0.85*fade;} anyOpen=true; continue;}
+    if(f.k==='lane'){const p1=samplePath(L.A[f.from].path,t),p2=samplePath(L.A[f.to].path,t);const dx=p2[0]-p1[0],dz=p2[1]-p1[1];const len=Math.hypot(dx,dz)||1;
+      let blocked=false;for(const d of f.vs){const o=samplePath(L.A[d].path,t);const u=clamp(((o[0]-p1[0])*dx+(o[1]-p1[1])*dz)/(len*len),0,1);if(Math.hypot(p1[0]+dx*u-o[0],p1[1]+dz*u-o[1])<0.75) blocked=true;}
+      e.mat.color.setHex(blocked?0xff4b4b:0x39d98a);e.mesh.position.set((p1[0]+p2[0])/2,0.06,(p1[1]+p2[1])/2);e.mesh.scale.z=len;e.mesh.rotation.y=Math.atan2(dx,dz);anyOpen=true;continue;}
+    if(f.k==='ring'&&f.actor){const p=samplePath(L.A[f.actor].path,t);e.mesh.position.set(p[0],0.03,p[1]);}
+    if(f.k==='link'){const p1=samplePath(L.A[f.a].path,t),p2=samplePath(L.A[f.b].path,t);const dx=p2[0]-p1[0],dz=p2[1]-p1[1];
+      e.mesh.position.set((p1[0]+p2[0])/2,0.05,(p1[1]+p2[1])/2);e.mesh.scale.z=Math.hypot(dx,dz);e.mesh.rotation.y=Math.atan2(dx,dz);}
+  }
+  legendEl.hidden=!anyOpen;
+  // camera
+  if(autoCam){let [cp,ct]=camAt(t);
+    if(L.follow){let fp; if(L.follow==='ball') fp=[b[0],b[2]]; else fp=samplePath(L.A[L.follow].path,t);
+      if(!camFollow||snap) camFollow=fp.slice(); else {const k=1-Math.exp(-3.5*Math.max(dtReal,0));camFollow[0]+=(fp[0]-camFollow[0])*k;camFollow[1]+=(fp[1]-camFollow[1])*k;}
+      cp=[cp[0]+camFollow[0],cp[1],cp[2]+camFollow[1]]; ct=[ct[0]+camFollow[0],ct[1],ct[2]+camFollow[1]];}
+    const aspect=camera.aspect; const pull=aspect<1.4?1+(1.4-aspect)*0.55:1;
+    camera.position.set(ct[0]+(cp[0]-ct[0])*pull,ct[1]+(cp[1]-ct[1])*pull,ct[2]+(cp[2]-ct[2])*pull);
+    controls.target.set(ct[0],ct[1],ct[2]); camera.lookAt(controls.target);
+  } else controls.update();
+}
+
+/* ================= lesson loading ================= */
+let done={}; try{done=JSON.parse(localStorage.getItem('hoopschool.done')||'{}')||{};}catch(e){done={};}
+function saveDone(){try{localStorage.setItem('hoopschool.done',JSON.stringify(done));}catch(e){}}
+let curIdx=0;
+function loadLesson(i,autoplay){
+  curIdx=(i+L_ALL.length)%L_ALL.length;
+  // remove old players
+  for(const id in P){scene.remove(P[id].root);if(P[id].label) scene.remove(P[id].label);(P[id].extras||[]).forEach(o=>scene.remove(o));}
+  P={};
+  L=prep(L_ALL[curIdx]);
+  L.actors.forEach((a,k)=>{a._lastLook=null;P[a.id]=XBOT?buildRig(a,k+curIdx):buildPlayer(a,k+curIdx);});
+  FX=buildFx(L.fx);
+  t=0;prevT=-1;capIdx=-1;lastBall=null;camFollow=null;lastPop=null;lastWhistle=null;
+  setAutoCam(true);
+  $('endcard').hidden=true;
+  const cat=CATS[L.cat];$('tag').textContent=cat.name;$('tag').style.background=cat.color;$('ltitle').textContent=L.title;
+  const dots=$('dots');dots.innerHTML='';L.caps.forEach((c,k)=>{const d=document.createElement('button');d.title=`Go to step ${k+1}`;d.setAttribute('aria-label',`Step ${k+1}`);d.onclick=()=>{seek(c[0]);};dots.appendChild(d);});
+  document.querySelectorAll('.lesson').forEach((el,k)=>el.setAttribute('aria-current',k===curIdx?'true':'false'));
+  setPlaying(autoplay!==false);
+  update(0);updateHUD();
+  try{history.replaceState(null,'','#'+L.id);}catch(e){}
+}
+function seek(nt){t=clamp(nt,0,L.dur);$('endcard').hidden=true;update(0);updateHUD();}
+function setPlaying(p){playing=p;$('play').setAttribute('aria-label',p?'Pause':'Play');
+  $('playIcon').innerHTML=p?'<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>':'<path d="M7 4v16l13-8z"/>';
+  if(p&&t>=L.dur-0.01){t=0;}
+  if(p) $('endcard').hidden=true;}
+function setAutoCam(v){autoCam=v;$('autocam').setAttribute('aria-pressed',v?'true':'false');$('autocam').textContent=v?'Auto camera':'Auto camera off · tap to reset';camFollow=null;}
+function setSpeed(s){speed=clamp(+s,0.1,2);$('speed').value=speed;$('speedOut').textContent=fmtSpeed(speed);
+  document.querySelectorAll('#presets button').forEach(b=>b.setAttribute('aria-pressed',Math.abs(+b.dataset.s-speed)<0.001?'true':'false'));}
+
+// rail
+(function(){const rail=$('rail');let n=0;
+  for(const key of Object.keys(CATS)){const g=document.createElement('div');g.className='group';
+    g.innerHTML=`<h2><i style="background:${CATS[key].color}"></i>${CATS[key].name}${key==='tricks'?' <small style="font-family:var(--body);font-weight:800;font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0">auto slow-mo</small>':''}</h2>`;
+    L_ALL.forEach((l,i)=>{if(l.cat!==key) return;n++;const b=document.createElement('button');b.className='lesson'+(done[l.id]?' done':'');b.dataset.idx=i;
+      b.innerHTML=`<span class="n">${done[l.id]?'✓':n}</span><span class="tt"><b>${l.title}</b><small>${l.sub}</small></span>`;b.dataset.n=n;
+      b.onclick=()=>{loadLesson(i,true);if(window.innerWidth<900) $('stage').scrollIntoView({behavior:'smooth',block:'start'});};g.appendChild(b);});
+    rail.appendChild(g);}
+})();
+function markDone(){if(!done[L.id]){done[L.id]=1;saveDone();}
+  document.querySelectorAll('.lesson').forEach(el=>{const l=L_ALL[+el.dataset.idx];if(done[l.id]){el.classList.add('done');el.querySelector('.n').textContent='✓';}});}
+
+// controls
+$('play').onclick=()=>setPlaying(!playing);
+$('restart').onclick=()=>{seek(0);setPlaying(true);};
+function stepPrev(){let ci=0;L.caps.forEach((c,i)=>{if(t>=c[0]) ci=i;});const target=(t-L.caps[ci][0]>0.8)?L.caps[ci][0]:L.caps[Math.max(0,ci-1)][0];seek(target);}
+function stepNext(){const n=L.caps.find(c=>c[0]>t+0.01);if(n) seek(n[0]); else seek(L.dur);}
+$('prev').onclick=stepPrev; $('next').onclick=stepNext;
+let scrubbing=false;
+$('scrub').addEventListener('input',e=>{scrubbing=true;seek(e.target.value/1000*L.dur);});
+$('scrub').addEventListener('change',()=>{scrubbing=false;});
+$('speed').addEventListener('input',e=>setSpeed(e.target.value));
+document.querySelectorAll('#presets button').forEach(b=>b.onclick=()=>setSpeed(b.dataset.s));
+$('autoSlow').onchange=e=>{autoSlow=e.target.checked;};
+$('names').onchange=e=>{showNames=e.target.checked;};
+$('loop').onchange=e=>{loop=e.target.checked;};
+$('autocam').onclick=()=>setAutoCam(true);
+controls.addEventListener('start',()=>{if(autoCam) setAutoCam(false);});
+$('again').onclick=()=>{seek(0);setPlaying(true);};
+$('againSlow').onclick=()=>{setSpeed(0.5);seek(0);setPlaying(true);};
+$('nextLesson').onclick=()=>loadLesson(curIdx+1,true);
+document.addEventListener('keydown',e=>{const tag=(e.target.tagName||'').toLowerCase();
+  if(e.key===' '&&tag!=='button'){e.preventDefault();setPlaying(!playing);}
+  else if(e.key==='ArrowRight'&&tag!=='input'){e.preventDefault();stepNext();}
+  else if(e.key==='ArrowLeft'&&tag!=='input'){e.preventDefault();stepPrev();}
+  else if(e.key==='-'||e.key==='_'){setSpeed(speed-0.25<0.1?0.1:speed-(speed<=0.5?0.15:0.25));}
+  else if(e.key==='='||e.key==='+'){setSpeed(speed+(speed<0.5?0.15:0.25));}});
+
+// resize
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h) return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w/h<1.2?58:45;camera.updateProjectionMatrix();}
+if(window.ResizeObserver) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize',resize);
+resize();
+
+// logo ball
+(function(){const c=$('logoBall'),g=c.getContext('2d');g.fillStyle='#f0761a';g.beginPath();g.arc(42,42,38,0,Math.PI*2);g.fill();g.strokeStyle='#1d1008';g.lineWidth=4;
+  g.beginPath();g.arc(42,42,38,0,Math.PI*2);g.stroke();g.beginPath();g.moveTo(4,42);g.lineTo(80,42);g.stroke();g.beginPath();g.moveTo(42,4);g.lineTo(42,80);g.stroke();
+  g.beginPath();g.arc(-6,42,36,-0.95,0.95);g.stroke();g.beginPath();g.arc(90,42,36,Math.PI-0.95,Math.PI+0.95);g.stroke();})();
+
+// main loop
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000); last=now;
+  if(playing&&L){let s=speed; if(autoSlow&&inSlow(t)) s*=0.3; t+=dt*s;
+    if(t>=L.dur){ if(loop){t=0;} else {t=L.dur;setPlaying(false);markDone();
+        $('endTitle').textContent=`${L.title}: done!`;$('nextLesson').textContent=curIdx<L_ALL.length-1?`Next: ${L_ALL[curIdx+1].title} →`:'Start again →';$('endcard').hidden=false;} } }
+  if(L){update(dt); updateHUD();}
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+const startId=(location.hash||'').slice(1);
+const si=L_ALL.findIndex(l=>l.id===startId);
+requestAnimationFrame(frame);
+const bootTimeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000));
+Promise.race([loadXbot(),bootTimeout]).then(g=>{XBOT=g;measureRig();}).catch(e=>{console.warn('Using simple players:',e&&e.message);XBOT=null;})
+  .then(()=>{$('loading').hidden=true;loadLesson(si>=0?si:0,true);});
+window.__hoop={get t(){return t;},seek,loadLesson,setPlaying,L_ALL,cam:(q,g)=>{setAutoCam(false);camera.position.set(q[0],q[1],q[2]);controls.target.set(g[0],g[1],g[2]);camera.lookAt(controls.target);}};
+})();
+</script>
+
+</body>
+</html>
