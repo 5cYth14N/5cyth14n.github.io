@@ -589,7 +589,7 @@ scene.fog=new THREE.Fog(0x0f1d36,40,80);
 const camera=new THREE.PerspectiveCamera(45,16/9,0.1,200);
 camera.position.set(0,16,18);
 const controls=new THREE.OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.48; controls.minDistance=3; controls.maxDistance=45;
+controls.enableDamping=true; controls.maxPolarAngle=Math.PI*0.48; controls.minDistance=1.2; controls.maxDistance=45;
 scene.add(new THREE.HemisphereLight(0xffffff,0x3a4a6a,0.62));
 const sun=new THREE.DirectionalLight(0xffffff,0.62);
 sun.position.set(6,20,9); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
@@ -766,6 +766,7 @@ let camFollow=null, prevT=0;
 function prep(lesson){
   lesson.A={}; lesson.actors.forEach(a=>{lesson.A[a.id]=a;});
   lesson.ball.sort((a,b)=>a.t0-b.t0);
+  lesson.ball.forEach((s,i)=>{const n=lesson.ball[i+1]; if(s.k==='hold'&&n&&n.k==='pass'&&n.from===s.p&&Math.abs(n.t0-s.t1)<0.06&&(n.fh||'chest')===s.h&&s.t1-s.t0>0.4){s.windup=true;n.prevWindup=true;}});
   return lesson;}
 function segIndex(t){const S=L.ball;let i=0;for(let k=0;k<S.length;k++) if(t>=S[k].t0) i=k;return i;}
 function holderOf(seg,t){ if(!seg) return null; if(seg.k==='drib'||seg.k==='hold') return seg.p; if(seg.k==='shot'&&t<seg.t0+0.3) return seg.from; return null;}
@@ -792,23 +793,23 @@ function facingBase(id,t){
   if(v[2]>0.25){const mv=Math.atan2(v[0],v[1]);return lerpAng(look,mv,clamp((v[2]-0.25)/0.8,0,1));}
   return look;}
 function facing(id,t){return facingBase(id,t)+spinOff(L.A[id],t);}
-function handPos(id,t,h,rough){
-  const a=L.A[id]; const p=samplePath(a.path,t); const j=jumpH(a,t);
+function handPos(id,t,h,rough,wu){
+  const a=L.A[id]; const p=samplePath(a.path,t); const j=jumpH(a,t); wu=wu||0;
   if(rough) return [p[0],1.2+j,p[1]];
   const th=facing(id,t), fx=Math.sin(th), fz=Math.cos(th);
-  if(h==='high') return [p[0]+fx*0.24,2.1+j,p[1]+fz*0.24];
-  return [p[0]+fx*0.45,1.2+j,p[1]+fz*0.45];}
+  if(h==='high'){ const f=0.22-0.32*wu; return [p[0]+fx*f,1.98+0.06*wu+j,p[1]+fz*f]; }
+  const f=0.36-0.15*wu; return [p[0]+fx*f,1.17-0.03*wu+j,p[1]+fz*f];}
 function resolvePt(pt,rough){ if(typeof pt[1]==='string') return {p:handPos(pt[1],pt[0],pt[3]||'chest',rough),arc:pt[2]||0}; return {p:[pt[1],pt[2],pt[3]],arc:pt[4]||0}; }
 function evalSeg(s,t,rough){
   const u=clamp((t-s.t0)/((s.t1-s.t0)||1),0,1);
   switch(s.k){
-    case 'hold': return handPos(s.p,t,s.h,rough);
+    case 'hold': return handPos(s.p,t,s.h,rough,s.windup?smooth((t-(s.t1-0.32))/0.32):0);
     case 'drib': { const a=L.A[s.p]; const p=samplePath(a.path,t); if(rough) return [p[0],0.6,p[1]];
       const th=facing(s.p,t), fx=Math.sin(th), fz=Math.cos(th), rx=-Math.cos(th), rz=Math.sin(th);
       const side=kv(s.side,t,1), f=kv(s.fwd,t,0.45), hy=kv(s.hy,t,0.95);
       const ph=((t-s.t0)*(s.rate||2))%1; const y=BR+(hy-BR)*Math.abs(Math.cos(Math.PI*ph));
       return [p[0]+fx*f+rx*side*0.32,y,p[1]+fz*f+rz*side*0.32]; }
-    case 'pass': { const a0=handPos(s.from,s.t0,s.fh||'chest',rough), a1=handPos(s.to,s.t1,s.th||'chest',rough);
+    case 'pass': { const a0=handPos(s.from,s.t0,s.fh||'chest',rough,s.prevWindup?1:0), a1=handPos(s.to,s.t1,s.th||'chest',rough);
       if(s.wrap&&!rough){const uw=0.4;const wrapAt=(tt,v)=>{const pp=samplePath(L.A[s.from].path,tt),th=facing(s.from,tt);const ang=Math.PI*0.92*v;
           const Fx=Math.sin(th),Fz=Math.cos(th),Rx=-Math.cos(th),Rz=Math.sin(th);return [pp[0]+(Math.cos(ang)*Rx-Math.sin(ang)*Fx)*0.5,1.0,pp[1]+(Math.cos(ang)*Rz-Math.sin(ang)*Fz)*0.5];};
         if(u<uw) return wrapAt(t,u/uw);
@@ -841,7 +842,8 @@ function poseFor(id,t){
   if(seg){
     if(seg.k==='drib'&&seg.p===id&&t<=seg.t1) return {name:'dribble',seg,legs};
     if(seg.k==='hold'&&seg.p===id) return {name:seg.h==='high'?'high':'hold',legs};
-    if(seg.k==='pass'&&seg.from===id&&t<seg.t0+0.3) return {name:'release',legs};
+    if(seg.k==='pass'&&seg.from===id&&t<seg.t0+0.09) return {name:'push',legs};
+    if(seg.k==='pass'&&seg.from===id&&t<seg.t0+0.4) return {name:'release',legs};
     if(seg.k==='pass'&&seg.to===id&&t>seg.t1-0.35) return {name:'catch',legs};
     if(seg.k==='shot'&&seg.from===id&&t<seg.t0+0.06) return {name:'high',legs};
     if(seg.k==='shot'&&seg.from===id&&t<seg.t0+0.5) return {name:'follow',legs};
@@ -895,7 +897,7 @@ function measureTpl(tpl){
   tpl.scale=1.8/top; tpl.ankle=m.getObjectByName('mixamorigLeftFoot').getWorldPosition(new V3()).y*tpl.scale; return tpl;}
 function measureRig(){
   TPL.xbot=measureTpl({root:XBOT.scene,xbot:true,numbers:true,clips:{idle:clipNamed('idle'),walk:clipNamed('walk'),run:clipNamed('run')}});
-  RIG.scale=TPL.xbot.scale; RIG.ankle=TPL.xbot.ankle;}
+  RIG.scale=TPL.xbot.scale; RIG.ankle=TPL.xbot.ankle; computeHandInfo();}
 /* Custom characters: static meshes rigged in-page onto the Xbot skeleton (joint targets + skin weights prepared offline). */
 const RIG_A={"targets":{"HeadTop":[0.0,1.897,0.0015],"Head":[0.0,1.7,0.0384],"Neck":[0.0,1.59,0.0236],"Spine2":[0.0,1.42,0.0282],"Spine1":[0.0,1.3,0.0241],"Spine":[0.0,1.17,-0.0457],"Hips":[0.0,1.03,-0.0356],"LeftUpLeg":[0.1126,0.98,-0.0009],"LeftLeg":[0.1324,0.53,-0.0183],"LeftFoot":[0.1524,0.1,-0.0028],"LeftToeBase":[0.1982,0.04,0.128],"LeftToe_End":[0.2179,0.03,0.1741],"LeftShoulder":[0.05,1.52,-0.081],"LeftArm":[0.1816,1.48,-0.0455],"LeftForeArm":[0.2458,1.14,-0.062],"LeftHand":[0.2732,0.93,-0.0267],"LeftTip":[0.2519,0.8,-0.0197],"LeftHandMiddle1":[0.2636,0.8715,-0.0236],"RightUpLeg":[-0.0812,0.98,0.0008],"RightLeg":[-0.135,0.53,-0.0258],"RightFoot":[-0.153,0.1,-0.0025],"RightToeBase":[-0.2066,0.04,0.1277],"RightToe_End":[-0.2296,0.03,0.1735],"RightShoulder":[-0.05,1.52,-0.0831],"RightArm":[-0.1824,1.48,-0.0798],"RightForeArm":[-0.2495,1.14,-0.0667],"RightHand":[-0.272,0.93,-0.0185],"RightTip":[-0.2526,0.8,-0.0262],"RightHandMiddle1":[-0.2633,0.8715,-0.022]},"bones":["Hips","Spine","Spine1","Spine2","Neck","Head","LeftShoulder","LeftArm","LeftForeArm","LeftHand","LeftUpLeg","LeftLeg","LeftFoot","LeftToeBase","RightShoulder","RightArm","RightForeArm","RightHand","RightUpLeg","RightLeg","RightFoot","RightToeBase"],"scale":1.0,"shift":[0.00094,0.95056,0.00106]};
 function recolorTex(tex,mode){
@@ -1045,10 +1047,10 @@ function buildRig(a,idx){
   const g=n=>model.getObjectByName('mixamorig'+n);
   root.updateMatrixWorld(true);
   const chain=(A,B,C)=>{const ch={a:g(A),b:g(B),c:g(C)};const pa=ch.a.getWorldPosition(new V3()),pb=ch.b.getWorldPosition(new V3()),pc=ch.c.getWorldPosition(new V3());ch.l1=pa.distanceTo(pb);ch.l2=pb.distanceTo(pc);ch.w=0;ch.cur=null;ch.pole=null;return ch;};
-  const rig={tpl,model,mixer,act,spine:g('Spine'),spine2:g('Spine2'),head:g('Head'),
+  const rig={tpl,model,mixer,act,spine:g('Spine'),spine1:g('Spine1'),spine2:g('Spine2'),head:g('Head'),
     armL:chain('LeftArm','LeftForeArm','LeftHand'),armR:chain('RightArm','RightForeArm','RightHand'),
     legL:chain('LeftUpLeg','LeftLeg','LeftFoot'),legR:chain('RightUpLeg','RightLeg','RightFoot')};
-  rig.reset=[];[rig.spine,rig.spine2,rig.armL.a,rig.armL.b,rig.armR.a,rig.armR.b,rig.legL.a,rig.legL.b,rig.legR.a,rig.legR.b,rig.legL.c,rig.legR.c].forEach(b=>rig.reset.push([b,b.quaternion.clone()]));
+  rig.reset=[];[rig.spine,rig.spine1,rig.spine2,rig.armL.c,rig.armR.c,rig.armL.a,rig.armL.b,rig.armR.a,rig.armR.b,rig.legL.a,rig.legL.b,rig.legR.a,rig.legR.b,rig.legL.c,rig.legR.c].forEach(b=>rig.reset.push([b,b.quaternion.clone()]));
   const extras=[];
   if(tpl.numbers&&a.team!=='ref'&&a.num!==''){const nm=new THREE.MeshBasicMaterial({map:textTex(String(a.num)),transparent:true,depthWrite:false});
     rig.numF=new THREE.Mesh(new THREE.PlaneGeometry(0.24,0.24),nm);rig.numB=new THREE.Mesh(new THREE.PlaneGeometry(0.26,0.26),nm);scene.add(rig.numF);scene.add(rig.numB);extras.push(rig.numF,rig.numB);}
@@ -1062,57 +1064,84 @@ function armTargets(pose,c){
   const {b,F,R,U,shL,shR,t}=c; const L=R.clone().negate();
   const reach=(sh,...terms)=>{const d=new V3();for(let i=0;i<terms.length;i+=2) d.addScaledVector(terms[i],terms[i+1]);return sh.clone().addScaledVector(d.normalize(),c.armLen*0.9);};
   const P=(base,...terms)=>{const v=base.clone();for(let i=0;i<terms.length;i+=2) v.addScaledVector(terms[i],terms[i+1]);return v;};
-  const both=(l,r,pl,pr,exact)=>({l:{t:l,pole:pl,exact},r:{t:r,pole:pr,exact}});
-  const elbowsDown=[P(shL,U,-0.6,L,0.35,F,-0.2),P(shR,U,-0.6,R,0.35,F,-0.2)];
+  const N=(...terms)=>{const v=new V3();for(let i=0;i<terms.length;i+=2) v.addScaledVector(terms[i],terms[i+1]);return v.normalize();};
+  // wrist position so the palm (facing n, fingers along f) rests on the ball surface
+  const grip=(n,f,gap)=>b.clone().addScaledVector(n,-(BR+(gap==null?0.012:gap))).addScaledVector(f,-0.075);
+  const A=(t_,pole,exact,n,f)=>({t:t_,pole,exact,n,f});
+  const elbowsDown=[P(shL,U,-0.6,L,0.35,F,-0.25),P(shR,U,-0.6,R,0.35,F,-0.25)];
   switch(pose.name){
-    case 'hold': case 'holdlow': case 'catch':
-      return both(P(b,L,0.15,F,-0.04),P(b,R,0.15,F,-0.04),elbowsDown[0],elbowsDown[1],true);
-    case 'chin': return both(P(b,L,0.15),P(b,R,0.15),P(shL,L,0.8,U,-0.2),P(shR,R,0.8,U,-0.2),true);
-    case 'high': case 'highlow':
-      return both(P(b,L,0.13,U,-0.04,F,-0.02),P(b,U,-0.14,F,-0.07,R,0.02),P(shL,F,0.5,U,-0.4,L,0.35),P(shR,F,0.6,U,-0.4,R,0.15),true);
-    case 'follow': return both(P(shL,F,0.3,U,0.45,R,0.08),P(shR,F,0.34,U,0.44,L,0.04),P(shL,F,0.6,L,0.2),P(shR,F,0.6,R,0.2),false);
-    case 'release': return both(P(shL,F,0.55,U,-0.12,R,0.1),P(shR,F,0.55,U,-0.12,L,0.1),P(shL,U,-0.5,L,0.4),P(shR,U,-0.5,R,0.4),false);
+    case 'hold': case 'holdlow': case 'catch': case 'push': {
+      const nL=N(R,1,F,0.55), nR=N(L,1,F,0.55), fu=N(U,0.85,F,0.3);
+      return {l:A(grip(nL,fu),elbowsDown[0],true,nL,fu),r:A(grip(nR,fu),elbowsDown[1],true,nR,fu)}; }
+    case 'chin': { const nL=N(R,1,F,0.4), nR=N(L,1,F,0.4), fu=N(U,0.8,F,0.3);
+      return {l:A(grip(nL,fu),P(shL,L,0.8,U,-0.2),true,nL,fu),r:A(grip(nR,fu),P(shR,R,0.8,U,-0.2),true,nR,fu)}; }
+    case 'high': case 'highlow': {
+      const nR=N(U,0.85,F,0.4), fR=N(F,-0.85,U,0.4), nL=N(R,1,F,0.15), fL=N(U,0.9,F,0.2);
+      return {l:A(grip(nL,fL),P(shL,F,0.5,U,-0.4,L,0.35),true,nL,fL),r:A(grip(nR,fR,0.005),P(shR,F,0.6,U,-0.4,R,0.15),true,nR,fR)}; }
+    case 'follow': return {l:A(P(shL,F,0.3,U,0.45,R,0.08),P(shL,F,0.6,L,0.2),false,N(R,1),N(U,1)),
+                           r:A(P(shR,F,0.34,U,0.44,L,0.04),P(shR,F,0.6,R,0.2),false,N(F,-0.8,U,-0.6),N(F,0.6,U,-0.8))};
+    case 'release': return {l:A(P(shL,F,0.55,U,-0.12,R,0.1),P(shL,U,-0.5,L,0.4),false,N(L,0.75,U,-0.65),N(F,1)),
+                            r:A(P(shR,F,0.55,U,-0.12,L,0.1),P(shR,U,-0.5,R,0.4),false,N(R,0.75,U,-0.65),N(F,1))};
     case 'dribble': { const s=pose.seg; const side=kv(s.side,t,1); const hy=kv(s.hy,t,0.95);
-      const hand=new V3(b.x,Math.max(b.y+BR*0.85,hy-0.1),b.z);
-      const guardL=P(shL,F,0.3,U,-0.32,L,0.22), guardR=P(shR,F,0.3,U,-0.32,R,0.22);
-      if(side>=0) return {r:{t:hand,pole:P(shR,R,0.5,U,-0.3,F,-0.4),exact:true},l:{t:guardL,pole:elbowsDown[0],exact:false}};
-      return {l:{t:hand,pole:P(shL,L,0.5,U,-0.3,F,-0.4),exact:true},r:{t:guardR,pole:elbowsDown[1],exact:false}}; }
-    case 'wrap': return {r:{t:b.clone(),pole:P(shR,R,0.5,F,-0.5,U,-0.2),exact:true},l:{t:P(shL,F,0.3,U,-0.32,L,0.22),pole:elbowsDown[0],exact:false}};
+      const n=N(U,-1,F,0.12), f=N(F,1,U,0.12);
+      const palm=new V3(b.x,Math.max(b.y+BR+0.01,hy-0.08),b.z); const wrist=palm.addScaledVector(f,-0.075);
+      const gL=A(P(shL,F,0.3,U,-0.32,L,0.22),elbowsDown[0],false,N(F,1,U,-0.3),N(U,1,F,0.3)), gR=A(P(shR,F,0.3,U,-0.32,R,0.22),elbowsDown[1],false,N(F,1,U,-0.3),N(U,1,F,0.3));
+      if(side>=0) return {r:A(wrist,P(shR,R,0.5,U,-0.3,F,-0.4),true,n,f),l:gL};
+      return {l:A(wrist,P(shL,L,0.5,U,-0.3,F,-0.4),true,n,f),r:gR}; }
+    case 'wrap': { const n=b.clone().sub(shR).setY(0).normalize(), f=U.clone();
+      return {r:A(grip(n,f),P(shR,R,0.5,F,-0.5,U,-0.2),true,n,f),l:A(P(shL,F,0.3,U,-0.32,L,0.22),elbowsDown[0],false,N(F,1),N(U,1))}; }
     case 'defend': { const mid=shL.clone().add(shR).multiplyScalar(0.5); const ballRight=b.clone().sub(mid).dot(R)>0;
-      const high=(sh,out)=>reach(sh,out,0.55,F,0.5,U,0.45), low=(sh,out)=>reach(sh,out,0.6,F,0.55,U,-0.55);
-      const lT=ballRight?high(shL,L):low(shL,L), rT=ballRight?low(shR,R):high(shR,R);
-      return both(lT,rT,P(shL,U,-0.7,L,0.15,F,-0.15),P(shR,U,-0.7,R,0.15,F,-0.15),false); }
-    case 'box': return both(reach(shL,L,1,F,0.2,U,-0.05),reach(shR,R,1,F,0.2,U,-0.05),P(shL,U,-0.7,F,-0.2),P(shR,U,-0.7,F,-0.2),false);
-    case 'block': return both(P(shL,U,0.56,F,0.08,L,0.05),P(shR,U,0.56,F,0.08,R,0.05),P(shL,L,0.6,F,0.2),P(shR,R,0.6,F,0.2),false);
-    case 'slap': return {r:{t:P(shR,F,0.52,U,0.02,L,0.12),pole:P(shR,U,-0.5,R,0.4),exact:false},l:null};
-    case 'screen': return both(P(shL,F,0.24,U,-0.42,R,0.22),P(shR,F,0.26,U,-0.4,L,0.22),P(shL,L,0.5,U,-0.3),P(shR,R,0.5,U,-0.3),false);
+      const high=(sh,out)=>A(reach(sh,out,0.55,F,0.5,U,0.45),P(sh,U,-0.7,out,0.15,F,-0.15),false,N(F,1),N(U,1));
+      const low=(sh,out)=>A(reach(sh,out,0.6,F,0.55,U,-0.55),P(sh,U,-0.7,out,0.15,F,-0.15),false,N(F,1,U,0.2),N(out,1,U,-0.3));
+      return {l:ballRight?high(shL,L):low(shL,L), r:ballRight?low(shR,R):high(shR,R)}; }
+    case 'box': return {l:A(reach(shL,L,1,F,0.2,U,-0.05),P(shL,U,-0.7,F,-0.2),false,N(F,-0.4,L,1),N(U,1)),r:A(reach(shR,R,1,F,0.2,U,-0.05),P(shR,U,-0.7,F,-0.2),false,N(F,-0.4,R,1),N(U,1))};
+    case 'block': return {l:A(P(shL,U,0.56,F,0.08,L,0.05),P(shL,L,0.6,F,0.2),false,N(F,1),N(U,1)),r:A(P(shR,U,0.56,F,0.08,R,0.05),P(shR,R,0.6,F,0.2),false,N(F,1),N(U,1))};
+    case 'slap': return {r:A(P(shR,F,0.52,U,0.02,L,0.12),P(shR,U,-0.5,R,0.4),false,N(U,-1,F,0.3),N(F,1)),l:null};
+    case 'screen': return {l:A(P(shL,F,0.24,U,-0.42,R,0.22),P(shL,L,0.5,U,-0.3),false,N(F,-1),N(U,-1)),r:A(P(shR,F,0.26,U,-0.4,L,0.22),P(shR,R,0.5,U,-0.3),false,N(F,-1),N(U,-1))};
     case 'travel': { const w=t*9, ce=P(shL.clone().add(shR).multiplyScalar(0.5),F,0.38,U,-0.18);
-      return both(P(ce,L,0.07,U,0.1*Math.sin(w),F,0.1*Math.cos(w)),P(ce,R,0.07,U,0.1*Math.sin(w+Math.PI),F,0.1*Math.cos(w+Math.PI)),P(shL,U,-0.5,L,0.5),P(shR,U,-0.5,R,0.5),true); }
-    case 'double': { const bob=0.1*Math.sin(t*10); return both(P(shL,F,0.42,U,-0.3+bob),P(shR,F,0.42,U,-0.3+bob),P(shL,L,0.5,U,-0.4),P(shR,R,0.5,U,-0.4),true); }
-    case 'foul': return {r:{t:P(shR,U,0.56,F,0.04),pole:P(shR,R,0.6,F,0.2),exact:false},l:null};
-    case 'point': return {r:{t:P(shR,R,0.55,F,0.08),pole:P(shR,U,-0.5,F,-0.2),exact:false},l:null};
-    case 'three': return {r:{t:P(shR,U,0.5,R,0.2,F,0.05),pole:P(shR,R,0.6,F,0.2),exact:false},l:null};
+      return {l:A(P(ce,L,0.07,U,0.1*Math.sin(w),F,0.1*Math.cos(w)),P(shL,U,-0.5,L,0.5),true,N(U,-1),N(F,1)),r:A(P(ce,R,0.07,U,0.1*Math.sin(w+Math.PI),F,0.1*Math.cos(w+Math.PI)),P(shR,U,-0.5,R,0.5),true,N(U,-1),N(F,1))}; }
+    case 'double': { const bob=0.1*Math.sin(t*10); return {l:A(P(shL,F,0.42,U,-0.3+bob),P(shL,L,0.5,U,-0.4),true,N(U,-1),N(F,1)),r:A(P(shR,F,0.42,U,-0.3+bob),P(shR,R,0.5,U,-0.4),true,N(U,-1),N(F,1))}; }
+    case 'foul': return {r:A(P(shR,U,0.56,F,0.04),P(shR,R,0.6,F,0.2),false,N(F,1),N(U,1)),l:null};
+    case 'point': return {r:A(P(shR,R,0.55,F,0.08),P(shR,U,-0.5,F,-0.2),false,N(U,-1),N(R,1)),l:null};
+    case 'three': return {r:A(P(shR,U,0.5,R,0.2,F,0.05),P(shR,R,0.6,F,0.2),false,N(F,1),N(U,1)),l:null};
   }
   return {l:null,r:null};}
-function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr){
+const HANDINFO={};
+function computeHandInfo(){ const m=THREE.SkeletonUtils.clone(XBOT.scene); m.updateMatrixWorld(true);
+  for(const S of ['Left','Right']){ const h=m.getObjectByName('mixamorig'+S+'Hand'), mid=m.getObjectByName('mixamorig'+S+'HandMiddle1');
+    const qi=h.getWorldQuaternion(new Q()).invert(); HANDINFO[S]={palm:new V3(0,-1,0).applyQuaternion(qi).normalize(),finger:mid.position.clone().normalize()}; } }
+function orientHand(hand,S,f,n,w){
+  const I=HANDINFO[S]; if(!I) return;
+  const fl=I.finger, pl=I.palm.clone().addScaledVector(fl,-I.palm.dot(fl)).normalize(), bl=new V3().crossVectors(fl,pl);
+  const fw=f.clone().normalize(), nw=n.clone().addScaledVector(fw,-n.dot(fw)); if(nw.lengthSq()<1e-6) return; nw.normalize(); const bw=new V3().crossVectors(fw,nw);
+  const Mw=new THREE.Matrix4().makeBasis(fw,nw,bw), Ml=new THREE.Matrix4().makeBasis(fl,pl,bl).transpose();
+  const qt=new Q().setFromRotationMatrix(Mw.multiply(Ml));
+  const ql=hand.parent.getWorldQuaternion(new Q()).invert().multiply(qt);
+  hand.quaternion.slerp(ql,w); hand.updateMatrixWorld(true);}
+function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr,full){
   const R=v.rig, th=v.root.rotation.y;
   const F=new V3(Math.sin(th),0,Math.cos(th)), Rt=new V3(-Math.cos(th),0,Math.sin(th)), Lf=Rt.clone().negate();
+  const Fu=new V3(Math.sin(full),0,Math.cos(full)), Ru=new V3(-Math.cos(full),0,Math.sin(full));
   for(const [bn,q] of R.reset) bn.quaternion.copy(q);
   let crouch=CROUCH[pose.name]||0;
   if(pose.name==='dribble'){const hy=kv(pose.seg.hy,t,0.95); if(hy<0.85) crouch=Math.max(crouch,0.55);}
   const air=j>0.02;
-  const mode=pose.legs==='lunge'?'lunge':air?'air':crouch>0?'crouch':'clip';
+  const turning=v.turnT!=null&&!air&&crouch===0&&pose.legs!=='lunge';
+  const mode=pose.legs==='lunge'?'lunge':air?'air':crouch>0?'crouch':turning?'turn':'clip';
   let wi=1,ww=0,wr=0;
-  if(mode==='clip'||mode==='air'){const m=clamp(sp/1.1,0,1),rk=clamp((sp-2.0)/1.6,0,1);wi=1-m;ww=m*(1-rk);wr=m*rk;}
+  if(mode==='clip'||mode==='air'||mode==='turn'){const m=clamp(sp/1.1,0,1),rk=clamp((sp-2.0)/1.6,0,1);wi=1-m;ww=m*(1-rk);wr=m*rk;}
   if(R.act.idle) R.act.idle.setEffectiveWeight(wi);
   if(R.act.walk){R.act.walk.setEffectiveWeight(ww);R.act.walk.timeScale=clamp(sp/1.35,0.6,1.7);}
   if(R.act.run){R.act.run.setEffectiveWeight(wr);R.act.run.timeScale=clamp(sp/3.9,0.7,1.5);}
   R.mixer.update(snap?0:clamp(air?dtG*0.3:dtG,0,0.1));
   const drop=mode==='crouch'?0.2*crouch:mode==='lunge'?0.16:0;
   v.root.position.set(p[0],j-drop,p[1]); v.root.updateMatrixWorld(true);
+  // upper body turns ahead of the feet
+  const tw=clamp(angDiff(th,full),-1.3,1.3);
+  if(Math.abs(tw)>0.002){ rotateBoneWorld(R.spine,UP,tw*0.35); rotateBoneWorld(R.spine1,UP,tw*0.35); rotateBoneWorld(R.spine2,UP,tw*0.3); }
   // torso lean
   const lean=crouch*0.3+(mode==='lunge'?0.22:0);
-  if(lean>0.001) rotateBoneWorld(R.spine,new V3().crossVectors(UP,F).normalize(),lean);
+  if(lean>0.001) rotateBoneWorld(R.spine,new V3().crossVectors(UP,Fu).normalize(),lean);
   // legs
   if(mode==='crouch'&&(!R.feet||R.feetMode!=='crouch'||snap)) R.feet={};
   if(mode!=='clip'){
@@ -1127,6 +1156,8 @@ function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr){
         let pos=f.plant, lift=0;
         if(f.stepping){f.s+=Math.max(dtG,0)/clamp(0.17/(1+sp*0.35),0.08,0.17);const u=Math.min(1,f.s);pos=f.from.clone().lerp(desired,smooth(u));lift=0.13*Math.sin(Math.PI*u);if(u>=1){f.stepping=false;f.plant=desired.clone();pos=f.plant;}}
         tg=pos.clone().add(new V3(0,R.tpl.ankle+lift,0));}
+      else if(mode==='turn'){ const u=clamp(v.turnT,0,1); const lift=side>0?(u<0.5?0.09*Math.sin(Math.PI*u*2):0):(u>=0.5?0.09*Math.sin(Math.PI*(u-0.5)*2):0);
+        tg=ground.clone().addScaledVector(Lf,side*0.12).addScaledVector(F,0.03).add(new V3(0,R.tpl.ankle+lift,0));}
       else if(mode==='lunge'){tg=ground.clone().addScaledVector(Lf,side*0.14).addScaledVector(F,side>0?0.42:-0.36).add(new V3(0,R.tpl.ankle,0));}
       else {tg=leg.c.getWorldPosition(new V3()).add(new V3(0,Math.min(0.22,j*0.6),0)).addScaledVector(F,-0.06);}
       const hip=leg.a.getWorldPosition(new V3());
@@ -1135,17 +1166,20 @@ function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr){
   }
   R.feetMode=mode;
   // arms
-  const ctx={b:new V3(bArr[0],bArr[1],bArr[2]),F,R:Rt,U:UP,t,shL:R.armL.a.getWorldPosition(new V3()),shR:R.armR.a.getWorldPosition(new V3()),armLen:R.armL.l1+R.armL.l2};
+  const ctx={b:new V3(bArr[0],bArr[1],bArr[2]),F:Fu,R:Ru,U:UP,t,shL:R.armL.a.getWorldPosition(new V3()),shR:R.armR.a.getWorldPosition(new V3()),armLen:R.armL.l1+R.armL.l2};
   const T=armTargets(pose,ctx); const k=snap?1:1-Math.exp(-16*Math.max(dtG,0));
-  for(const [arm,tg] of [[R.armL,T.l],[R.armR,T.r]]){
+  for(const [arm,tg,S] of [[R.armL,T.l,'Left'],[R.armR,T.r,'Right']]){
     if(snap) arm.w=tg?1:0; else arm.w+=((tg?1:0)-arm.w)*k;
-    if(tg){ if(!arm.cur||snap||tg.exact) arm.cur=tg.t.clone(); else arm.cur.lerp(tg.t,k*1.4>1?1:k*1.4); arm.pole=tg.pole; }
-    if(arm.w>0.01&&arm.cur){const clipHand=arm.c.getWorldPosition(new V3());twoBone(arm,clipHand.lerp(arm.cur,arm.w),arm.pole);}
+    if(tg){ const kk=k*1.4>1?1:k*1.4;
+      if(!arm.cur||snap||tg.exact) arm.cur=tg.t.clone(); else arm.cur.lerp(tg.t,kk); arm.pole=tg.pole;
+      if(tg.n){ if(!arm.n||snap||tg.exact){arm.n=tg.n.clone();arm.f=tg.f.clone();} else {arm.n.lerp(tg.n,kk).normalize();arm.f.lerp(tg.f,kk).normalize();} } }
+    if(arm.w>0.01&&arm.cur){const clipHand=arm.c.getWorldPosition(new V3());twoBone(arm,clipHand.lerp(arm.cur,arm.w),arm.pole);
+      if(arm.n) orientHand(arm.c,S,arm.f,arm.n,arm.w);}
   }
   // jersey numbers
   if(R.numF){const c=R.spine2.getWorldPosition(new V3());
-    R.numF.position.copy(c).addScaledVector(F,0.17).add(new V3(0,0.02,0)); R.numF.rotation.set(0,th,0);
-    R.numB.position.copy(c).addScaledVector(F,-0.17).add(new V3(0,0.04,0)); R.numB.rotation.set(0,th+Math.PI,0);}
+    R.numF.position.copy(c).addScaledVector(F,0.17).add(new V3(0,0.02,0)); R.numF.rotation.set(0,full,0);
+    R.numB.position.copy(c).addScaledVector(F,-0.17).add(new V3(0,0.04,0)); R.numB.rotation.set(0,full+Math.PI,0);}
   if(v.label){v.label.visible=showNames;v.label.position.set(p[0],j-drop+2.5,p[1]);}
 }
 
@@ -1202,7 +1236,14 @@ function update(dtReal){
     if(v.lastP&&!snap){v.phase+=Math.hypot(p[0]-v.lastP[0],p[1]-v.lastP[1])*2.6;} v.lastP=p;
     const sp=velOf(a,t)[2];
     const pose=poseFor(a.id,t);
-    if(v.rig){updateRig(v,a,p,j,dtG,snap,sp,pose,b);continue;}
+    if(v.rig){ const full=v.root.rotation.y;
+      const spinning=a.spins.some(q=>t>=q[0]-0.1&&t<=q[1]+0.1);
+      if(v.legAng==null||snap){v.legAng=full;v.turnT=null;}
+      else if(sp>0.6||spinning||j>0.02||CROUCH[pose.name]||pose.legs){ v.legAng=lerpAng(v.legAng,full,1-Math.exp(-14*Math.max(dtG,0))); v.turnT=null; }
+      else { if(v.turnT==null&&Math.abs(angDiff(v.legAng,full))>0.5){v.turnT=0;v.turnFrom=v.legAng;}
+        if(v.turnT!=null){ v.turnT+=Math.max(dtG,0)/0.36; const u=Math.min(1,v.turnT); v.legAng=lerpAng(v.turnFrom,full,smooth(u)); if(u>=1) v.turnT=null; } }
+      v.root.rotation.y=v.legAng;
+      updateRig(v,a,p,j,dtG,snap,sp,pose,b,full);continue;}
     const arms=armsFor(pose,t,a);
     const crouch=arms&&arms.crouch?arms.crouch:0;
     let lx=0,rx=0,lz=0,rz=0;
