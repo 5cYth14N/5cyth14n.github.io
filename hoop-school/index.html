@@ -781,7 +781,8 @@ function facingBase(id,t){
   if(look==null){const dx=q[0]-p[0],dz=q[1]-p[1]; look=(dx*dx+dz*dz<0.01)?(a._lastLook||Math.PI/2):Math.atan2(dx,dz);}
   a._lastLook=look;
   const sprinting=a.stance==='defend'&&!a.slide&&v[2]>2.1;
-  if(!sprinting&&(explicit||a.stance==='defend'||a.stance==='ref')) return look;
+  const walkingRef=a.stance==='ref'&&!explicit&&v[2]>0.5;
+  if(!sprinting&&!walkingRef&&(explicit||a.stance==='defend'||a.stance==='ref')) return look;
   if(v[2]>0.25){const mv=Math.atan2(v[0],v[1]);return lerpAng(look,mv,clamp((v[2]-0.25)/0.8,0,1));}
   return look;}
 function facing(id,t){return facingBase(id,t)+spinOff(L.A[id],t);}
