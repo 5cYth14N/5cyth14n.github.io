@@ -913,6 +913,7 @@ function makeCharTpl(gltf,R,modeFor){
   const root=new THREE.Group(); root.add(xb); root.updateMatrixWorld(true);
   const g=n=>xb.getObjectByName('mixamorig'+n), T=n=>new V3().fromArray(R.targets[n]);
   const hips0=g('Hips').position.clone();
+  const POSTURE=['Spine','Spine1','Spine2','Neck','Head']; const q0={}; POSTURE.forEach(n=>q0[n]=g(n).quaternion.clone());
   const setW=(b,p)=>{b.position.copy(b.parent.worldToLocal(p.clone()));b.updateMatrixWorld(true);};
   const scaleSub=(o,k)=>o.traverse(c=>{if(c!==o&&c.isBone) c.position.multiplyScalar(k);});
   const chain=(bn,cn,tn,sub)=>{const b=g(bn),c=g(cn),tgt=T(tn||cn);const bw=b.getWorldPosition(new V3()),cw=c.getWorldPosition(new V3());
@@ -939,9 +940,12 @@ function makeCharTpl(gltf,R,modeFor){
     const sm=new THREE.SkinnedMesh(geo,mat); sm.castShadow=true; sm.frustumCulled=false; root.add(sm); sm.bind(skeleton);
   }
   const hips1=g('Hips').position.clone(), ratio=hips1.y/hips0.y;
+  const dq={}; POSTURE.forEach(n=>{dq['mixamorig'+n+'.quaternion']=q0[n].clone().invert().multiply(g(n).quaternion);});
   const clips={}; for(const n of ['idle','walk','run']){ const c=clipNamed(n).clone();
     c.tracks=c.tracks.filter(tr=>tr.name.endsWith('.quaternion')||tr.name==='mixamorigHips.position').map(tr=>{
-      if(tr.name!=='mixamorigHips.position') return tr; const t2=tr.clone();
+      if(dq[tr.name]){ const t2=tr.clone(); t2.values=Float32Array.from(tr.values); const q=new Q();
+        for(let i=0;i<t2.values.length;i+=4){ q.fromArray(t2.values,i).multiply(dq[tr.name]); q.toArray(t2.values,i);} return t2; }
+      if(tr.name!=='mixamorigHips.position') return tr; const t2=tr.clone(); t2.values=Float32Array.from(tr.values);
       for(let i=0;i<t2.values.length;i+=3){ for(let k=0;k<3;k++) t2.values[i+k]=hips1.getComponent(k)+(t2.values[i+k]-hips0.getComponent(k))*ratio; } return t2; });
     clips[n]=c; }
   return measureTpl({root,clips,numbers:false});}
