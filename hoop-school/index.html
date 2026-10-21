@@ -239,7 +239,7 @@ const L_ALL=[
  actors:[actor('Y','blue',4,'You',[[0,-1.5,1],[4,-1.5,1],[6.5,10.5,1],[10,10.5,1],[11.5,7.9,0],[14.5,7.9,0],[16,4.6,3],[18.5,4.6,3],[20.5,14.4,5.5],[24,14.4,5.5]])],
  ball:[H('Y',0,24)],
  fx:[{k:'zone',z:'front',t0:3.6,t1:7.4,color:0x2b6fe0},{k:'zone',z:'halfline',t0:3.6,t1:7.4,color:0xffd24a},{k:'zone',z:'paint',t0:7.5,t1:11.4,color:0xffd24a},{k:'zone',z:'ftline',t0:11.5,t1:15,color:0xffffff},{k:'zone',z:'outside3',t0:15.1,t1:19,color:0x39d98a},{k:'zone',z:'out',t0:19.1,t1:24,color:0xff4b4b}],
- caps:[[0,'This is a basketball court. Each team tries to throw the ball through the other team\'s hoop.'],[3.6,'The half-court line splits the court. Your team attacks one hoop and defends the other one.'],[7.5,'The colored box under the hoop is called the paint, or the key.'],[11.5,'This is the free throw line. Free shots are taken from here.'],[15.1,'See the big arc? Baskets from behind it count for 3 points!'],[19.1,'The lines around the edge are out of bounds. Step on them with the ball and the other team gets it.']],
+ caps:[[0,'This is a basketball court. Each team tries to throw the ball through the other team\'s hoop.'],[3.6,'The half-court line splits the court. Your team attacks one hoop and defends the other one.'],[7.5,'The colored box under the hoop is called the paint, or the key.'],[11.5,'This is the free throw line. Free shots are taken from here.'],[15.1,'See the big arc? Baskets from behind it count for 3 points in professional big games but it is still 2 points for you!'],[19.1,'The lines around the edge are out of bounds. Step on them with the ball and the other team gets it.']],
  cam:[[0,[0,17,18],[0,0,0]],[4,[0,17,18],[0,0,0]],[7.2,[5,11,10],[10.5,0,0]],[15,[4,11,11],[10,0,0]],[19,[3,14,14],[8,0,0]],[24,[3,14,14],[8,0,0]]]},
 
 {id:'scoring',cat:'basics',title:'How to Score',sub:'1, 2 and 3 points',dur:17,
@@ -248,7 +248,7 @@ const L_ALL=[
  ball:[H('Y',0,1.0),H('Y',1.0,1.5,'high'),SH('Y',1.5,2.4,{arc:1.0}),FR([[2.4,HX,2.5,0],[2.85,12.3,BR,-0.4],[3.4,'B',0.6]]),H('B',3.4,4.6),PS('B','Y',4.6,5.4,{arc:0.5}),H('Y',5.4,6.0),H('Y',6.0,6.5,'high'),SH('Y',6.5,7.8,{arc:1.9}),FR([[7.8,HX,2.5,0],[8.25,12.2,BR,-0.5],[8.8,'B',0.6]]),H('B',8.8,10.7),PS('B','Y',10.7,11.5,{bounce:1}),H('Y',11.5,12.6),H('Y',12.6,13.0,'high'),SH('Y',13.0,13.9,{arc:1.3}),netDrop(13.9)],
  scores:[[2.3,'blue',2],[7.65,'blue',3],[13.75,'blue',1]],
  fx:[{k:'zone',z:'inside3',t0:0,t1:3.6,color:0x39d98a},{k:'zone',z:'outside3',t0:4.2,t1:8.6,color:0xffd24a},{k:'zone',z:'ftline',t0:9.4,t1:14.5,color:0xffffff}],
- caps:[[0,'A basket from inside the big arc is worth 2 points.'],[4.2,'Now step behind the 3-point line. A basket from out here is worth 3!'],[9.4,'A free throw is taken from the free throw line. It is worth 1 point.'],[14.6,'The team with the most points at the end wins!']],
+ caps:[[0,'A basket from inside the big arc is worth 2 points.'],[4.2,'Now step behind the 3-point line. A basket from out here is worth 3, but for your game is still 2 points!'],[9.4,'A free throw is taken from the free throw line. It is worth 1 point.'],[14.6,'The team with the most points at the end wins!']],
  cam:[[0,[9,5.5,11],[10,1.5,0]],[3,[6,6.5,12],[8.5,1.5,0]],[9,[6,6.5,12],[8.5,1.5,0]],[11,[7,4.5,9],[10,1.8,0]]]},
 
 {id:'dribble',cat:'basics',title:'Dribbling',sub:'Bounce, walk, run',dur:16,
@@ -339,7 +339,7 @@ return {id:'defense',cat:'basics',title:'Defense',sub:'Stance and sliding',dur:1
          actor('D','red',9,'Defender',[[0,7.7,3.6],[2.7,7.7,3.6],[3.6,8.0,3.0],[5,9.8,1.9],[9,10.0,1.8]],{stance:'defend',face:[[0,99,'Y']],jumps:[[1.75,2.55,0.55]],pose:[[1.5,2.7,'block']]})],
  ball:[H('Y',0,1.4),H('Y',1.4,2.0,'high'),H('Y',2.0,2.4),DR('Y',2.4,3.9),H('Y',3.9,4.4),H('Y',4.4,4.7,'high'),SH('Y',4.7,5.3,{arc:0.45}),netDrop(5.3)],
  scores:[[5.2,'blue',2]],
- caps:[[0,'The pump fake: pretend you are going to shoot.'],[1.4,'Lift the ball up like a real shot. Keep your feet on the floor!'],[1.9,'The defender jumps to block it…'],[2.4,'…and while they\'re in the air, dribble right past!'],[4.2,'Score!']],
+ caps:[[0,'The pump fake: pretend you are going to shoot.'],[1.4,'Lift the ball up like a real shot. Keep your feet on the floor! (otherwise you will double dribble!)'],[1.9,'The defender jumps to block it…'],[2.4,'…and while they\'re in the air, dribble right past!'],[4.2,'Score!']],
  slow:[[1.3,3.0]],
  cam:[[0,[4.5,3.5,8.5],[8,1.6,3]],[3,[4.5,3.5,8.5],[8,1.6,3]],[4.3,[8,5,-6],[11,1.8,0.5]],[9,[8,5,-6],[11,1.8,0.5]]]},
 
