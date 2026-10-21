@@ -123,6 +123,8 @@ input[type=range]{accent-color:var(--accent);height:28px}
 .toggles label{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;cursor:pointer}
 .toggles input{width:18px;height:18px;accent-color:var(--accent)}
 .keys{color:var(--muted);font-size:12px}
+.credits{color:var(--muted);font-size:12px;line-height:1.5;max-width:90ch}
+.credits a{color:inherit}
 .keys kbd{font-family:var(--body);font-weight:800;background:var(--chip);border-radius:5px;padding:1px 6px}
 .loading{position:absolute;inset:0;display:flex;gap:12px;align-items:center;justify-content:center;color:#fff;font-family:var(--display);font-size:22px;letter-spacing:.5px;background:var(--stage);z-index:2}
 .spinball{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff9a4a,#e0661a);border:3px solid #1d1008;animation:bounce .6s ease-in infinite alternate}
@@ -192,6 +194,7 @@ input[type=range]{accent-color:var(--accent);height:28px}
       </div>
       <div class="keys"><kbd>Space</kbd> play/pause · <kbd>←</kbd> <kbd>→</kbd> steps · <kbd>-</kbd> <kbd>+</kbd> speed</div>
     </section>
+    <footer class="credits">3D players: blue team based on a free basketball player model from Sketchfab; red team based on <a href="https://sketchfab.com/3d-models/male-character-basketball-player-15d5ce0f9f424c2c88d06233c0420e1f" target="_blank" rel="noopener">“male_character_Basketball_Player”</a> by <a href="https://sketchfab.com/mynameisRJ" target="_blank" rel="noopener">Raj_Kumar_Jadhav</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (simplified, rigged and recolored). Referee: Xbot from the three.js examples.</footer>
   </main>
 </div>
 
@@ -239,7 +242,7 @@ const L_ALL=[
  actors:[actor('Y','blue',4,'You',[[0,-1.5,1],[4,-1.5,1],[6.5,10.5,1],[10,10.5,1],[11.5,7.9,0],[14.5,7.9,0],[16,4.6,3],[18.5,4.6,3],[20.5,14.4,5.5],[24,14.4,5.5]])],
  ball:[H('Y',0,24)],
  fx:[{k:'zone',z:'front',t0:3.6,t1:7.4,color:0x2b6fe0},{k:'zone',z:'halfline',t0:3.6,t1:7.4,color:0xffd24a},{k:'zone',z:'paint',t0:7.5,t1:11.4,color:0xffd24a},{k:'zone',z:'ftline',t0:11.5,t1:15,color:0xffffff},{k:'zone',z:'outside3',t0:15.1,t1:19,color:0x39d98a},{k:'zone',z:'out',t0:19.1,t1:24,color:0xff4b4b}],
- caps:[[0,'This is a basketball court. Each team tries to throw the ball through the other team\'s hoop.'],[3.6,'The half-court line splits the court. Your team attacks one hoop and defends the other one.'],[7.5,'The colored box under the hoop is called the paint, or the key.'],[11.5,'This is the free throw line. Free shots are taken from here.'],[15.1,'See the big arc? Baskets from behind it count for 3 points in professional big games but it is still 2 points for you!'],[19.1,'The lines around the edge are out of bounds. Step on them with the ball and the other team gets it.']],
+ caps:[[0,'This is a basketball court. Each team tries to throw the ball through the other team\'s hoop.'],[3.6,'The half-court line splits the court. Your team attacks one hoop and defends the other one.'],[7.5,'The colored box under the hoop is called the paint, or the key.'],[11.5,'This is the free throw line. Free shots are taken from here.'],[15.1,'See the big arc? Baskets from behind it count for 3 points!'],[19.1,'The lines around the edge are out of bounds. Step on them with the ball and the other team gets it.']],
  cam:[[0,[0,17,18],[0,0,0]],[4,[0,17,18],[0,0,0]],[7.2,[5,11,10],[10.5,0,0]],[15,[4,11,11],[10,0,0]],[19,[3,14,14],[8,0,0]],[24,[3,14,14],[8,0,0]]]},
 
 {id:'scoring',cat:'basics',title:'How to Score',sub:'1, 2 and 3 points',dur:17,
@@ -248,7 +251,7 @@ const L_ALL=[
  ball:[H('Y',0,1.0),H('Y',1.0,1.5,'high'),SH('Y',1.5,2.4,{arc:1.0}),FR([[2.4,HX,2.5,0],[2.85,12.3,BR,-0.4],[3.4,'B',0.6]]),H('B',3.4,4.6),PS('B','Y',4.6,5.4,{arc:0.5}),H('Y',5.4,6.0),H('Y',6.0,6.5,'high'),SH('Y',6.5,7.8,{arc:1.9}),FR([[7.8,HX,2.5,0],[8.25,12.2,BR,-0.5],[8.8,'B',0.6]]),H('B',8.8,10.7),PS('B','Y',10.7,11.5,{bounce:1}),H('Y',11.5,12.6),H('Y',12.6,13.0,'high'),SH('Y',13.0,13.9,{arc:1.3}),netDrop(13.9)],
  scores:[[2.3,'blue',2],[7.65,'blue',3],[13.75,'blue',1]],
  fx:[{k:'zone',z:'inside3',t0:0,t1:3.6,color:0x39d98a},{k:'zone',z:'outside3',t0:4.2,t1:8.6,color:0xffd24a},{k:'zone',z:'ftline',t0:9.4,t1:14.5,color:0xffffff}],
- caps:[[0,'A basket from inside the big arc is worth 2 points.'],[4.2,'Now step behind the 3-point line. A basket from out here is worth 3, but for your game is still 2 points!'],[9.4,'A free throw is taken from the free throw line. It is worth 1 point.'],[14.6,'The team with the most points at the end wins!']],
+ caps:[[0,'A basket from inside the big arc is worth 2 points.'],[4.2,'Now step behind the 3-point line. A basket from out here is worth 3!'],[9.4,'A free throw is taken from the free throw line. It is worth 1 point.'],[14.6,'The team with the most points at the end wins!']],
  cam:[[0,[9,5.5,11],[10,1.5,0]],[3,[6,6.5,12],[8.5,1.5,0]],[9,[6,6.5,12],[8.5,1.5,0]],[11,[7,4.5,9],[10,1.8,0]]]},
 
 {id:'dribble',cat:'basics',title:'Dribbling',sub:'Bounce, walk, run',dur:16,
@@ -339,7 +342,7 @@ return {id:'defense',cat:'basics',title:'Defense',sub:'Stance and sliding',dur:1
          actor('D','red',9,'Defender',[[0,7.7,3.6],[2.7,7.7,3.6],[3.6,8.0,3.0],[5,9.8,1.9],[9,10.0,1.8]],{stance:'defend',face:[[0,99,'Y']],jumps:[[1.75,2.55,0.55]],pose:[[1.5,2.7,'block']]})],
  ball:[H('Y',0,1.4),H('Y',1.4,2.0,'high'),H('Y',2.0,2.4),DR('Y',2.4,3.9),H('Y',3.9,4.4),H('Y',4.4,4.7,'high'),SH('Y',4.7,5.3,{arc:0.45}),netDrop(5.3)],
  scores:[[5.2,'blue',2]],
- caps:[[0,'The pump fake: pretend you are going to shoot.'],[1.4,'Lift the ball up like a real shot. Keep your feet on the floor! (otherwise you will double dribble!)'],[1.9,'The defender jumps to block it…'],[2.4,'…and while they\'re in the air, dribble right past!'],[4.2,'Score!']],
+ caps:[[0,'The pump fake: pretend you are going to shoot.'],[1.4,'Lift the ball up like a real shot. Keep your feet on the floor!'],[1.9,'The defender jumps to block it…'],[2.4,'…and while they\'re in the air, dribble right past!'],[4.2,'Score!']],
  slow:[[1.3,3.0]],
  cam:[[0,[4.5,3.5,8.5],[8,1.6,3]],[3,[4.5,3.5,8.5],[8,1.6,3]],[4.3,[8,5,-6],[11,1.8,0.5]],[9,[8,5,-6],[11,1.8,0.5]]]},
 
@@ -877,15 +880,71 @@ function armsFor(pose,t,a){
 /* ================= rigged 3D players (Xbot) ================= */
 const V3=THREE.Vector3, Q=THREE.Quaternion, UP=new V3(0,1,0);
 let XBOT=null, RIG={scale:1,ankle:0.08};
-function loadXbot(){
-  return fetch('xbot.glb').then(r=>{if(!r.ok) throw new Error('model '+r.status);return r.arrayBuffer();})
-    .then(buf=>new Promise((ok,err)=>new THREE.GLTFLoader().parse(buf,'',ok,err)));}
+const ASSET_EXT='glb';
+function loadGLB(base){
+  const bufP=ASSET_EXT==='txt'
+    ? fetch(base+'-model.txt').then(r=>{if(!r.ok) throw new Error(base+' '+r.status);return r.text();}).then(txt=>{const bin=atob(txt.trim());const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);return u.buffer;})
+    : fetch(base+'.glb').then(r=>{if(!r.ok) throw new Error(base+' '+r.status);return r.arrayBuffer();});
+  return bufP.then(buf=>new Promise((ok,err)=>new THREE.GLTFLoader().parse(buf,'',ok,err)));}
+const loadXbot=()=>loadGLB('xbot');
 function clipNamed(n){return XBOT.animations.find(c=>c.name===n);}
-function measureRig(){
-  const m=THREE.SkeletonUtils.clone(XBOT.scene); const mx=new THREE.AnimationMixer(m); mx.clipAction(clipNamed('idle')).play(); mx.update(0); m.updateMatrixWorld(true);
+const TPL={};
+function measureTpl(tpl){
+  const m=THREE.SkeletonUtils.clone(tpl.root); const mx=new THREE.AnimationMixer(m); mx.clipAction(tpl.clips.idle).play(); mx.update(0); m.updateMatrixWorld(true);
   const top=m.getObjectByName('mixamorigHeadTop_End').getWorldPosition(new V3()).y;
-  RIG.scale=1.8/top;
-  RIG.ankle=m.getObjectByName('mixamorigLeftFoot').getWorldPosition(new V3()).y*RIG.scale;}
+  tpl.scale=1.8/top; tpl.ankle=m.getObjectByName('mixamorigLeftFoot').getWorldPosition(new V3()).y*tpl.scale; return tpl;}
+function measureRig(){
+  TPL.xbot=measureTpl({root:XBOT.scene,xbot:true,numbers:true,clips:{idle:clipNamed('idle'),walk:clipNamed('walk'),run:clipNamed('run')}});
+  RIG.scale=TPL.xbot.scale; RIG.ankle=TPL.xbot.ankle;}
+/* Custom characters: static meshes rigged in-page onto the Xbot skeleton (joint targets + skin weights prepared offline). */
+const CHAR_RIGS={"A":{"targets":{"HeadTop":[0.0,1.897,0.0015],"Head":[0.0,1.7,0.0384],"Neck":[0.0,1.59,0.0236],"Spine2":[0.0,1.42,0.0282],"Spine1":[0.0,1.3,0.0241],"Spine":[0.0,1.17,-0.0457],"Hips":[0.0,1.03,-0.0356],"LeftUpLeg":[0.1126,0.98,-0.0009],"LeftLeg":[0.1324,0.53,-0.0183],"LeftFoot":[0.1524,0.1,-0.0028],"LeftToeBase":[0.1982,0.04,0.128],"LeftToe_End":[0.2179,0.03,0.1741],"LeftShoulder":[0.05,1.52,-0.081],"LeftArm":[0.1816,1.48,-0.0455],"LeftForeArm":[0.2458,1.14,-0.062],"LeftHand":[0.2732,0.93,-0.0267],"LeftTip":[0.2519,0.8,-0.0197],"LeftHandMiddle1":[0.2636,0.8715,-0.0236],"RightUpLeg":[-0.0812,0.98,0.0008],"RightLeg":[-0.135,0.53,-0.0258],"RightFoot":[-0.153,0.1,-0.0025],"RightToeBase":[-0.2066,0.04,0.1277],"RightToe_End":[-0.2296,0.03,0.1735],"RightShoulder":[-0.05,1.52,-0.0831],"RightArm":[-0.1824,1.48,-0.0798],"RightForeArm":[-0.2495,1.14,-0.0667],"RightHand":[-0.272,0.93,-0.0185],"RightTip":[-0.2526,0.8,-0.0262],"RightHandMiddle1":[-0.2633,0.8715,-0.022]},"bones":["Hips","Spine","Spine1","Spine2","Neck","Head","LeftShoulder","LeftArm","LeftForeArm","LeftHand","LeftUpLeg","LeftLeg","LeftFoot","LeftToeBase","RightShoulder","RightArm","RightForeArm","RightHand","RightUpLeg","RightLeg","RightFoot","RightToeBase"],"scale":1.0,"shift":[0.00094,0.95056,0.00106]},"B":{"targets":{"HeadTop":[0.0,1.824,0.0041],"Head":[0.0,1.62,0.0711],"Neck":[0.0,1.52,-0.0444],"Spine2":[0.0,1.33,-0.0073],"Spine1":[0.0,1.2,-0.0027],"Spine":[0.0,1.08,-0.0406],"Hips":[0.0,0.96,-0.0126],"LeftUpLeg":[0.1001,0.92,-0.0119],"LeftLeg":[0.0814,0.5,-0.0332],"LeftFoot":[0.0909,0.09,0.0231],"LeftToeBase":[0.0997,0.04,0.1199],"LeftToe_End":[0.1035,0.03,0.1514],"LeftShoulder":[0.05,1.44,-0.0081],"LeftArm":[0.18,1.397,-0.0632],"LeftForeArm":[0.46,1.4141,-0.0892],"LeftHand":[0.7,1.3998,-0.0637],"LeftTip":[0.875,1.3878,-0.0699],"LeftHandMiddle1":[0.7787,1.3944,-0.0665],"RightUpLeg":[-0.1009,0.92,-0.0109],"RightLeg":[-0.0854,0.5,-0.0337],"RightFoot":[-0.0913,0.09,0.0216],"RightToeBase":[-0.1009,0.04,0.1184],"RightToe_End":[-0.1051,0.03,0.15],"RightShoulder":[-0.05,1.44,-0.0068],"RightArm":[-0.18,1.395,-0.0626],"RightForeArm":[-0.46,1.4057,-0.091],"RightHand":[-0.7,1.3904,-0.0678],"RightTip":[-0.875,1.3785,-0.0742],"RightHandMiddle1":[-0.7787,1.3851,-0.0707]},"bones":["Hips","Spine","Spine1","Spine2","Neck","Head","LeftShoulder","LeftArm","LeftForeArm","LeftHand","LeftUpLeg","LeftLeg","LeftFoot","LeftToeBase","RightShoulder","RightArm","RightForeArm","RightHand","RightUpLeg","RightLeg","RightFoot","RightToeBase"],"scale":0.01,"shift":[-0.00025,0.00477,-0.02261]}};
+function recolorTex(tex,mode){
+  const img=tex.image; if(!img) return tex; const w=img.width,h=img.height; const c=document.createElement('canvas'); c.width=w; c.height=h;
+  const x=c.getContext('2d'); x.drawImage(img,0,0);
+  if(mode){ const d=x.getImageData(0,0,w,h), p=d.data;
+    for(let i=0;i<p.length;i+=4){ const r=p[i],g=p[i+1],b=p[i+2]; const mx=Math.max(r,g,b), mn=Math.min(r,g,b); const sat=mx?(mx-mn)/mx:0, v=mx/255;
+      if(mode==='white'&&sat<0.16&&v>0.5){ const k=Math.pow(v,1.25); p[i]=40*k; p[i+1]=104*k; p[i+2]=218*k; }
+      else if(mode==='yellow'&&mx>40&&b<0.6*g&&g>0.62*r&&r>0.55*g){ p[i]=mx*0.9; p[i+1]=mx*0.2; p[i+2]=mx*0.17; } }
+    x.putImageData(d,0,0); }
+  const t=new THREE.CanvasTexture(c); t.flipY=tex.flipY; t.wrapS=tex.wrapS; t.wrapT=tex.wrapT; t.anisotropy=4; return t;}
+function makeCharTpl(gltf,R,modeFor){
+  const xb=THREE.SkeletonUtils.clone(XBOT.scene);
+  const rm=[]; xb.traverse(o=>{if(o.isSkinnedMesh) rm.push(o);}); rm.forEach(m=>m.parent.remove(m));
+  const root=new THREE.Group(); root.add(xb); root.updateMatrixWorld(true);
+  const g=n=>xb.getObjectByName('mixamorig'+n), T=n=>new V3().fromArray(R.targets[n]);
+  const hips0=g('Hips').position.clone();
+  const setW=(b,p)=>{b.position.copy(b.parent.worldToLocal(p.clone()));b.updateMatrixWorld(true);};
+  const scaleSub=(o,k)=>o.traverse(c=>{if(c!==o&&c.isBone) c.position.multiplyScalar(k);});
+  const chain=(bn,cn,tn,sub)=>{const b=g(bn),c=g(cn),tgt=T(tn||cn);const bw=b.getWorldPosition(new V3()),cw=c.getWorldPosition(new V3());
+    const k=bw.distanceTo(tgt)/Math.max(1e-6,bw.distanceTo(cw)); c.position.multiplyScalar(k);
+    if(sub){ for(const ch of b.children){ if(!ch.isBone) continue; if(ch!==c) ch.position.multiplyScalar(k); scaleSub(ch,k);} }
+    b.updateMatrixWorld(true); aimBone(b,c,tgt);};
+  setW(g('Hips'),T('Hips'));
+  for(const S of ['Left','Right']) setW(g(S+'UpLeg'),T(S+'UpLeg'));
+  setW(g('Spine'),T('Spine')); chain('Spine','Spine1'); chain('Spine1','Spine2');
+  setW(g('Neck'),T('Neck')); for(const S of ['Left','Right']) setW(g(S+'Shoulder'),T(S+'Shoulder'));
+  chain('Neck','Head'); chain('Head','HeadTop_End','HeadTop',true);
+  for(const S of ['Left','Right']){ chain(S+'Shoulder',S+'Arm'); chain(S+'Arm',S+'ForeArm'); chain(S+'ForeArm',S+'Hand'); chain(S+'Hand',S+'HandMiddle1',null,true);
+    chain(S+'UpLeg',S+'Leg'); chain(S+'Leg',S+'Foot'); chain(S+'Foot',S+'ToeBase'); chain(S+'ToeBase',S+'Toe_End',null,true); }
+  root.updateMatrixWorld(true);
+  const bones=[]; xb.traverse(o=>{if(o.isBone) bones.push(o);});
+  const skeleton=new THREE.Skeleton(bones); const bi=R.bones.map(n=>bones.indexOf(g(n)));
+  gltf.scene.updateMatrixWorld(true); const meshes=[]; gltf.scene.traverse(o=>{if(o.isMesh) meshes.push(o);});
+  for(const o of meshes){
+    const geo=o.geometry.clone(); geo.applyMatrix4(o.matrixWorld); geo.scale(R.scale,R.scale,R.scale); geo.translate(R.shift[0],R.shift[1],R.shift[2]);
+    const J=geo.getAttribute('_skinj'), W=geo.getAttribute('_skinw'); const si=new Uint16Array(J.count*4); for(let i=0;i<si.length;i++) si[i]=bi[J.array[i]];
+    geo.setAttribute('skinIndex',new THREE.Uint16BufferAttribute(si,4)); geo.setAttribute('skinWeight',new THREE.Float32BufferAttribute(Float32Array.from(W.array),4));
+    geo.deleteAttribute('_skinj'); geo.deleteAttribute('_skinw'); ['tangent','color_0'].forEach(a=>geo.getAttribute(a)&&geo.deleteAttribute(a));
+    const om=o.material; const mat=new THREE.MeshStandardMaterial({map:om.map?recolorTex(om.map,modeFor(om.name||'')):null,roughness:0.72,metalness:0,skinning:true,side:om.side,alphaTest:om.alphaTest||0});
+    const sm=new THREE.SkinnedMesh(geo,mat); sm.castShadow=true; sm.frustumCulled=false; root.add(sm); sm.bind(skeleton);
+  }
+  const hips1=g('Hips').position.clone(), ratio=hips1.y/hips0.y;
+  const clips={}; for(const n of ['idle','walk','run']){ const c=clipNamed(n).clone();
+    c.tracks=c.tracks.filter(tr=>tr.name.endsWith('.quaternion')||tr.name==='mixamorigHips.position').map(tr=>{
+      if(tr.name!=='mixamorigHips.position') return tr; const t2=tr.clone();
+      for(let i=0;i<t2.values.length;i+=3){ for(let k=0;k<3;k++) t2.values[i+k]=hips1.getComponent(k)+(t2.values[i+k]-hips0.getComponent(k))*ratio; } return t2; });
+    clips[n]=c; }
+  return measureTpl({root,clips,numbers:false});}
 function aimBone(bone,child,target){
   const bp=bone.getWorldPosition(new V3()), cp=child.getWorldPosition(new V3());
   const cur=cp.sub(bp); if(cur.lengthSq()<1e-10) return; cur.normalize();
@@ -911,23 +970,24 @@ function buildRig(a,idx){
   const cols={blue:[0x2b6fe0,0xf2f5fb],red:[0xe0403a,0xf2f5fb],ref:[0x1c1c1f,0xf4f4f4]}[a.team];
   const bodyM=new THREE.MeshStandardMaterial({color:cols[0],roughness:0.55,metalness:0.05,skinning:true});
   const jointM=new THREE.MeshStandardMaterial({color:cols[1],roughness:0.5,metalness:0.05,skinning:true});
-  const model=THREE.SkeletonUtils.clone(XBOT.scene);
-  model.traverse(o=>{if(o.isSkinnedMesh){o.material=/Joints/.test(o.material.name)?jointM:bodyM;o.castShadow=true;o.frustumCulled=false;}});
-  model.scale.setScalar(RIG.scale);
+  const tpl=TPL[a.team]||TPL.xbot;
+  const model=THREE.SkeletonUtils.clone(tpl.root);
+  model.traverse(o=>{if(o.isSkinnedMesh){if(tpl.xbot) o.material=/Joints/.test(o.material.name)?jointM:bodyM;o.castShadow=true;o.frustumCulled=false;}});
+  model.scale.setScalar(tpl.scale);
   const root=new THREE.Group(); root.add(model); scene.add(root);
   const mixer=new THREE.AnimationMixer(model);
-  const act={}; for(const n of ['idle','walk','run']){const c=clipNamed(n);if(!c) continue;act[n]=mixer.clipAction(c);act[n].play();act[n].setEffectiveWeight(n==='idle'?1:0);}
+  const act={}; for(const n of ['idle','walk','run']){const c=tpl.clips[n];if(!c) continue;act[n]=mixer.clipAction(c);act[n].play();act[n].setEffectiveWeight(n==='idle'?1:0);}
   // desync gait between players
   mixer.update((idx*0.37)%1);
   const g=n=>model.getObjectByName('mixamorig'+n);
   root.updateMatrixWorld(true);
   const chain=(A,B,C)=>{const ch={a:g(A),b:g(B),c:g(C)};const pa=ch.a.getWorldPosition(new V3()),pb=ch.b.getWorldPosition(new V3()),pc=ch.c.getWorldPosition(new V3());ch.l1=pa.distanceTo(pb);ch.l2=pb.distanceTo(pc);ch.w=0;ch.cur=null;ch.pole=null;return ch;};
-  const rig={model,mixer,act,spine:g('Spine'),spine2:g('Spine2'),head:g('Head'),
+  const rig={tpl,model,mixer,act,spine:g('Spine'),spine2:g('Spine2'),head:g('Head'),
     armL:chain('LeftArm','LeftForeArm','LeftHand'),armR:chain('RightArm','RightForeArm','RightHand'),
     legL:chain('LeftUpLeg','LeftLeg','LeftFoot'),legR:chain('RightUpLeg','RightLeg','RightFoot')};
   rig.reset=[];[rig.spine,rig.spine2,rig.armL.a,rig.armL.b,rig.armR.a,rig.armR.b,rig.legL.a,rig.legL.b,rig.legR.a,rig.legR.b,rig.legL.c,rig.legR.c].forEach(b=>rig.reset.push([b,b.quaternion.clone()]));
   const extras=[];
-  if(a.team!=='ref'&&a.num!==''){const nm=new THREE.MeshBasicMaterial({map:textTex(String(a.num)),transparent:true,depthWrite:false});
+  if(tpl.numbers&&a.team!=='ref'&&a.num!==''){const nm=new THREE.MeshBasicMaterial({map:textTex(String(a.num)),transparent:true,depthWrite:false});
     rig.numF=new THREE.Mesh(new THREE.PlaneGeometry(0.24,0.24),nm);rig.numB=new THREE.Mesh(new THREE.PlaneGeometry(0.26,0.26),nm);scene.add(rig.numF);scene.add(rig.numB);extras.push(rig.numF,rig.numB);}
   let label=null;
   if(a.label){const isYou=a.label==='You';const tex=textTex(a.label,{w:256,h:72,size:44,bg:isYou?'#f0761a':(a.team==='ref'?'#222222':'rgba(15,29,54,0.85)'),color:'#fff'});
@@ -1003,8 +1063,8 @@ function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr){
         if(!f.stepping&&dtG>0&&f.plant.distanceTo(desired)>0.2&&!(other&&other.stepping)){f.stepping=true;f.from=f.plant.clone();f.s=0;}
         let pos=f.plant, lift=0;
         if(f.stepping){f.s+=Math.max(dtG,0)/clamp(0.17/(1+sp*0.35),0.08,0.17);const u=Math.min(1,f.s);pos=f.from.clone().lerp(desired,smooth(u));lift=0.13*Math.sin(Math.PI*u);if(u>=1){f.stepping=false;f.plant=desired.clone();pos=f.plant;}}
-        tg=pos.clone().add(new V3(0,RIG.ankle+lift,0));}
-      else if(mode==='lunge'){tg=ground.clone().addScaledVector(Lf,side*0.14).addScaledVector(F,side>0?0.42:-0.36).add(new V3(0,RIG.ankle,0));}
+        tg=pos.clone().add(new V3(0,R.tpl.ankle+lift,0));}
+      else if(mode==='lunge'){tg=ground.clone().addScaledVector(Lf,side*0.14).addScaledVector(F,side>0?0.42:-0.36).add(new V3(0,R.tpl.ankle,0));}
       else {tg=leg.c.getWorldPosition(new V3()).add(new V3(0,Math.min(0.22,j*0.6),0)).addScaledVector(F,-0.06);}
       const hip=leg.a.getWorldPosition(new V3());
       twoBone(leg,tg,hip.clone().addScaledVector(F,1).addScaledVector(Lf,side*0.2).add(new V3(0,-0.3,0)));
@@ -1228,7 +1288,11 @@ const startId=(location.hash||'').slice(1);
 const si=L_ALL.findIndex(l=>l.id===startId);
 requestAnimationFrame(frame);
 const bootTimeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000));
-Promise.race([loadXbot(),bootTimeout]).then(g=>{XBOT=g;measureRig();}).catch(e=>{console.warn('Using simple players:',e&&e.message);XBOT=null;})
+Promise.race([Promise.all([loadXbot(),loadGLB('playerA').catch(e=>{console.warn(e&&e.message);return null;}),loadGLB('playerB').catch(e=>{console.warn(e&&e.message);return null;})]),bootTimeout])
+  .then(([g,pa,pb])=>{XBOT=g;measureRig();
+    try{ if(pa) TPL.blue=makeCharTpl(pa,CHAR_RIGS.A,()=> 'white'); }catch(e){console.warn('Player A rig failed:',e);}
+    try{ if(pb) TPL.red=makeCharTpl(pb,CHAR_RIGS.B,n=>/^(Body|Hair)$/.test(n)?null:'yellow'); }catch(e){console.warn('Player B rig failed:',e);} })
+  .catch(e=>{console.warn('Using simple players:',e&&e.message);XBOT=null;})
   .then(()=>{$('loading').hidden=true;loadLesson(si>=0?si:0,true);});
 window.__hoop={get t(){return t;},seek,loadLesson,setPlaying,L_ALL,cam:(q,g)=>{setAutoCam(false);camera.position.set(q[0],q[1],q[2]);controls.target.set(g[0],g[1],g[2]);camera.lookAt(controls.target);}};
 })();
