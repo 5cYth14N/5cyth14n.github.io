@@ -194,7 +194,7 @@ input[type=range]{accent-color:var(--accent);height:28px}
       </div>
       <div class="keys"><kbd>Space</kbd> play/pause · <kbd>←</kbd> <kbd>→</kbd> steps · <kbd>-</kbd> <kbd>+</kbd> speed</div>
     </section>
-    <footer class="credits">3D players: blue team based on a free basketball player model from Sketchfab; red team based on <a href="https://sketchfab.com/3d-models/male-character-basketball-player-15d5ce0f9f424c2c88d06233c0420e1f" target="_blank" rel="noopener">“male_character_Basketball_Player”</a> by <a href="https://sketchfab.com/mynameisRJ" target="_blank" rel="noopener">Raj_Kumar_Jadhav</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (simplified, rigged and recolored). Referee: Xbot from the three.js examples.</footer>
+    <footer class="credits">3D players based on <a href="https://sketchfab.com/3d-models/man-player-4c7133dbb06e4136891d59231372d818" target="_blank" rel="noopener">“Man Player”</a> by <a href="https://sketchfab.com/RiverofCreative" target="_blank" rel="noopener">RiverofCreative</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (simplified, re-rigged and recolored for the blue team). Referee: Xbot from the three.js examples.</footer>
   </main>
 </div>
 
@@ -897,16 +897,74 @@ function measureRig(){
   TPL.xbot=measureTpl({root:XBOT.scene,xbot:true,numbers:true,clips:{idle:clipNamed('idle'),walk:clipNamed('walk'),run:clipNamed('run')}});
   RIG.scale=TPL.xbot.scale; RIG.ankle=TPL.xbot.ankle;}
 /* Custom characters: static meshes rigged in-page onto the Xbot skeleton (joint targets + skin weights prepared offline). */
-const CHAR_RIGS={"A":{"targets":{"HeadTop":[0.0,1.897,0.0015],"Head":[0.0,1.7,0.0384],"Neck":[0.0,1.59,0.0236],"Spine2":[0.0,1.42,0.0282],"Spine1":[0.0,1.3,0.0241],"Spine":[0.0,1.17,-0.0457],"Hips":[0.0,1.03,-0.0356],"LeftUpLeg":[0.1126,0.98,-0.0009],"LeftLeg":[0.1324,0.53,-0.0183],"LeftFoot":[0.1524,0.1,-0.0028],"LeftToeBase":[0.1982,0.04,0.128],"LeftToe_End":[0.2179,0.03,0.1741],"LeftShoulder":[0.05,1.52,-0.081],"LeftArm":[0.1816,1.48,-0.0455],"LeftForeArm":[0.2458,1.14,-0.062],"LeftHand":[0.2732,0.93,-0.0267],"LeftTip":[0.2519,0.8,-0.0197],"LeftHandMiddle1":[0.2636,0.8715,-0.0236],"RightUpLeg":[-0.0812,0.98,0.0008],"RightLeg":[-0.135,0.53,-0.0258],"RightFoot":[-0.153,0.1,-0.0025],"RightToeBase":[-0.2066,0.04,0.1277],"RightToe_End":[-0.2296,0.03,0.1735],"RightShoulder":[-0.05,1.52,-0.0831],"RightArm":[-0.1824,1.48,-0.0798],"RightForeArm":[-0.2495,1.14,-0.0667],"RightHand":[-0.272,0.93,-0.0185],"RightTip":[-0.2526,0.8,-0.0262],"RightHandMiddle1":[-0.2633,0.8715,-0.022]},"bones":["Hips","Spine","Spine1","Spine2","Neck","Head","LeftShoulder","LeftArm","LeftForeArm","LeftHand","LeftUpLeg","LeftLeg","LeftFoot","LeftToeBase","RightShoulder","RightArm","RightForeArm","RightHand","RightUpLeg","RightLeg","RightFoot","RightToeBase"],"scale":1.0,"shift":[0.00094,0.95056,0.00106]},"B":{"targets":{"HeadTop":[0.0,1.824,0.0041],"Head":[0.0,1.62,0.0711],"Neck":[0.0,1.52,-0.0444],"Spine2":[0.0,1.33,-0.0073],"Spine1":[0.0,1.2,-0.0027],"Spine":[0.0,1.08,-0.0406],"Hips":[0.0,0.96,-0.0126],"LeftUpLeg":[0.1001,0.92,-0.0119],"LeftLeg":[0.0814,0.5,-0.0332],"LeftFoot":[0.0909,0.09,0.0231],"LeftToeBase":[0.0997,0.04,0.1199],"LeftToe_End":[0.1035,0.03,0.1514],"LeftShoulder":[0.05,1.44,-0.0081],"LeftArm":[0.18,1.397,-0.0632],"LeftForeArm":[0.46,1.4141,-0.0892],"LeftHand":[0.7,1.3998,-0.0637],"LeftTip":[0.875,1.3878,-0.0699],"LeftHandMiddle1":[0.7787,1.3944,-0.0665],"RightUpLeg":[-0.1009,0.92,-0.0109],"RightLeg":[-0.0854,0.5,-0.0337],"RightFoot":[-0.0913,0.09,0.0216],"RightToeBase":[-0.1009,0.04,0.1184],"RightToe_End":[-0.1051,0.03,0.15],"RightShoulder":[-0.05,1.44,-0.0068],"RightArm":[-0.18,1.395,-0.0626],"RightForeArm":[-0.46,1.4057,-0.091],"RightHand":[-0.7,1.3904,-0.0678],"RightTip":[-0.875,1.3785,-0.0742],"RightHandMiddle1":[-0.7787,1.3851,-0.0707]},"bones":["Hips","Spine","Spine1","Spine2","Neck","Head","LeftShoulder","LeftArm","LeftForeArm","LeftHand","LeftUpLeg","LeftLeg","LeftFoot","LeftToeBase","RightShoulder","RightArm","RightForeArm","RightHand","RightUpLeg","RightLeg","RightFoot","RightToeBase"],"scale":0.01,"shift":[-0.00025,0.00477,-0.02261]}};
 function recolorTex(tex,mode){
   const img=tex.image; if(!img) return tex; const w=img.width,h=img.height; const c=document.createElement('canvas'); c.width=w; c.height=h;
   const x=c.getContext('2d'); x.drawImage(img,0,0);
   if(mode){ const d=x.getImageData(0,0,w,h), p=d.data;
     for(let i=0;i<p.length;i+=4){ const r=p[i],g=p[i+1],b=p[i+2]; const mx=Math.max(r,g,b), mn=Math.min(r,g,b); const sat=mx?(mx-mn)/mx:0, v=mx/255;
       if(mode==='white'&&sat<0.16&&v>0.5){ const k=Math.pow(v,1.25); p[i]=40*k; p[i+1]=104*k; p[i+2]=218*k; }
+      else if(mode==='red2blue'&&r>1.45*g&&r>1.45*b&&mx>25){ p[i]=r*0.16; p[i+1]=r*0.42; p[i+2]=Math.min(255,r*0.98); }
       else if(mode==='yellow'&&mx>40&&b<0.6*g&&g>0.62*r&&r>0.55*g){ p[i]=mx*0.9; p[i+1]=mx*0.2; p[i+2]=mx*0.17; } }
     x.putImageData(d,0,0); }
   const t=new THREE.CanvasTexture(c); t.flipY=tex.flipY; t.wrapS=tex.wrapS; t.wrapT=tex.wrapT; t.anisotropy=4; return t;}
+/* Character Creator rig ("Man Player"): bake the bind pose, translate its bones and skin weights onto the Mixamo skeleton. */
+const MX_BONES=['Hips','Spine','Spine1','Spine2','Neck','Head','LeftShoulder','LeftArm','LeftForeArm','LeftHand','RightShoulder','RightArm','RightForeArm','RightHand','LeftUpLeg','LeftLeg','LeftFoot','LeftToeBase','RightUpLeg','RightLeg','RightFoot','RightToeBase'];
+function ccMap(n,flip){
+  let side=/_L_/.test(n)?'Left':/_R_/.test(n)?'Right':''; if(flip&&side) side=side==='Left'?'Right':'Left';
+  if(/Toe/.test(n)) return side+'ToeBase';
+  if(/Pelvis|_Hip_|BoneRoot|rootJoint/i.test(n)) return 'Hips';
+  if(/Waist/.test(n)) return 'Spine';
+  if(/Spine01/.test(n)) return 'Spine1';
+  if(/Spine02|RibsTwist|Breast/.test(n)) return 'Spine2';
+  if(/NeckTwist/.test(n)) return 'Neck';
+  if(/Head|Facial|Jaw|Tongue|Teeth|Eye/.test(n)) return 'Head';
+  if(/Clavicle/.test(n)) return side+'Shoulder';
+  if(/Upperarm/.test(n)) return side+'Arm';
+  if(/Forearm|ElbowShare/.test(n)) return side+'ForeArm';
+  if(/Hand|Thumb|Index|Mid\d|Ring\d|Pinky\d/.test(n)) return side+'Hand';
+  if(/Thigh/.test(n)) return side+'UpLeg';
+  if(/Calf|KneeShare/.test(n)) return side+'Leg';
+  if(/Foot/.test(n)) return side+'Foot';
+  return 'Hips';}
+function makeCCTpl(gltf,modeFor){
+  gltf.scene.updateMatrixWorld(true);
+  const findB=re=>{let f=null;gltf.scene.traverse(o=>{if(!f&&o.isBone&&re.test(o.name)) f=o;});return f;};
+  const wp=re=>{const b=findB(re);if(!b) throw new Error('missing bone '+re);return b.getWorldPosition(new V3());};
+  const flip=wp(/_L_Thigh_\d/).x<0;
+  const sk=[]; gltf.scene.traverse(o=>{if(o.isSkinnedMesh) sk.push(o);});
+  const fake=new THREE.Group(); const bb=new THREE.Box3(); const v=new V3();
+  for(const m of sk){
+    const g0=m.geometry, pos=g0.attributes.position, n=pos.count; const P=new Float32Array(n*3);
+    const sI=g0.attributes.skinIndex, sW=g0.attributes.skinWeight;
+    const cmp=(at,i,k)=>{let x=at.array[i*at.itemSize+k]; if(at.normalized){ if(at.array instanceof Uint8Array) x/=255; else if(at.array instanceof Uint16Array) x/=65535; } return x;};
+    const BM=m.skeleton.bones.map((b,k)=>new THREE.Matrix4().multiplyMatrices(b.matrixWorld,m.skeleton.boneInverses[k]));
+    const base=new V3(), acc=new V3(), tmp=new V3();
+    for(let i=0;i<n;i++){ base.fromBufferAttribute(pos,i).applyMatrix4(m.bindMatrix); acc.set(0,0,0); let ws=0;
+      for(let k=0;k<4;k++){ const w=cmp(sW,i,k); if(w<=0) continue; ws+=w; acc.addScaledVector(tmp.copy(base).applyMatrix4(BM[sI.array[i*sI.itemSize+k]]),w); }
+      if(ws>0) acc.multiplyScalar(1/ws); else acc.copy(base);
+      v.copy(acc).applyMatrix4(m.bindMatrixInverse).applyMatrix4(m.matrixWorld); v.toArray(P,i*3); bb.expandByPoint(v); }
+    const geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(P,3));
+    if(g0.attributes.normal){ const N=g0.attributes.normal.clone(); N.applyNormalMatrix(new THREE.Matrix3().getNormalMatrix(m.matrixWorld)); geo.setAttribute('normal',N); }
+    if(g0.attributes.uv) geo.setAttribute('uv',g0.attributes.uv.clone());
+    if(g0.index) geo.setIndex(g0.index.clone());
+    const si=g0.attributes.skinIndex, sw=g0.attributes.skinWeight;
+    const comp=(at,i,k)=>{let x=at.array[i*at.itemSize+k]; if(at.normalized){ if(at.array instanceof Uint8Array) x/=255; else if(at.array instanceof Uint16Array) x/=65535; } return x;}; const map=m.skeleton.bones.map(b=>MX_BONES.indexOf(ccMap(b.name,flip)));
+    const J=new Uint8Array(n*4), W=new Float32Array(n*4);
+    for(let i=0;i<n;i++){ const acc={}; for(let k=0;k<4;k++){ const w=comp(sw,i,k); if(w<=0) continue; const mi=map[si.array[i*si.itemSize+k]]; acc[mi]=(acc[mi]||0)+w; }
+      const ent=Object.entries(acc).sort((a,b)=>b[1]-a[1]).slice(0,4); let tot=0; ent.forEach(e=>tot+=e[1]); if(!ent.length) ent.push([0,1]),tot=1;
+      ent.forEach((e,k)=>{J[i*4+k]=+e[0];W[i*4+k]=e[1]/tot;}); }
+    geo.setAttribute('_skinj',new THREE.BufferAttribute(J,4)); geo.setAttribute('_skinw',new THREE.BufferAttribute(W,4));
+    const mesh=new THREE.Mesh(geo,m.material); mesh.name=m.name; fake.add(mesh);
+  }
+  const c=bb.getCenter(new V3()); const shift=[-c.x,-bb.min.y,-c.z]; const S=new V3().fromArray(shift);
+  const L=flip?'R':'L', Rr=flip?'L':'R';
+  const tg={Hips:/CC_Base_Pelvis/,Spine:/CC_Base_Waist/,Spine1:/CC_Base_Spine01/,Spine2:/CC_Base_Spine02/,Neck:/CC_Base_NeckTwist01/,Head:/CC_Base_Head_/};
+  for(const [S2,c2] of [['Left',L],['Right',Rr]]) Object.assign(tg,{[S2+'Shoulder']:new RegExp('_'+c2+'_Clavicle'),[S2+'Arm']:new RegExp('_'+c2+'_Upperarm_\\d'),[S2+'ForeArm']:new RegExp('_'+c2+'_Forearm_\\d'),
+    [S2+'Hand']:new RegExp('_'+c2+'_Hand_'),[S2+'HandMiddle1']:new RegExp('_'+c2+'_Mid1_'),[S2+'UpLeg']:new RegExp('_'+c2+'_Thigh_\\d'),[S2+'Leg']:new RegExp('_'+c2+'_Calf_\\d'),
+    [S2+'Foot']:new RegExp('_'+c2+'_Foot_'),[S2+'ToeBase']:new RegExp('_'+c2+'_ToeBase_\\d'),[S2+'Toe_End']:new RegExp('_'+c2+'_MidToe1')});
+  const targets={}; for(const k in tg) targets[k]=wp(tg[k]).add(S).toArray();
+  const hd=new V3().fromArray(targets.Head); targets.HeadTop=[hd.x,bb.max.y-bb.min.y,hd.z+0.01];
+  return makeCharTpl({scene:fake},{targets,bones:MX_BONES,scale:1,shift},modeFor);}
 function makeCharTpl(gltf,R,modeFor){
   const xb=THREE.SkeletonUtils.clone(XBOT.scene);
   const rm=[]; xb.traverse(o=>{if(o.isSkinnedMesh) rm.push(o);}); rm.forEach(m=>m.parent.remove(m));
@@ -1292,13 +1350,12 @@ const startId=(location.hash||'').slice(1);
 const si=L_ALL.findIndex(l=>l.id===startId);
 requestAnimationFrame(frame);
 const bootTimeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000));
-Promise.race([Promise.all([loadXbot(),loadGLB('playerA').catch(e=>{console.warn(e&&e.message);return null;}),loadGLB('playerB').catch(e=>{console.warn(e&&e.message);return null;})]),bootTimeout])
-  .then(([g,pa,pb])=>{XBOT=g;measureRig();
-    try{ if(pa) TPL.blue=makeCharTpl(pa,CHAR_RIGS.A,()=> 'white'); }catch(e){console.warn('Player A rig failed:',e);}
-    try{ if(pb) TPL.red=makeCharTpl(pb,CHAR_RIGS.B,n=>/^(Body|Hair)$/.test(n)?null:'yellow'); }catch(e){console.warn('Player B rig failed:',e);} })
+Promise.race([Promise.all([loadXbot(),loadGLB('player').catch(e=>{console.warn(e&&e.message);return null;})]),bootTimeout])
+  .then(([g,pm])=>{XBOT=g;measureRig();
+    try{ if(pm){ TPL.blue=makeCCTpl(pm,n=>/T_shirt|Boots/.test(n)?'red2blue':null); TPL.red=makeCCTpl(pm,()=>null); } }catch(e){console.warn('Player rig failed:',e);} })
   .catch(e=>{console.warn('Using simple players:',e&&e.message);XBOT=null;})
   .then(()=>{$('loading').hidden=true;loadLesson(si>=0?si:0,true);});
-window.__hoop={get t(){return t;},seek,loadLesson,setPlaying,L_ALL,cam:(q,g)=>{setAutoCam(false);camera.position.set(q[0],q[1],q[2]);controls.target.set(g[0],g[1],g[2]);camera.lookAt(controls.target);}};
+window.__hoop={TPL,scene,get t(){return t;},seek,loadLesson,setPlaying,L_ALL,cam:(q,g)=>{setAutoCam(false);camera.position.set(q[0],q[1],q[2]);controls.target.set(g[0],g[1],g[2]);camera.lookAt(controls.target);}};
 })();
 </script>
 
