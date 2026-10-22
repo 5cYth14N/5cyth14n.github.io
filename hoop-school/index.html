@@ -194,7 +194,7 @@ input[type=range]{accent-color:var(--accent);height:28px}
       </div>
       <div class="keys"><kbd>Space</kbd> play/pause · <kbd>←</kbd> <kbd>→</kbd> steps · <kbd>-</kbd> <kbd>+</kbd> speed</div>
     </section>
-    <footer class="credits">3D players based on <a href="https://sketchfab.com/3d-models/low-poly-basketball-player-3d-model-2cb244c5f4b5433f88339caf67f36397" target="_blank" rel="noopener">“Low Poly Basketball Player 3D Model”</a> by <a href="https://sketchfab.com/KidBi-Gaming" target="_blank" rel="noopener">KidBi-Gaming</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (simplified, rigged and recolored). Referee: Xbot from the three.js examples.</footer>
+    <footer class="credits">3D players: the “Xbot” character and walk/run/idle animations from the three.js examples (originally from Adobe Mixamo).</footer>
   </main>
 </div>
 
@@ -1397,9 +1397,8 @@ const si=L_ALL.findIndex(l=>l.id===startId);
 requestAnimationFrame(frame);
 const bootTimeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000));
 const soft=pr=>pr.catch(e=>{console.warn(e&&e.message);return null;});
-Promise.race([Promise.all([loadXbot(),soft(loadGLB('playerK'))]),bootTimeout])
-  .then(([g,pk])=>{XBOT=g;measureRig();
-    try{ if(pk){ TPL.blue=makeCharTpl(pk,RIG_K,()=>'kitBlue'); TPL.red=makeCharTpl(pk,RIG_K,()=>'kitRed'); } }catch(e){console.warn('Player rig failed:',e);} })
+Promise.race([loadXbot(),bootTimeout])
+  .then(g=>{XBOT=g;measureRig();})
   .catch(e=>{console.warn('Using simple players:',e&&e.message);XBOT=null;})
   .then(()=>{$('loading').hidden=true;loadLesson(si>=0?si:0,true);});
 window.__hoop={TPL,scene,get t(){return t;},seek,loadLesson,setPlaying,L_ALL,cam:(q,g)=>{setAutoCam(false);camera.position.set(q[0],q[1],q[2]);controls.target.set(g[0],g[1],g[2]);camera.lookAt(controls.target);}};
