@@ -68,7 +68,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 .hud{position:absolute;inset:0;pointer-events:none;font-family:var(--display);color:var(--hud-ink)}
 .score{position:absolute;left:12px;top:12px;background:var(--hud);border-radius:12px;padding:6px 12px;display:flex;gap:10px;align-items:center;font-size:18px;letter-spacing:.5px}
 .score b{font-weight:400;font-size:24px;min-width:1.3ch;text-align:center;font-variant-numeric:tabular-nums}
-.score .bl{color:#79a9ff}.score .rd{color:#ff8a80}
+.score .bl{color:#79a9ff}.score .rd{color:#ffd24a}
 .clock{position:absolute;right:12px;top:12px;background:var(--hud);border-radius:12px;padding:6px 14px;text-align:center}
 .clock small{display:block;font-family:var(--body);font-weight:900;font-size:10px;letter-spacing:1.2px}
 .clock b{font-weight:400;font-size:34px;line-height:1;color:#ffd24a;font-variant-numeric:tabular-nums}
@@ -156,7 +156,7 @@ input[type=range]{accent-color:var(--accent);height:28px}
     <div class="stage" id="stage">
       <div class="loading" id="loading"><span class="spinball"></span>Warming up the players…</div>
       <div class="hud">
-        <div class="score" id="score" hidden><span class="bl">BLUE</span><b id="sb">0</b><b id="sr">0</b><span class="rd">RED</span></div>
+        <div class="score" id="score" hidden><span class="bl">BLUE</span><b id="sb">0</b><b id="sr">0</b><span class="rd">YELLOW</span></div>
         <div class="clock" id="clock" hidden><small id="clockLabel">SHOT CLOCK</small><b id="clockVal">24</b></div>
         <div class="whistle" id="whistle" hidden><small id="whistleLabel">TWEET! REF SAYS</small><span id="whistleText"></span></div>
         <div class="pop" id="pop" hidden>+2</div>
@@ -194,7 +194,7 @@ input[type=range]{accent-color:var(--accent);height:28px}
       </div>
       <div class="keys"><kbd>Space</kbd> play/pause · <kbd>←</kbd> <kbd>→</kbd> steps · <kbd>-</kbd> <kbd>+</kbd> speed</div>
     </section>
-    <footer class="credits">Blue team player based on <a href="https://sketchfab.com/3d-models/football-player-france-ef9acaa0cbae46edaffdd17dcedecab5" target="_blank" rel="noopener">“Football Player - France”</a> by <a href="https://sketchfab.com/neshallads" target="_blank" rel="noopener">neshallads</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (rigged and simplified). Red team and referee: the “Xbot” character and animations from the three.js examples (originally from Adobe Mixamo).</footer>
+    <footer class="credits">Players based on <a href="https://sketchfab.com/3d-models/football-player-france-ef9acaa0cbae46edaffdd17dcedecab5" target="_blank" rel="noopener">“Football Player - France”</a> (blue team) and <a href="https://sketchfab.com/3d-models/football-player-brazil-aff336862de94f8299c3feebff6977a7" target="_blank" rel="noopener">“Football Player - Brazil”</a> (opponents) by <a href="https://sketchfab.com/neshallads" target="_blank" rel="noopener">neshallads</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (rigged and simplified). Referee: the “Xbot” character and animations from the three.js examples (originally from Adobe Mixamo).</footer>
   </main>
 </div>
 
@@ -1406,9 +1406,12 @@ const si=L_ALL.findIndex(l=>l.id===startId);
 requestAnimationFrame(frame);
 const bootTimeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000));
 const soft=pr=>pr.catch(e=>{console.warn(e&&e.message);return null;});
-Promise.race([Promise.all([loadXbot(),soft(loadGLB('playerF'))]),bootTimeout])
-  .then(([g,pf])=>{XBOT=g;measureRig();
-    try{ if(pf) TPL.blue=makeCharTpl(pf,RIG_F,()=>null); }catch(e){console.warn('Player rig failed:',e);} })
+const loadTex=url=>new Promise((ok,err)=>new THREE.TextureLoader().load(url,ok,undefined,err));
+Promise.race([Promise.all([loadXbot(),soft(loadGLB('playerF')),soft(loadTex('brazil-kit.jpg'))]),bootTimeout])
+  .then(([g,pf,bz])=>{XBOT=g;measureRig();
+    try{ if(pf) TPL.blue=makeCharTpl(pf,RIG_F,()=>null); }catch(e){console.warn('Player rig failed:',e);}
+    try{ if(pf&&bz){ const tp=makeCharTpl(pf,RIG_F,()=>null); bz.flipY=false; bz.anisotropy=4;
+      tp.root.traverse(o=>{if(o.isSkinnedMesh){o.material=o.material.clone();o.material.map=bz;o.material.needsUpdate=true;}}); TPL.red=tp; } }catch(e){console.warn('Opponent rig failed:',e);} })
   .catch(e=>{console.warn('Using simple players:',e&&e.message);XBOT=null;})
   .then(()=>{$('loading').hidden=true;loadLesson(si>=0?si:0,true);});
 window.__hoop={TPL,scene,get t(){return t;},seek,loadLesson,setPlaying,L_ALL,cam:(q,g)=>{setAutoCam(false);camera.position.set(q[0],q[1],q[2]);controls.target.set(g[0],g[1],g[2]);camera.lookAt(controls.target);}};
