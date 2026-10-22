@@ -1410,9 +1410,10 @@ requestAnimationFrame(frame);
 const bootTimeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),15000));
 const soft=pr=>pr.catch(e=>{console.warn(e&&e.message);return null;});
 const loadTex=url=>new Promise((ok,err)=>new THREE.TextureLoader().load(url,ok,undefined,err));
-Promise.race([Promise.all([loadXbot(),soft(loadGLB('playerF')),soft(loadTex('brazil-kit.jpg'))]),bootTimeout])
-  .then(([g,pf,bz])=>{XBOT=g;measureRig();
-    try{ if(pf) TPL.blue=makeCharTpl(pf,RIG_F,()=>null); }catch(e){console.warn('Player rig failed:',e);}
+const kitTex=(tp,tex)=>{tex.flipY=false; tex.anisotropy=4; tp.root.traverse(o=>{if(o.isSkinnedMesh){o.material=o.material.clone();o.material.map=tex;o.material.needsUpdate=true;}}); return tp;};
+Promise.race([Promise.all([loadXbot(),soft(loadGLB('playerF')),soft(loadTex('brazil-kit.jpg')),soft(loadTex('blue-kit.jpg'))]),bootTimeout])
+  .then(([g,pf,bz,bk])=>{XBOT=g;measureRig();
+    try{ if(pf){ TPL.blue=makeCharTpl(pf,RIG_F,()=>null); if(bk) kitTex(TPL.blue,bk); } }catch(e){console.warn('Player rig failed:',e);}
     try{ if(pf) TPL.ref=makeCharTpl(pf,RIG_F,()=>'navy2black'); }catch(e){console.warn('Referee rig failed:',e);}
     try{ if(pf&&bz){ const tp=makeCharTpl(pf,RIG_F,()=>null); bz.flipY=false; bz.anisotropy=4;
       tp.root.traverse(o=>{if(o.isSkinnedMesh){o.material=o.material.clone();o.material.map=bz;o.material.needsUpdate=true;}}); TPL.red=tp; } }catch(e){console.warn('Opponent rig failed:',e);} })
