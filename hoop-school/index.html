@@ -194,7 +194,7 @@ input[type=range]{accent-color:var(--accent);height:28px}
       </div>
       <div class="keys"><kbd>Space</kbd> play/pause · <kbd>←</kbd> <kbd>→</kbd> steps · <kbd>-</kbd> <kbd>+</kbd> speed</div>
     </section>
-    <footer class="credits">Players based on <a href="https://sketchfab.com/3d-models/football-player-france-ef9acaa0cbae46edaffdd17dcedecab5" target="_blank" rel="noopener">“Football Player - France”</a> (blue team) and <a href="https://sketchfab.com/3d-models/football-player-brazil-aff336862de94f8299c3feebff6977a7" target="_blank" rel="noopener">“Football Player - Brazil”</a> (opponents) by <a href="https://sketchfab.com/neshallads" target="_blank" rel="noopener">neshallads</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (rigged and simplified). Referee: the “Xbot” character and animations from the three.js examples (originally from Adobe Mixamo).</footer>
+    <footer class="credits">Players based on <a href="https://sketchfab.com/3d-models/football-player-france-ef9acaa0cbae46edaffdd17dcedecab5" target="_blank" rel="noopener">“Football Player - France”</a> (blue team) and <a href="https://sketchfab.com/3d-models/football-player-brazil-aff336862de94f8299c3feebff6977a7" target="_blank" rel="noopener">“Football Player - Brazil”</a> (opponents) by <a href="https://sketchfab.com/neshallads" target="_blank" rel="noopener">neshallads</a>, licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (rigged and simplified). Referee: the same player with a black shirt. Skeleton and walk/run/idle animations: the “Xbot” character from the three.js examples (originally from Adobe Mixamo).</footer>
   </main>
 </div>
 
@@ -919,6 +919,7 @@ function recolorTex(tex,mode){
   if(mode){ const d=x.getImageData(0,0,w,h), p=d.data;
     for(let i=0;i<p.length;i+=4){ const r=p[i],g=p[i+1],b=p[i+2]; const mx=Math.max(r,g,b), mn=Math.min(r,g,b); const sat=mx?(mx-mn)/mx:0, v=mx/255;
       if(mode==='white'&&sat<0.16&&v>0.5){ const k=Math.pow(v,1.25); p[i]=40*k; p[i+1]=104*k; p[i+2]=218*k; }
+      else if(mode==='navy2black'&&b>r*1.2+6&&b>g*1.08&&mx<190){ const q=18+mx*0.28; p[i]=q; p[i+1]=q; p[i+2]=q*1.04; }
       else if(mode==='red2blue'&&r>1.45*g&&r>1.45*b&&mx>25){ p[i]=r*0.16; p[i+1]=r*0.42; p[i+2]=Math.min(255,r*0.98); }
       else if(mode==='yellow'&&mx>40&&b<0.6*g&&g>0.62*r&&r>0.55*g){ p[i]=mx*0.9; p[i+1]=mx*0.2; p[i+2]=mx*0.17; } }
     x.putImageData(d,0,0); }
@@ -1412,6 +1413,7 @@ const loadTex=url=>new Promise((ok,err)=>new THREE.TextureLoader().load(url,ok,u
 Promise.race([Promise.all([loadXbot(),soft(loadGLB('playerF')),soft(loadTex('brazil-kit.jpg'))]),bootTimeout])
   .then(([g,pf,bz])=>{XBOT=g;measureRig();
     try{ if(pf) TPL.blue=makeCharTpl(pf,RIG_F,()=>null); }catch(e){console.warn('Player rig failed:',e);}
+    try{ if(pf) TPL.ref=makeCharTpl(pf,RIG_F,()=>'navy2black'); }catch(e){console.warn('Referee rig failed:',e);}
     try{ if(pf&&bz){ const tp=makeCharTpl(pf,RIG_F,()=>null); bz.flipY=false; bz.anisotropy=4;
       tp.root.traverse(o=>{if(o.isSkinnedMesh){o.material=o.material.clone();o.material.map=bz;o.material.needsUpdate=true;}}); TPL.red=tp; } }catch(e){console.warn('Opponent rig failed:',e);} })
   .catch(e=>{console.warn('Using simple players:',e&&e.message);XBOT=null;})
