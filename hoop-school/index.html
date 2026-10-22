@@ -897,6 +897,7 @@ function measureTpl(tpl){
   const top=m.getObjectByName('mixamorigHeadTop_End').getWorldPosition(new V3()).y;
   tpl.scale=1.8/top; tpl.ankle=m.getObjectByName('mixamorigLeftFoot').getWorldPosition(new V3()).y*tpl.scale;
   const sa=m.getObjectByName('mixamorigLeftArm').getWorldPosition(new V3()), fa=m.getObjectByName('mixamorigLeftForeArm').getWorldPosition(new V3()), ha=m.getObjectByName('mixamorigLeftHand').getWorldPosition(new V3());
+  const ul=m.getObjectByName('mixamorigLeftUpLeg').getWorldPosition(new V3()); tpl.hipHalf=Math.abs(ul.x)*tpl.scale; tpl.legLen=(ul.y)*tpl.scale;
   tpl.shoulderY=sa.y*tpl.scale; tpl.armLen=(sa.distanceTo(fa)+fa.distanceTo(ha))*tpl.scale; tpl.hold=null; return tpl;}
 function holdOf(id){
   const a=L&&L.A[id]; const tp=(a&&TPL[a.team])||TPL.xbot; if(!tp||!TPL.xbot) return {chestY:1.17,highY:1.98,chestF:0.36,k:1};
@@ -1147,7 +1148,8 @@ function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr,full){
   if(R.act.walk){R.act.walk.setEffectiveWeight(ww);R.act.walk.timeScale=clamp(sp/1.35,0.6,1.7);}
   if(R.act.run){R.act.run.setEffectiveWeight(wr);R.act.run.timeScale=clamp(sp/3.9,0.7,1.5);}
   R.mixer.update(snap?0:clamp(air?dtG*0.3:dtG,0,0.1));
-  const drop=mode==='crouch'?0.2*crouch:mode==='lunge'?0.16:0;
+  const legK=clamp((R.tpl.legLen||0.95)/0.95,0.5,1.1);
+  const drop=mode==='crouch'?0.15*crouch*legK:mode==='lunge'?0.14*legK:0;
   v.root.position.set(p[0],j-drop,p[1]); v.root.updateMatrixWorld(true);
   // upper body turns ahead of the feet
   const tw=clamp(angDiff(th,full),-1.3,1.3);
@@ -1160,12 +1162,12 @@ function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr,full){
   if(mode!=='clip'){
     const ground=new V3(p[0],0,p[1]);
     for(const side of [1,-1]){const leg=side>0?R.legL:R.legR; let tg;
-      if(mode==='crouch'){const wide=0.22+0.1*crouch;
+      if(mode==='crouch'){const wide=(R.tpl.hipHalf||0.1)*1.15+0.06*crouch*legK;
         const vv=velOf(a,t);const vel=new V3(vv[0]/0.36,0,vv[1]/0.36);
         const desired=ground.clone().addScaledVector(Lf,side*wide).addScaledVector(F,0.03).addScaledVector(vel,0.12);
         let f=R.feet[side]; if(!f){f=R.feet[side]={plant:ground.clone().addScaledVector(Lf,side*wide).addScaledVector(F,0.03),stepping:false,s:0};}
         const other=R.feet[-side];
-        if(!f.stepping&&dtG>0&&f.plant.distanceTo(desired)>0.2&&!(other&&other.stepping)){f.stepping=true;f.from=f.plant.clone();f.s=0;}
+        if(!f.stepping&&dtG>0&&f.plant.distanceTo(desired)>0.16*legK+0.04&&!(other&&other.stepping)){f.stepping=true;f.from=f.plant.clone();f.s=0;}
         let pos=f.plant, lift=0;
         if(f.stepping){f.s+=Math.max(dtG,0)/clamp(0.17/(1+sp*0.35),0.08,0.17);const u=Math.min(1,f.s);pos=f.from.clone().lerp(desired,smooth(u));lift=0.13*Math.sin(Math.PI*u);if(u>=1){f.stepping=false;f.plant=desired.clone();pos=f.plant;}}
         tg=pos.clone().add(new V3(0,R.tpl.ankle+lift,0));}
