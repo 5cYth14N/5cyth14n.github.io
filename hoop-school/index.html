@@ -1070,7 +1070,7 @@ function armTargets(pose,c){
   const P=(base,...terms)=>{const v=base.clone();for(let i=0;i<terms.length;i+=2) v.addScaledVector(terms[i],terms[i+1]);return v;};
   const N=(...terms)=>{const v=new V3();for(let i=0;i<terms.length;i+=2) v.addScaledVector(terms[i],terms[i+1]);return v.normalize();};
   // wrist position so the palm (facing n, fingers along f) rests on the ball surface
-  const grip=(n,f,gap)=>b.clone().addScaledVector(n,-(BR+(gap==null?0.012:gap))).addScaledVector(f,-0.075);
+  const grip=(n,f,gap)=>b.clone().addScaledVector(n,-(BR+0.055+(gap==null?0:gap*0)));
   const A=(t_,pole,exact,n,f)=>({t:t_,pole,exact,n,f});
   const elbowsDown=[P(shL,U,-0.6,L,0.35,F,-0.25),P(shR,U,-0.6,R,0.35,F,-0.25)];
   switch(pose.name){
@@ -1088,7 +1088,7 @@ function armTargets(pose,c){
                             r:A(P(shR,F,0.55,U,-0.12,L,0.1),P(shR,U,-0.5,R,0.4),false,N(R,0.75,U,-0.65),N(F,1))};
     case 'dribble': { const s=pose.seg; const side=kv(s.side,t,1); const hy=kv(s.hy,t,0.95);
       const n=N(U,-1,F,0.12), f=N(F,1,U,0.12);
-      const palm=new V3(b.x,Math.max(b.y+BR+0.01,hy-0.08),b.z); const wrist=palm.addScaledVector(f,-0.075);
+      const wrist=new V3(b.x,Math.max(b.y+BR+0.055,hy-0.03),b.z).addScaledVector(F,-0.02);
       const gL=A(P(shL,F,0.3,U,-0.32,L,0.22),elbowsDown[0],false,N(F,1,U,-0.3),N(U,1,F,0.3)), gR=A(P(shR,F,0.3,U,-0.32,R,0.22),elbowsDown[1],false,N(F,1,U,-0.3),N(U,1,F,0.3));
       if(side>=0) return {r:A(wrist,P(shR,R,0.5,U,-0.3,F,-0.4),true,n,f),l:gL};
       return {l:A(wrist,P(shL,L,0.5,U,-0.3,F,-0.4),true,n,f),r:gR}; }
@@ -1178,7 +1178,7 @@ function updateRig(v,a,p,j,dtG,snap,sp,pose,bArr,full){
       if(!arm.cur||snap||tg.exact) arm.cur=tg.t.clone(); else arm.cur.lerp(tg.t,kk); arm.pole=tg.pole;
       if(tg.n){ if(!arm.n||snap||tg.exact){arm.n=tg.n.clone();arm.f=tg.f.clone();} else {arm.n.lerp(tg.n,kk).normalize();arm.f.lerp(tg.f,kk).normalize();} } }
     if(arm.w>0.01&&arm.cur){const clipHand=arm.c.getWorldPosition(new V3());twoBone(arm,clipHand.lerp(arm.cur,arm.w),arm.pole);
-      if(arm.n) orientHand(arm.c,S,arm.f,arm.n,arm.w);}
+}
   }
   // jersey numbers
   if(R.numF){const c=R.spine2.getWorldPosition(new V3());
